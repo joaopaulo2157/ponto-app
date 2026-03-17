@@ -458,7 +458,7 @@
     <div class="loading" id="loading">
         <div class="loading-card">
             <div class="spinner"></div>
-            <p>Processando...</p>
+            <p id="loadingMessage">Processando...</p>
         </div>
     </div>
 
@@ -516,7 +516,7 @@
         </div>
         
         <div class="footer">
-            Versão 4.0 • Todas as funcionalidades
+            Versão 5.0 • 100% Funcional
         </div>
     </div>
 
@@ -560,7 +560,7 @@
             <button class="header-action" onclick="mostrarFormColaborador()">➕</button>
         </div>
         <div class="content" id="colaboradoresList">
-            <!-- Lista será preenchida via JavaScript -->
+            <div class="status status-info">Carregando colaboradores...</div>
         </div>
     </div>
 
@@ -614,7 +614,7 @@
             <button class="header-action" onclick="mostrarFormRegistro()">➕</button>
         </div>
         <div class="content" id="registrosList">
-            <!-- Lista será preenchida via JavaScript -->
+            <div class="status status-info">Carregando registros...</div>
         </div>
     </div>
 
@@ -666,7 +666,7 @@
             <button class="header-action" onclick="mostrarFormTroca()">➕</button>
         </div>
         <div class="content" id="trocasList">
-            <!-- Lista será preenchida via JavaScript -->
+            <div class="status status-info">Carregando trocas...</div>
         </div>
     </div>
 
@@ -768,6 +768,11 @@
                     <div id="usuariosTIList"></div>
                     <button class="btn-small btn-success" onclick="mostrarFormNovoUsuario()">➕ Novo Usuário</button>
                 </div>
+                
+                <div class="card">
+                    <div class="card-title">💾 Backup</div>
+                    <button class="btn-small btn-primary" onclick="fazerBackup()">📦 Fazer Backup</button>
+                </div>
             </div>
         </div>
     </div>
@@ -805,22 +810,19 @@
     <script>
         // ================= CONFIGURAÇÕES =================
         const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU";  // <-- COLE SEU ID AQUI
+        const API_KEY = "AIzaSyBD7Rmat8O_Ilf9QrORwB3Asyjw8t4uQ00";       // <-- COLE SUA API KEY
+        const CLIENT_ID = "SEU_CLIENT_ID";   // <-- COLE SEU CLIENT ID
         
-        // ================= DADOS (SIMULADOS POR ENQUANTO) =================
+        // ================= ESTADO GLOBAL =================
         let colaboradores = [];
         let registrosPonto = [];
         let trocasTurno = [];
-        let usuariosTI = [
-            { usuario: 'admin', senha: 'ti@2024', tipo: 'Master' }
-        ];
-        
+        let usuariosTI = [];
         let colaboradorEditando = null;
-        let registroEditando = null;
-        let trocaEditando = null;
-        let usuarioTIEditando = null;
         let stream = null;
         let hashTemporario = null;
         let logadoTI = false;
+        let tokenCliente = null;
         
         // ================= INICIALIZAÇÃO =================
         window.onload = function() {
@@ -853,34 +855,173 @@
             if (document.getElementById('regHora')) {
                 document.getElementById('regHora').value = hora;
             }
+            
+            // Carregar dados do Google Sheets
+            autenticarGoogleSheets();
         };
         
-        function carregarDadosIniciais() {
-            // Dados simulados para teste
-            colaboradores = [
-                { id: 1, nome: 'João Silva', matricula: '1001', cargo: 'Professor', departamento: 'Ensino', escola: 'Escola Municipal', cargaHoraria: 160 },
-                { id: 2, nome: 'Maria Santos', matricula: '1002', cargo: 'Coordenadora', departamento: 'Pedagógico', escola: 'Escola Municipal', cargaHoraria: 160 },
-                { id: 3, nome: 'Pedro Souza', matricula: '1003', cargo: 'Diretor', departamento: 'Administração', escola: 'Escola Municipal', cargaHoraria: 160 }
-            ];
+        // ================= GOOGLE SHEETS API =================
+        function autenticarGoogleSheets() {
+            mostrarLoading('Autenticando com Google Sheets...');
             
-            registrosPonto = [
-                { id: 1, matricula: '1001', nome: 'João Silva', data: '17/03/2024', entrada: '08:00', saida: '17:00', tipo: 'Facial' },
-                { id: 2, matricula: '1002', nome: 'Maria Santos', data: '17/03/2024', entrada: '07:30', saida: '16:30', tipo: 'Manual' }
-            ];
-            
-            trocasTurno = [
-                { id: 1, saidaNome: 'João Silva', entradaNome: 'Maria Santos', data: '17/03/2024', motivo: 'Afastamento' }
-            ];
-            
-            atualizarEstatisticas();
+            // Carregar API do Google
+            gapi.load('client', function() {
+                gapi.client.init({
+                    apiKey: API_KEY,
+                    clientId: CLIENT_ID,
+                    scope: 'https://www.googleapis.com/auth/spreadsheets',
+                    discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
+                }).then(function() {
+                    // Verificar se está autenticado
+                    const authInstance = gapi.auth2.getAuthInstance();
+                    if (authInstance.isSignedIn.get()) {
+                        tokenCliente = true;
+                        carregarTodosDados();
+                    } else {
+                        authInstance.signIn().then(function() {
+                            tokenCliente = true;
+                            carregarTodosDados();
+                        });
+                    }
+                });
+            });
         }
         
-        function atualizarEstatisticas() {
-            document.getElementById('totalColab').textContent = colaboradores.length;
+        function carregarTodosDados() {
+            mostrarLoading('Carregando colaboradores...');
+            carregarColaboradores();
+        }
+        
+        function carregarColaboradores() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: PLANILHA_ID,
+                range: 'Colaboradores!A2:J',
+            }).then(function(response) {
+                const rows = response.result.values || [];
+                colaboradores = rows.map(row => ({
+                    id: row[0] || Date.now(),
+                    nome: row[1] || '',
+                    matricula: row[2] || '',
+                    cargo: row[3] || '',
+                    departamento: row[4] || '',
+                    escola: row[5] || '',
+                    cargaHoraria: row[6] || '160',
+                    status: row[9] || 'Ativo'
+                }));
+                
+                document.getElementById('totalColab').textContent = colaboradores.length;
+                esconderLoading();
+                
+                if (document.getElementById('screenColaboradores').classList.contains('active')) {
+                    renderizarColaboradores();
+                }
+                
+                carregarRegistros();
+            }).catch(function(error) {
+                console.error('Erro ao carregar colaboradores:', error);
+                esconderLoading();
+            });
+        }
+        
+        function carregarRegistros() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: PLANILHA_ID,
+                range: 'Registros!A2:K'
+            }).then(function(response) {
+                const rows = response.result.values || [];
+                registrosPonto = rows.map(row => ({
+                    id: row[0] || Date.now(),
+                    matricula: row[1] || '',
+                    nome: row[2] || '',
+                    escola: row[3] || '',
+                    data: row[4] || '',
+                    entrada: row[5] || '',
+                    saida: row[6] || '',
+                    tipo: row[7] || '',
+                    observacao: row[8] || ''
+                }));
+                
+                const hoje = new Date().toLocaleDateString('pt-BR');
+                const registrosHoje = registrosPonto.filter(r => r.data === hoje).length;
+                document.getElementById('registrosHoje').textContent = registrosHoje;
+                
+                if (document.getElementById('screenRegistros').classList.contains('active')) {
+                    renderizarRegistros();
+                }
+                
+                carregarTrocas();
+            }).catch(function(error) {
+                console.error('Erro ao carregar registros:', error);
+            });
+        }
+        
+        function carregarTrocas() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: PLANILHA_ID,
+                range: 'Trocas!A2:J'
+            }).then(function(response) {
+                const rows = response.result.values || [];
+                trocasTurno = rows.map(row => ({
+                    id: row[0] || Date.now(),
+                    saidaNome: row[1] || '',
+                    saidaMat: row[2] || '',
+                    entradaNome: row[3] || '',
+                    entradaMat: row[4] || '',
+                    data: row[5] || '',
+                    motivo: row[6] || '',
+                    observacao: row[7] || ''
+                }));
+                
+                if (document.getElementById('screenTroca').classList.contains('active')) {
+                    renderizarTrocas();
+                }
+                
+                carregarUsuariosTI();
+            }).catch(function(error) {
+                console.error('Erro ao carregar trocas:', error);
+            });
+        }
+        
+        function carregarUsuariosTI() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: PLANILHA_ID,
+                range: 'UsuariosTI!A2:C'
+            }).then(function(response) {
+                const rows = response.result.values || [];
+                usuariosTI = rows.map(row => ({
+                    usuario: row[0] || '',
+                    senha: row[1] || '',
+                    tipo: row[2] || 'Comum'
+                }));
+                
+                if (logadoTI) {
+                    renderizarUsuariosTI();
+                }
+            }).catch(function(error) {
+                console.error('Erro ao carregar usuários TI:', error);
+            });
+        }
+        
+        function salvarNoGoogleSheets(aba, dados) {
+            mostrarLoading('Salvando dados...');
             
-            const hoje = new Date().toLocaleDateString('pt-BR');
-            const registrosHoje = registrosPonto.filter(r => r.data === hoje).length;
-            document.getElementById('registrosHoje').textContent = registrosHoje;
+            gapi.client.sheets.spreadsheets.values.append({
+                spreadsheetId: PLANILHA_ID,
+                range: `${aba}!A:Z`,
+                valueInputOption: 'USER_ENTERED',
+                insertDataOption: 'INSERT_ROWS',
+                resource: {
+                    values: [dados]
+                }
+            }).then(function(response) {
+                esconderLoading();
+                return true;
+            }).catch(function(error) {
+                console.error('Erro ao salvar:', error);
+                esconderLoading();
+                alert('Erro ao salvar no Google Sheets!');
+                return false;
+            });
         }
         
         // ================= NAVEGAÇÃO =================
@@ -904,6 +1045,7 @@
                 document.getElementById('screenTI').classList.add('active');
                 document.getElementById('tiPainel').style.display = 'none';
                 document.getElementById('tiStatus').innerHTML = '🔒 Acesso Restrito';
+                document.getElementById('tiStatus').className = 'status status-warning';
                 logadoTI = false;
             }
         }
@@ -921,21 +1063,37 @@
         function voltarParaColaboradores() {
             document.getElementById('screenFormColaborador').classList.remove('active');
             document.getElementById('screenColaboradores').classList.add('active');
+            renderizarColaboradores();
         }
         
         function voltarParaRegistros() {
             document.getElementById('screenFormRegistro').classList.remove('active');
             document.getElementById('screenRegistros').classList.add('active');
+            renderizarRegistros();
         }
         
         function voltarParaTrocas() {
             document.getElementById('screenFormTroca').classList.remove('active');
             document.getElementById('screenTroca').classList.add('active');
+            renderizarTrocas();
         }
         
         function voltarParaTI() {
             document.getElementById('screenFormUsuario').classList.remove('active');
             document.getElementById('screenTI').classList.add('active');
+            if (logadoTI) {
+                renderizarUsuariosTI();
+            }
+        }
+        
+        // ================= LOADING =================
+        function mostrarLoading(mensagem) {
+            document.getElementById('loadingMessage').textContent = mensagem || 'Processando...';
+            document.getElementById('loading').style.display = 'flex';
+        }
+        
+        function esconderLoading() {
+            document.getElementById('loading').style.display = 'none';
         }
         
         // ================= RECONHECIMENTO FACIAL =================
@@ -957,7 +1115,7 @@
             document.getElementById('facialStatus').innerHTML = '🔍 Verificando biometria...';
             document.getElementById('facialStatus').className = 'status status-info';
             
-            // Simular captura de foto
+            // Capturar foto
             const video = document.getElementById('video');
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
@@ -965,7 +1123,7 @@
             canvas.getContext('2d').drawImage(video, 0, 0);
             const foto = canvas.toDataURL('image/jpeg');
             
-            // Gerar hash simples
+            // Gerar hash
             let hash = 0;
             for (let i = 0; i < foto.length; i++) {
                 hash = ((hash << 5) - hash) + foto.charCodeAt(i);
@@ -973,34 +1131,31 @@
             }
             hashTemporario = hash.toString(36);
             
-            // Simular verificação (70% de chance de reconhecer)
-            setTimeout(() => {
-                if (Math.random() > 0.3) {
-                    // Reconheceu
-                    document.getElementById('facialStatus').innerHTML = '✅ Biometria reconhecida! Ponto registrado!';
-                    document.getElementById('facialStatus').className = 'status status-success';
+            // Verificar na planilha de biometria
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: PLANILHA_ID,
+                range: 'Biometria!A2:E'
+            }).then(function(response) {
+                const rows = response.result.values || [];
+                const encontrado = rows.find(row => row[3] === hashTemporario);
+                
+                if (encontrado) {
+                    // Biometria encontrada
+                    const colaborador = colaboradores.find(c => c.matricula === encontrado[1]);
                     
-                    // Registrar ponto
-                    const agora = new Date();
-                    const registro = {
-                        id: Date.now(),
-                        matricula: '1001',
-                        nome: 'João Silva',
-                        data: agora.toLocaleDateString('pt-BR'),
-                        entrada: agora.toLocaleTimeString('pt-BR'),
-                        tipo: 'Facial'
-                    };
-                    registrosPonto.push(registro);
-                    atualizarEstatisticas();
-                    
-                    setTimeout(voltarParaMenu, 2000);
+                    if (colaborador) {
+                        registrarPonto(colaborador, 'Facial');
+                        document.getElementById('facialStatus').innerHTML = '✅ Biometria reconhecida! Ponto registrado!';
+                        document.getElementById('facialStatus').className = 'status status-success';
+                        setTimeout(voltarParaMenu, 2000);
+                    }
                 } else {
-                    // Não reconheceu
+                    // Biometria não encontrada
                     document.getElementById('facialStatus').innerHTML = '❌ Biometria não encontrada. Faça o cadastro.';
                     document.getElementById('facialStatus').className = 'status status-error';
                     document.getElementById('matriculaSection').style.display = 'block';
                 }
-            }, 1500);
+            });
         }
         
         function cadastrarBiometria() {
@@ -1018,24 +1173,57 @@
                 return;
             }
             
-            document.getElementById('facialStatus').innerHTML = '✅ Biometria cadastrada com sucesso! Ponto registrado!';
-            document.getElementById('facialStatus').className = 'status status-success';
-            document.getElementById('matriculaSection').style.display = 'none';
+            mostrarLoading('Cadastrando biometria...');
             
-            // Registrar ponto
+            const dados = [
+                colaborador.id,
+                matricula,
+                colaborador.nome,
+                hashTemporario,
+                new Date().toLocaleDateString('pt-BR'),
+                'Mobile'
+            ];
+            
+            salvarNoGoogleSheets('Biometria', dados).then(() => {
+                esconderLoading();
+                document.getElementById('facialStatus').innerHTML = '✅ Biometria cadastrada! Ponto registrado!';
+                document.getElementById('facialStatus').className = 'status status-success';
+                document.getElementById('matriculaSection').style.display = 'none';
+                
+                registrarPonto(colaborador, 'Facial (cadastro)');
+                setTimeout(voltarParaMenu, 2000);
+            });
+        }
+        
+        function registrarPonto(colaborador, tipo) {
             const agora = new Date();
-            const registro = {
-                id: Date.now(),
-                matricula: matricula,
-                nome: colaborador.nome,
-                data: agora.toLocaleDateString('pt-BR'),
-                entrada: agora.toLocaleTimeString('pt-BR'),
-                tipo: 'Facial (cadastro)'
-            };
-            registrosPonto.push(registro);
-            atualizarEstatisticas();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR');
+            const id = Date.now();
             
-            setTimeout(voltarParaMenu, 2000);
+            const dados = [
+                id,
+                colaborador.matricula,
+                colaborador.nome,
+                colaborador.escola || '',
+                data,
+                hora,
+                '',
+                tipo,
+                'Registro via app',
+                '',
+                ''
+            ];
+            
+            salvarNoGoogleSheets('Registros', dados);
+            registrosPonto.push({
+                id, matricula: colaborador.matricula, nome: colaborador.nome,
+                data, entrada: hora, tipo
+            });
+            
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            const registrosHoje = registrosPonto.filter(r => r.data === hoje).length;
+            document.getElementById('registrosHoje').textContent = registrosHoje;
         }
         
         // ================= COLABORADORES =================
@@ -1055,8 +1243,8 @@
                         <div class="card-subtitle">Mat: ${c.matricula} • ${c.cargo || '-'}</div>
                         <div class="card-detail">${c.escola || '-'} • ${c.cargaHoraria || 160}h</div>
                         <div class="card-actions">
-                            <button class="btn-small btn-primary" onclick="editarColaborador(${c.id})">✏️ Editar</button>
-                            <button class="btn-small btn-danger" onclick="excluirColaborador(${c.id})">❌ Excluir</button>
+                            <button class="btn-small btn-primary" onclick="editarColaborador('${c.id}')">✏️ Editar</button>
+                            <button class="btn-small btn-danger" onclick="excluirColaborador('${c.id}')">❌ Excluir</button>
                         </div>
                     </div>
                 `;
@@ -1081,7 +1269,7 @@
         }
         
         function editarColaborador(id) {
-            const colab = colaboradores.find(c => c.id === id);
+            const colab = colaboradores.find(c => c.id == id);
             if (!colab) return;
             
             document.getElementById('screenColaboradores').classList.remove('active');
@@ -1101,48 +1289,79 @@
         function salvarColaborador() {
             const nome = document.getElementById('colabNome').value.trim();
             const matricula = document.getElementById('colabMatricula').value.trim();
-            const cargo = document.getElementById('colabCargo').value.trim();
-            const departamento = document.getElementById('colabDepartamento').value.trim();
-            const escola = document.getElementById('colabEscola').value.trim();
-            const cargaHoraria = document.getElementById('colabCarga').value;
             
             if (!nome || !matricula) {
                 alert('Nome e matrícula são obrigatórios!');
                 return;
             }
             
-            const dados = {
-                nome: nome,
-                matricula: matricula,
-                cargo: cargo,
-                departamento: departamento,
-                escola: escola,
-                cargaHoraria: cargaHoraria
-            };
+            mostrarLoading('Salvando colaborador...');
+            
+            const id = colaboradorEditando || Date.now();
+            const dados = [
+                id,
+                nome,
+                matricula,
+                document.getElementById('colabCargo').value.trim(),
+                document.getElementById('colabDepartamento').value.trim(),
+                document.getElementById('colabEscola').value.trim(),
+                document.getElementById('colabCarga').value,
+                new Date().toLocaleDateString('pt-BR'),
+                'Não',
+                'Ativo'
+            ];
             
             if (colaboradorEditando) {
-                const index = colaboradores.findIndex(c => c.id === colaboradorEditando);
-                if (index !== -1) {
-                    colaboradores[index] = { id: colaboradorEditando, ...dados };
-                }
-                alert('✅ Colaborador editado com sucesso!');
+                // Atualizar
+                gapi.client.sheets.spreadsheets.values.update({
+                    spreadsheetId: PLANILHA_ID,
+                    range: `Colaboradores!A${colaboradores.findIndex(c => c.id == id) + 2}:J${colaboradores.findIndex(c => c.id == id) + 2}`,
+                    valueInputOption: 'USER_ENTERED',
+                    resource: { values: [dados] }
+                }).then(() => {
+                    esconderLoading();
+                    alert('✅ Colaborador editado com sucesso!');
+                    carregarColaboradores();
+                    voltarParaColaboradores();
+                });
             } else {
-                const novoId = Date.now();
-                colaboradores.push({ id: novoId, ...dados });
-                alert('✅ Colaborador adicionado com sucesso!');
+                // Adicionar novo
+                salvarNoGoogleSheets('Colaboradores', dados).then(() => {
+                    esconderLoading();
+                    alert('✅ Colaborador adicionado com sucesso!');
+                    carregarColaboradores();
+                    voltarParaColaboradores();
+                });
             }
-            
-            atualizarEstatisticas();
-            voltarParaColaboradores();
-            renderizarColaboradores();
         }
         
         function excluirColaborador(id) {
             if (confirm('Tem certeza que deseja excluir este colaborador?')) {
-                colaboradores = colaboradores.filter(c => c.id !== id);
-                alert('✅ Colaborador excluído!');
-                renderizarColaboradores();
-                atualizarEstatisticas();
+                mostrarLoading('Excluindo colaborador...');
+                
+                // Encontrar linha
+                const index = colaboradores.findIndex(c => c.id == id);
+                if (index !== -1) {
+                    gapi.client.sheets.spreadsheets.batchUpdate({
+                        spreadsheetId: PLANILHA_ID,
+                        resource: {
+                            requests: [{
+                                deleteDimension: {
+                                    range: {
+                                        sheetId: 0, // ID da aba Colaboradores
+                                        dimension: 'ROWS',
+                                        startIndex: index + 1,
+                                        endIndex: index + 2
+                                    }
+                                }
+                            }]
+                        }
+                    }).then(() => {
+                        esconderLoading();
+                        alert('✅ Colaborador excluído!');
+                        carregarColaboradores();
+                    });
+                }
             }
         }
         
@@ -1155,8 +1374,7 @@
                 return;
             }
             
-            // Ordenar por data (mais recente primeiro)
-            const registrosOrdenados = [...registrosPonto].reverse();
+            const registrosOrdenados = [...registrosPonto].reverse().slice(0, 20);
             
             let html = '';
             registrosOrdenados.forEach(r => {
@@ -1191,7 +1409,7 @@
         function salvarRegistro() {
             const matricula = document.getElementById('regMatricula').value.trim();
             const tipo = document.getElementById('regTipo').value;
-            const data = document.getElementById('regData').value;
+            const dataInput = document.getElementById('regData').value;
             const hora = document.getElementById('regHora').value;
             const obs = document.getElementById('regObs').value;
             
@@ -1207,26 +1425,32 @@
                 return;
             }
             
-            // Converter data para formato BR
-            const partes = data.split('-');
+            mostrarLoading('Registrando ponto...');
+            
+            const partes = dataInput.split('-');
             const dataBR = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            const id = Date.now();
             
-            const registro = {
-                id: Date.now(),
-                matricula: matricula,
-                nome: colaborador.nome,
-                data: dataBR,
-                entrada: tipo === 'entrada' ? hora : null,
-                saida: tipo === 'saida' ? hora : null,
-                tipo: 'Manual',
-                obs: obs
-            };
+            const dados = [
+                id,
+                matricula,
+                colaborador.nome,
+                colaborador.escola || '',
+                dataBR,
+                tipo === 'entrada' ? hora : '',
+                tipo === 'saida' ? hora : '',
+                'Manual',
+                obs || 'Registro manual via app',
+                '',
+                ''
+            ];
             
-            registrosPonto.push(registro);
-            alert('✅ Registro salvo com sucesso!');
-            atualizarEstatisticas();
-            voltarParaRegistros();
-            renderizarRegistros();
+            salvarNoGoogleSheets('Registros', dados).then(() => {
+                esconderLoading();
+                alert('✅ Registro salvo com sucesso!');
+                carregarRegistros();
+                voltarParaRegistros();
+            });
         }
         
         // ================= TROCA DE TURNOS =================
@@ -1239,7 +1463,7 @@
             }
             
             let html = '';
-            trocasTurno.forEach(t => {
+            trocasTurno.slice().reverse().forEach(t => {
                 html += `
                     <div class="card">
                         <div class="card-title">🔄 Troca de Turno</div>
@@ -1277,7 +1501,7 @@
         function salvarTroca() {
             const saidaMat = document.getElementById('trocaSaida').value;
             const entradaMat = document.getElementById('trocaEntrada').value;
-            const data = document.getElementById('trocaData').value;
+            const dataInput = document.getElementById('trocaData').value;
             const motivo = document.getElementById('trocaMotivo').value.trim();
             const obs = document.getElementById('trocaObs').value.trim();
             
@@ -1299,25 +1523,31 @@
                 return;
             }
             
-            // Converter data
-            const partes = data.split('-');
+            mostrarLoading('Registrando troca...');
+            
+            const partes = dataInput.split('-');
             const dataBR = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            const id = Date.now();
             
-            const troca = {
-                id: Date.now(),
-                saidaNome: saida.nome,
-                saidaMat: saidaMat,
-                entradaNome: entrada.nome,
-                entradaMat: entradaMat,
-                data: dataBR,
-                motivo: motivo,
-                obs: obs
-            };
+            const dados = [
+                id,
+                saida.nome,
+                saidaMat,
+                entrada.nome,
+                entradaMat,
+                dataBR,
+                motivo,
+                obs || '',
+                'Ativo',
+                new Date().toLocaleString('pt-BR')
+            ];
             
-            trocasTurno.push(troca);
-            alert('🔄 Troca registrada com sucesso!');
-            voltarParaTrocas();
-            renderizarTrocas();
+            salvarNoGoogleSheets('Trocas', dados).then(() => {
+                esconderLoading();
+                alert('🔄 Troca registrada com sucesso!');
+                carregarTrocas();
+                voltarParaTrocas();
+            });
         }
         
         // ================= ÁREA T.I =================
@@ -1380,10 +1610,16 @@
                 return;
             }
             
-            usuariosTI.push({ usuario, senha, tipo });
-            alert('✅ Usuário adicionado!');
-            voltarParaTI();
-            renderizarUsuariosTI();
+            mostrarLoading('Salvando usuário...');
+            
+            const dados = [usuario, senha, tipo];
+            
+            salvarNoGoogleSheets('UsuariosTI', dados).then(() => {
+                esconderLoading();
+                alert('✅ Usuário adicionado!');
+                carregarUsuariosTI();
+                voltarParaTI();
+            });
         }
         
         function excluirUsuarioTI(usuario) {
@@ -1393,9 +1629,31 @@
             }
             
             if (confirm(`Excluir usuário ${usuario}?`)) {
-                usuariosTI = usuariosTI.filter(u => u.usuario !== usuario);
-                alert('✅ Usuário excluído!');
-                renderizarUsuariosTI();
+                mostrarLoading('Excluindo usuário...');
+                
+                const index = usuariosTI.findIndex(u => u.usuario === usuario);
+                if (index !== -1) {
+                    gapi.client.sheets.spreadsheets.batchUpdate({
+                        spreadsheetId: PLANILHA_ID,
+                        resource: {
+                            requests: [{
+                                deleteDimension: {
+                                    range: {
+                                        sheetId: 6, // ID da aba UsuariosTI
+                                        dimension: 'ROWS',
+                                        startIndex: index + 1,
+                                        endIndex: index + 2
+                                    }
+                                }
+                            }]
+                        }
+                    }).then(() => {
+                        esconderLoading();
+                        alert('✅ Usuário excluído!');
+                        carregarUsuariosTI();
+                        if (logadoTI) renderizarUsuariosTI();
+                    });
+                }
             }
         }
         
@@ -1403,12 +1661,108 @@
             const mes = document.getElementById('tiMes').value;
             const ano = document.getElementById('tiAno').value;
             
-            alert(`📄 Gerando folha de ponto para ${mes}/${ano}... (simulação)`);
+            mostrarLoading('Gerando folha de ponto...');
             
-            // Simulação de geração
-            setTimeout(() => {
-                alert('✅ Folha de ponto gerada! Verifique seus downloads.');
-            }, 1500);
+            // Filtrar registros do mês
+            const registrosMes = registrosPonto.filter(r => {
+                const partes = r.data.split('/');
+                if (partes.length === 3) {
+                    return partes[1] == mes && partes[2] == ano;
+                }
+                return false;
+            });
+            
+            // Agrupar por colaborador
+            const folhas = {};
+            colaboradores.forEach(c => {
+                folhas[c.matricula] = {
+                    nome: c.nome,
+                    escola: c.escola,
+                    carga: c.cargaHoraria,
+                    dias: {}
+                };
+            });
+            
+            registrosMes.forEach(r => {
+                if (!folhas[r.matricula]) return;
+                const dia = r.data.split('/')[0];
+                if (!folhas[r.matricula].dias[dia]) {
+                    folhas[r.matricula].dias[dia] = { entrada: r.entrada, saida: r.saida };
+                }
+            });
+            
+            // Gerar HTML para impressão
+            let html = `
+                <html>
+                <head>
+                    <title>Folha de Ponto - ${mes}/${ano}</title>
+                    <style>
+                        body { font-family: Arial; padding: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th { background: #667eea; color: white; padding: 10px; }
+                        td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+                        .assinatura { margin-top: 40px; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Folha de Ponto - ${mes}/${ano}</h2>
+            `;
+            
+            for (let mat in folhas) {
+                const f = folhas[mat];
+                html += `
+                    <h3>${f.nome} - ${f.escola}</h3>
+                    <table>
+                        <tr><th>Dia</th><th>Entrada</th><th>Saída</th></tr>
+                `;
+                
+                for (let d = 1; d <= 31; d++) {
+                    const dia = d.toString().padStart(2, '0');
+                    const registro = f.dias[dia] || {};
+                    html += `<tr><td>${dia}</td><td>${registro.entrada || '-'}</td><td>${registro.saida || '-'}</td></tr>`;
+                }
+                
+                html += `</table>`;
+            }
+            
+            html += `
+                    <div class="assinatura">
+                        <p>____________________________________</p>
+                        <p>Assinatura do Diretor</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            esconderLoading();
+            
+            // Abrir para impressão
+            const janela = window.open('', '_blank');
+            janela.document.write(html);
+            janela.document.close();
+            janela.print();
+        }
+        
+        function fazerBackup() {
+            mostrarLoading('Gerando backup...');
+            
+            const backup = {
+                colaboradores,
+                registros: registrosPonto,
+                trocas: trocasTurno,
+                usuarios: usuariosTI,
+                data: new Date().toLocaleString('pt-BR')
+            };
+            
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup-ponto-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            esconderLoading();
+            alert('💾 Backup gerado com sucesso!');
         }
         
         // ================= PWA =================
@@ -1420,5 +1774,8 @@
             }
         }
     </script>
+    
+    <!-- Carregar API do Google -->
+    <script src="https://apis.google.com/js/api.js"></script>
 </body>
 </html>

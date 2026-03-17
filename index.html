@@ -24,18 +24,30 @@
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 16px;
+            padding: 12px;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
         
-        .container {
+        /* Tela Principal */
+        #mainScreen {
             background: white;
             border-radius: 40px;
             padding: 24px;
-            min-height: calc(100vh - 32px);
+            min-height: calc(100vh - 24px);
             display: flex;
             flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        /* Tela de Funcionalidade */
+        #functionScreen {
+            background: white;
+            border-radius: 40px;
+            min-height: calc(100vh - 24px);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
@@ -150,6 +162,47 @@
             font-size: 1.2rem;
         }
         
+        /* Cabeçalho da tela de função */
+        .function-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn-back {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .btn-back:active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .function-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        /* IFrame para carregar as funcionalidades */
+        #functionFrame {
+            width: 100%;
+            flex: 1;
+            border: none;
+            background: white;
+        }
+        
         .install-banner {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -219,38 +272,39 @@
     <div class="loading" id="loading">
         <div class="loading-card">
             <div class="spinner"></div>
-            <p>Abrindo sistema...</p>
+            <p>Carregando...</p>
         </div>
     </div>
 
-    <div class="container">
+    <!-- Tela Principal (Menu) -->
+    <div id="mainScreen">
         <div class="header">
             <div class="logo">📱</div>
             <h1>Ponto App</h1>
             <div class="developer">João Paulo da Silva de Farias</div>
         </div>
         
-        <button class="btn-facial" onclick="abrirTela('facial')">
+        <button class="btn-facial" onclick="abrirFuncionalidade('facial')">
             <span>📸</span> BATER PONTO
         </button>
         
         <div class="menu-grid">
-            <button class="menu-item" onclick="abrirTela('colaboradores')">
+            <button class="menu-item" onclick="abrirFuncionalidade('colaboradores')">
                 <span>👥</span>
                 Colaboradores
             </button>
             
-            <button class="menu-item" onclick="abrirTela('manual')">
+            <button class="menu-item" onclick="abrirFuncionalidade('manual')">
                 <span>📝</span>
                 Registro Manual
             </button>
             
-            <button class="menu-item" onclick="abrirTela('troca')">
+            <button class="menu-item" onclick="abrirFuncionalidade('troca')">
                 <span>🔄</span>
                 Troca de Turnos
             </button>
             
-            <button class="menu-item" onclick="abrirTela('ti')">
+            <button class="menu-item" onclick="abrirFuncionalidade('ti')">
                 <span>👨‍💻</span>
                 Área T.I
             </button>
@@ -279,28 +333,45 @@
             Versão 2.0 • App Nativo
         </div>
     </div>
+
+    <!-- Tela de Funcionalidade (abre quando clica em um botão) -->
+    <div id="functionScreen">
+        <div class="function-header">
+            <button class="btn-back" onclick="voltarParaMenu()">←</button>
+            <div class="function-title" id="functionTitle">Funcionalidade</div>
+        </div>
+        <iframe id="functionFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    </div>
     
     <script>
         // ================= CONFIGURAÇÕES =================
-        // COLE AQUI O ID DA SUA PLANILHA (somente os números e letras)
-        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU/edit?hl=pt-br&gid=0#gid=0";  // <-- TROQUE AQUI!
+        // COLE AQUI O ID DA SUA PLANILHA
+        const PLANILHA_ID = "SEU_ID_AQUI";  // <-- TROQUE AQUI!
         
-        // URLs do sistema (seus arquivos HTML no Apps Script)
+        // URLs do Google Apps Script (cada funcionalidade)
         const URLs = {
-            facial: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
-            colaboradores: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
-            manual: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
-            troca: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
-            ti: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`
+            facial: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=facial`,
+            colaboradores: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=colaboradores`,
+            manual: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=manual`,
+            troca: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=troca`,
+            ti: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=ti`
         };
         
-        // ================= FUNÇÕES DO APP =================
+        // Nomes das funcionalidades
+        const Nomes = {
+            facial: "📸 Reconhecimento Facial",
+            colaboradores: "👥 Gerenciar Colaboradores",
+            manual: "📝 Registro Manual",
+            troca: "🔄 Troca de Turnos",
+            ti: "👨‍💻 Área T.I"
+        };
+        
         let deferredPrompt;
         
         window.onload = function() {
             carregarEstatisticas();
             
-            // Detectar se pode instalar o PWA
+            // Detectar instalação PWA
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
@@ -311,25 +382,47 @@
             if (window.matchMedia('(display-mode: standalone)').matches) {
                 document.getElementById('installBanner').style.display = 'none';
             }
+            
+            // Tratar botão de voltar do Android
+            window.addEventListener('popstate', function(event) {
+                if (document.getElementById('functionScreen').style.display === 'flex') {
+                    voltarParaMenu();
+                }
+            });
         };
         
-        function abrirTela(tela) {
+        function abrirFuncionalidade(func) {
             // Mostrar loading
             document.getElementById('loading').style.display = 'flex';
             
-            // Abrir a tela correspondente no sistema
-            setTimeout(() => {
-                window.location.href = URLs[tela];
-            }, 500);
+            // Configurar título
+            document.getElementById('functionTitle').textContent = Nomes[func];
+            
+            // Carregar a funcionalidade no iframe
+            const iframe = document.getElementById('functionFrame');
+            iframe.src = URLs[func];
+            
+            // Quando o iframe carregar, esconder loading e mostrar tela
+            iframe.onload = function() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('mainScreen').style.display = 'none';
+                document.getElementById('functionScreen').style.display = 'flex';
+            };
+        }
+        
+        function voltarParaMenu() {
+            // Mostrar menu, esconder funcionalidade
+            document.getElementById('mainScreen').style.display = 'flex';
+            document.getElementById('functionScreen').style.display = 'none';
+            
+            // Limpar o iframe para não consumir memória
+            document.getElementById('functionFrame').src = 'about:blank';
         }
         
         function installPWA() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('App instalado');
-                    }
+                deferredPrompt.userChoice.then(() => {
                     deferredPrompt = null;
                     document.getElementById('installBanner').style.display = 'none';
                 });
@@ -337,17 +430,30 @@
         }
         
         function carregarEstatisticas() {
-            // Buscar estatísticas do backend
-            google.script.run.withSuccessHandler(function(stats) {
-                document.getElementById('totalColab').textContent = stats.totalColaboradores || '0';
-                document.getElementById('registrosHoje').textContent = stats.registrosHoje || '0';
-            }).getEstatisticas();
+            // Simular carregamento de estatísticas (depois conectamos com o backend)
+            setTimeout(() => {
+                document.getElementById('totalColab').textContent = '15';
+                document.getElementById('registrosHoje').textContent = '8';
+            }, 1000);
         }
         
         // Impedir zoom acidental
         document.addEventListener('touchstart', (e) => {
             if (e.touches.length > 1) e.preventDefault();
         }, { passive: false });
+        
+        // Botão físico de voltar do Android
+        document.addEventListener('backbutton', function(e) {
+            e.preventDefault();
+            if (document.getElementById('functionScreen').style.display === 'flex') {
+                voltarParaMenu();
+            } else {
+                // Se estiver no menu, pode fechar o app
+                if (confirm('Deseja sair do app?')) {
+                    navigator.app.exitApp();
+                }
+            }
+        }, false);
     </script>
 </body>
 </html>

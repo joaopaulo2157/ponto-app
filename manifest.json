@@ -1,7 +1,7 @@
 {
   "name": "Ponto Eletrônico",
   "short_name": "Ponto App",
-  "description": "Sistema de Ponto Eletrônico 100% Nativo",
+  "description": "Sistema de Ponto Eletrônico Completo",
   "start_url": ".",
   "display": "standalone",
   "orientation": "portrait",

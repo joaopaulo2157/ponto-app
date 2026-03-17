@@ -40,8 +40,8 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
-        /* Tela de Funcionalidade */
-        #functionScreen {
+        /* Tela de Funcionalidade (WebView) */
+        #webviewScreen {
             background: white;
             border-radius: 40px;
             min-height: calc(100vh - 24px);
@@ -162,8 +162,8 @@
             font-size: 1.2rem;
         }
         
-        /* Cabeçalho da tela de função */
-        .function-header {
+        /* Cabeçalho da WebView */
+        .webview-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 20px;
@@ -190,13 +190,13 @@
             background: rgba(255,255,255,0.3);
         }
         
-        .function-title {
+        .webview-title {
             font-size: 1.3rem;
             font-weight: 600;
         }
         
-        /* IFrame para carregar as funcionalidades */
-        #functionFrame {
+        /* WebView */
+        #webviewFrame {
             width: 100%;
             flex: 1;
             border: none;
@@ -284,27 +284,27 @@
             <div class="developer">João Paulo da Silva de Farias</div>
         </div>
         
-        <button class="btn-facial" onclick="abrirFuncionalidade('facial')">
+        <button class="btn-facial" onclick="abrirWebView('facial')">
             <span>📸</span> BATER PONTO
         </button>
         
         <div class="menu-grid">
-            <button class="menu-item" onclick="abrirFuncionalidade('colaboradores')">
+            <button class="menu-item" onclick="abrirWebView('colaboradores')">
                 <span>👥</span>
                 Colaboradores
             </button>
             
-            <button class="menu-item" onclick="abrirFuncionalidade('manual')">
+            <button class="menu-item" onclick="abrirWebView('manual')">
                 <span>📝</span>
                 Registro Manual
             </button>
             
-            <button class="menu-item" onclick="abrirFuncionalidade('troca')">
+            <button class="menu-item" onclick="abrirWebView('troca')">
                 <span>🔄</span>
                 Troca de Turnos
             </button>
             
-            <button class="menu-item" onclick="abrirFuncionalidade('ti')">
+            <button class="menu-item" onclick="abrirWebView('ti')">
                 <span>👨‍💻</span>
                 Área T.I
             </button>
@@ -334,13 +334,13 @@
         </div>
     </div>
 
-    <!-- Tela de Funcionalidade (abre quando clica em um botão) -->
-    <div id="functionScreen">
-        <div class="function-header">
-            <button class="btn-back" onclick="voltarParaMenu()">←</button>
-            <div class="function-title" id="functionTitle">Funcionalidade</div>
+    <!-- Tela WebView (abre quando clica em um botão) -->
+    <div id="webviewScreen">
+        <div class="webview-header">
+            <button class="btn-back" onclick="fecharWebView()">←</button>
+            <div class="webview-title" id="webviewTitle">Carregando...</div>
         </div>
-        <iframe id="functionFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        <iframe id="webviewFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"></iframe>
     </div>
     
     <script>
@@ -348,13 +348,16 @@
         // COLE AQUI O ID DA SUA PLANILHA
         const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU/edit?hl=pt-br&gid=0#gid=0";  // <-- TROQUE AQUI!
         
-        // URLs do Google Apps Script (cada funcionalidade)
+        // URL da sua planilha
+        const PLANILHA_URL = `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing`;
+        
+        // URLs específicas para cada funcionalidade (usando a planilha)
         const URLs = {
-            facial: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=facial`,
-            colaboradores: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=colaboradores`,
-            manual: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=manual`,
-            troca: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=troca`,
-            ti: `https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec?page=ti`
+            facial: PLANILHA_URL,
+            colaboradores: PLANILHA_URL,
+            manual: PLANILHA_URL,
+            troca: PLANILHA_URL,
+            ti: PLANILHA_URL
         };
         
         // Nomes das funcionalidades
@@ -385,38 +388,38 @@
             
             // Tratar botão de voltar do Android
             window.addEventListener('popstate', function(event) {
-                if (document.getElementById('functionScreen').style.display === 'flex') {
-                    voltarParaMenu();
+                if (document.getElementById('webviewScreen').style.display === 'flex') {
+                    fecharWebView();
                 }
             });
         };
         
-        function abrirFuncionalidade(func) {
+        function abrirWebView(func) {
             // Mostrar loading
             document.getElementById('loading').style.display = 'flex';
             
             // Configurar título
-            document.getElementById('functionTitle').textContent = Nomes[func];
+            document.getElementById('webviewTitle').textContent = Nomes[func];
             
-            // Carregar a funcionalidade no iframe
-            const iframe = document.getElementById('functionFrame');
+            // Carregar a planilha no iframe
+            const iframe = document.getElementById('webviewFrame');
             iframe.src = URLs[func];
             
             // Quando o iframe carregar, esconder loading e mostrar tela
             iframe.onload = function() {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('mainScreen').style.display = 'none';
-                document.getElementById('functionScreen').style.display = 'flex';
+                document.getElementById('webviewScreen').style.display = 'flex';
             };
         }
         
-        function voltarParaMenu() {
-            // Mostrar menu, esconder funcionalidade
+        function fecharWebView() {
+            // Mostrar menu, esconder webview
             document.getElementById('mainScreen').style.display = 'flex';
-            document.getElementById('functionScreen').style.display = 'none';
+            document.getElementById('webviewScreen').style.display = 'none';
             
             // Limpar o iframe para não consumir memória
-            document.getElementById('functionFrame').src = 'about:blank';
+            document.getElementById('webviewFrame').src = 'about:blank';
         }
         
         function installPWA() {
@@ -430,11 +433,13 @@
         }
         
         function carregarEstatisticas() {
-            // Simular carregamento de estatísticas (depois conectamos com o backend)
+            // Simular carregamento de estatísticas
             setTimeout(() => {
-                document.getElementById('totalColab').textContent = '15';
-                document.getElementById('registrosHoje').textContent = '8';
+                document.getElementById('totalColab').textContent = 'Carregando...';
+                document.getElementById('registrosHoje').textContent = '...';
             }, 1000);
+            
+            // Aqui você pode buscar do Google Sheets depois
         }
         
         // Impedir zoom acidental
@@ -445,10 +450,9 @@
         // Botão físico de voltar do Android
         document.addEventListener('backbutton', function(e) {
             e.preventDefault();
-            if (document.getElementById('functionScreen').style.display === 'flex') {
-                voltarParaMenu();
+            if (document.getElementById('webviewScreen').style.display === 'flex') {
+                fecharWebView();
             } else {
-                // Se estiver no menu, pode fechar o app
                 if (confirm('Deseja sair do app?')) {
                     navigator.app.exitApp();
                 }

@@ -1,14 +1,21 @@
 {
   "name": "Ponto Eletrônico",
   "short_name": "Ponto App",
+  "description": "Sistema de Ponto Eletrônico 100% Nativo",
   "start_url": ".",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#667eea",
   "theme_color": "#764ba2",
   "icons": [
     {
       "src": "https://i.imgur.com/icon-192.png",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.imgur.com/icon-512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]

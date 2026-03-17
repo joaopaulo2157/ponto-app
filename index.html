@@ -38,17 +38,105 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 10;
         }
         
-        /* Tela de Funcionalidade (WebView) */
-        #webviewScreen {
+        /* Popup */
+        #popupOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        #popupContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
             background: white;
             border-radius: 40px;
-            min-height: calc(100vh - 24px);
-            display: none;
-            flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            z-index: 1001;
+        }
+        
+        .popup-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .popup-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .btn-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .btn-close:active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .popup-content {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .popup-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .popup-text {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        
+        .btn-popup {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        .btn-popup:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-popup-secondary {
+            background: #f5f5f5;
+            color: #333;
         }
         
         .header {
@@ -162,47 +250,6 @@
             font-size: 1.2rem;
         }
         
-        /* Cabeçalho da WebView */
-        .webview-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .btn-back {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .btn-back:active {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .webview-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        /* WebView */
-        #webviewFrame {
-            width: 100%;
-            flex: 1;
-            border: none;
-            background: white;
-        }
-        
         .install-banner {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -232,7 +279,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            z-index: 1000;
+            z-index: 2000;
             align-items: center;
             justify-content: center;
         }
@@ -265,6 +312,12 @@
             color: #999;
             font-size: 0.8rem;
         }
+        
+        .small-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -272,7 +325,31 @@
     <div class="loading" id="loading">
         <div class="loading-card">
             <div class="spinner"></div>
-            <p>Carregando...</p>
+            <p>Processando...</p>
+        </div>
+    </div>
+
+    <!-- Popup -->
+    <div id="popupOverlay"></div>
+    <div id="popupContainer">
+        <div class="popup-header">
+            <div class="popup-title" id="popupTitle">Funcionalidade</div>
+            <button class="btn-close" onclick="fecharPopup()">✕</button>
+        </div>
+        <div class="popup-content">
+            <div class="popup-icon" id="popupIcon">📌</div>
+            <div class="popup-text" id="popupText">
+                Esta funcionalidade será aberta no navegador.
+            </div>
+            <button class="btn-popup" id="popupButton" onclick="abrirNavegador()">
+                Continuar
+            </button>
+            <button class="btn-popup btn-popup-secondary" onclick="fecharPopup()">
+                Cancelar
+            </button>
+            <div class="small-text">
+                O sistema será aberto em uma nova aba
+            </div>
         </div>
     </div>
 
@@ -284,27 +361,27 @@
             <div class="developer">João Paulo da Silva de Farias</div>
         </div>
         
-        <button class="btn-facial" onclick="abrirWebView('facial')">
+        <button class="btn-facial" onclick="mostrarPopup('facial')">
             <span>📸</span> BATER PONTO
         </button>
         
         <div class="menu-grid">
-            <button class="menu-item" onclick="abrirWebView('colaboradores')">
+            <button class="menu-item" onclick="mostrarPopup('colaboradores')">
                 <span>👥</span>
                 Colaboradores
             </button>
             
-            <button class="menu-item" onclick="abrirWebView('manual')">
+            <button class="menu-item" onclick="mostrarPopup('manual')">
                 <span>📝</span>
                 Registro Manual
             </button>
             
-            <button class="menu-item" onclick="abrirWebView('troca')">
+            <button class="menu-item" onclick="mostrarPopup('troca')">
                 <span>🔄</span>
                 Troca de Turnos
             </button>
             
-            <button class="menu-item" onclick="abrirWebView('ti')">
+            <button class="menu-item" onclick="mostrarPopup('ti')">
                 <span>👨‍💻</span>
                 Área T.I
             </button>
@@ -333,42 +410,43 @@
             Versão 2.0 • App Nativo
         </div>
     </div>
-
-    <!-- Tela WebView (abre quando clica em um botão) -->
-    <div id="webviewScreen">
-        <div class="webview-header">
-            <button class="btn-back" onclick="fecharWebView()">←</button>
-            <div class="webview-title" id="webviewTitle">Carregando...</div>
-        </div>
-        <iframe id="webviewFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"></iframe>
-    </div>
     
     <script>
         // ================= CONFIGURAÇÕES =================
-        // COLE AQUI O ID DA SUA PLANILHA
-        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU/edit?hl=pt-br&gid=0#gid=0";  // <-- TROQUE AQUI!
+        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU/edit?hl=pt-br&gid=0#gid=0";  // <-- SEU ID AQUI
         
-        // URL da sua planilha
         const PLANILHA_URL = `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing`;
         
-        // URLs específicas para cada funcionalidade (usando a planilha)
-        const URLs = {
-            facial: PLANILHA_URL,
-            colaboradores: PLANILHA_URL,
-            manual: PLANILHA_URL,
-            troca: PLANILHA_URL,
-            ti: PLANILHA_URL
+        // Configurações do popup
+        const popupConfig = {
+            facial: {
+                title: "📸 Reconhecimento Facial",
+                icon: "📸",
+                text: "Você será redirecionado para a tela de reconhecimento facial."
+            },
+            colaboradores: {
+                title: "👥 Colaboradores",
+                icon: "👥",
+                text: "Abrir gerenciamento de colaboradores."
+            },
+            manual: {
+                title: "📝 Registro Manual",
+                icon: "📝",
+                text: "Abrir registro manual de ponto."
+            },
+            troca: {
+                title: "🔄 Troca de Turnos",
+                icon: "🔄",
+                text: "Abrir sistema de troca de turnos."
+            },
+            ti: {
+                title: "👨‍💻 Área T.I",
+                icon: "👨‍💻",
+                text: "Abrir painel do T.I (acesso restrito)."
+            }
         };
         
-        // Nomes das funcionalidades
-        const Nomes = {
-            facial: "📸 Reconhecimento Facial",
-            colaboradores: "👥 Gerenciar Colaboradores",
-            manual: "📝 Registro Manual",
-            troca: "🔄 Troca de Turnos",
-            ti: "👨‍💻 Área T.I"
-        };
-        
+        let currentFunction = null;
         let deferredPrompt;
         
         window.onload = function() {
@@ -386,40 +464,41 @@
                 document.getElementById('installBanner').style.display = 'none';
             }
             
-            // Tratar botão de voltar do Android
-            window.addEventListener('popstate', function(event) {
-                if (document.getElementById('webviewScreen').style.display === 'flex') {
-                    fecharWebView();
-                }
-            });
+            // Esconder popup inicialmente
+            document.getElementById('popupOverlay').style.display = 'none';
+            document.getElementById('popupContainer').style.display = 'none';
         };
         
-        function abrirWebView(func) {
+        function mostrarPopup(func) {
+            currentFunction = func;
+            const config = popupConfig[func];
+            
+            document.getElementById('popupTitle').textContent = config.title;
+            document.getElementById('popupIcon').textContent = config.icon;
+            document.getElementById('popupText').textContent = config.text;
+            
+            document.getElementById('popupOverlay').style.display = 'block';
+            document.getElementById('popupContainer').style.display = 'block';
+        }
+        
+        function fecharPopup() {
+            document.getElementById('popupOverlay').style.display = 'none';
+            document.getElementById('popupContainer').style.display = 'none';
+            currentFunction = null;
+        }
+        
+        function abrirNavegador() {
             // Mostrar loading
             document.getElementById('loading').style.display = 'flex';
             
-            // Configurar título
-            document.getElementById('webviewTitle').textContent = Nomes[func];
+            // Fechar popup
+            fecharPopup();
             
-            // Carregar a planilha no iframe
-            const iframe = document.getElementById('webviewFrame');
-            iframe.src = URLs[func];
-            
-            // Quando o iframe carregar, esconder loading e mostrar tela
-            iframe.onload = function() {
+            // Abrir planilha em nova aba
+            setTimeout(() => {
+                window.open(PLANILHA_URL, '_blank');
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('mainScreen').style.display = 'none';
-                document.getElementById('webviewScreen').style.display = 'flex';
-            };
-        }
-        
-        function fecharWebView() {
-            // Mostrar menu, esconder webview
-            document.getElementById('mainScreen').style.display = 'flex';
-            document.getElementById('webviewScreen').style.display = 'none';
-            
-            // Limpar o iframe para não consumir memória
-            document.getElementById('webviewFrame').src = 'about:blank';
+            }, 500);
         }
         
         function installPWA() {
@@ -435,11 +514,9 @@
         function carregarEstatisticas() {
             // Simular carregamento de estatísticas
             setTimeout(() => {
-                document.getElementById('totalColab').textContent = 'Carregando...';
-                document.getElementById('registrosHoje').textContent = '...';
+                document.getElementById('totalColab').textContent = '15';
+                document.getElementById('registrosHoje').textContent = '8';
             }, 1000);
-            
-            // Aqui você pode buscar do Google Sheets depois
         }
         
         // Impedir zoom acidental
@@ -450,9 +527,12 @@
         // Botão físico de voltar do Android
         document.addEventListener('backbutton', function(e) {
             e.preventDefault();
-            if (document.getElementById('webviewScreen').style.display === 'flex') {
-                fecharWebView();
+            
+            // Se popup está aberto, fecha ele
+            if (document.getElementById('popupContainer').style.display === 'block') {
+                fecharPopup();
             } else {
+                // Se estiver no menu, pode fechar o app
                 if (confirm('Deseja sair do app?')) {
                     navigator.app.exitApp();
                 }

@@ -1,25 +1,353 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Ponto App</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ponto App">
+    <meta name="theme-color" content="#667eea">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/icon-152.png">
+    
+    <title>📱 Ponto App</title>
+    
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            height: 100vh;
-            overflow: hidden;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-        iframe {
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 16px;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .container {
+            background: white;
+            border-radius: 40px;
+            padding: 24px;
+            min-height: calc(100vh - 32px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .developer {
+            color: #666;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        .btn-facial {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+            border: none;
+            padding: 28px;
+            border-radius: 40px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 15px 30px rgba(67, 233, 123, 0.4);
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        .btn-facial:active {
+            transform: scale(0.97);
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .menu-item {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 25px;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        
+        .menu-item:active {
+            background: #e9ecef;
+            transform: scale(0.96);
+        }
+        
+        .menu-item span {
+            font-size: 2.2rem;
+        }
+        
+        .stats {
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 20px;
+            margin-top: auto;
+        }
+        
+        .stats h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .install-banner {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 25px;
+            margin-top: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .install-banner button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            border: none;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading-card {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #999;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <iframe src="https://docs.google.com/spreadsheets/d/1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU/edit?hl=pt-br&gid=0#gid=0"></iframe>
+    <!-- Tela de Loading -->
+    <div class="loading" id="loading">
+        <div class="loading-card">
+            <div class="spinner"></div>
+            <p>Abrindo sistema...</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">📱</div>
+            <h1>Ponto App</h1>
+            <div class="developer">João Paulo da Silva de Farias</div>
+        </div>
+        
+        <button class="btn-facial" onclick="abrirTela('facial')">
+            <span>📸</span> BATER PONTO
+        </button>
+        
+        <div class="menu-grid">
+            <button class="menu-item" onclick="abrirTela('colaboradores')">
+                <span>👥</span>
+                Colaboradores
+            </button>
+            
+            <button class="menu-item" onclick="abrirTela('manual')">
+                <span>📝</span>
+                Registro Manual
+            </button>
+            
+            <button class="menu-item" onclick="abrirTela('troca')">
+                <span>🔄</span>
+                Troca de Turnos
+            </button>
+            
+            <button class="menu-item" onclick="abrirTela('ti')">
+                <span>👨‍💻</span>
+                Área T.I
+            </button>
+        </div>
+        
+        <div class="stats">
+            <h3>
+                <span>📊</span> Estatísticas
+            </h3>
+            <div class="stat-item">
+                <span>Total Colaboradores</span>
+                <span class="stat-value" id="totalColab">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Registros Hoje</span>
+                <span class="stat-value" id="registrosHoje">0</span>
+            </div>
+        </div>
+        
+        <div class="install-banner" id="installBanner">
+            <span>📲 Instalar app na tela inicial</span>
+            <button onclick="installPWA()">Instalar</button>
+        </div>
+        
+        <div class="footer">
+            Versão 2.0 • App Nativo
+        </div>
+    </div>
+    
+    <script>
+        // ================= CONFIGURAÇÕES =================
+        // COLE AQUI O ID DA SUA PLANILHA (somente os números e letras)
+        const PLANILHA_ID = 1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU/edit?hl=pt-br&gid=0#gid=0;  // <-- TROQUE AQUI!
+        
+        // URLs do sistema (seus arquivos HTML no Apps Script)
+        const URLs = {
+            facial: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
+            colaboradores: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
+            manual: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
+            troca: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`,
+            ti: `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing#gid=0`
+        };
+        
+        // ================= FUNÇÕES DO APP =================
+        let deferredPrompt;
+        
+        window.onload = function() {
+            carregarEstatisticas();
+            
+            // Detectar se pode instalar o PWA
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installBanner').style.display = 'flex';
+            });
+            
+            // Se já está instalado, esconder banner
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installBanner').style.display = 'none';
+            }
+        };
+        
+        function abrirTela(tela) {
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'flex';
+            
+            // Abrir a tela correspondente no sistema
+            setTimeout(() => {
+                window.location.href = URLs[tela];
+            }, 500);
+        }
+        
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('App instalado');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installBanner').style.display = 'none';
+                });
+            }
+        }
+        
+        function carregarEstatisticas() {
+            // Buscar estatísticas do backend
+            google.script.run.withSuccessHandler(function(stats) {
+                document.getElementById('totalColab').textContent = stats.totalColaboradores || '0';
+                document.getElementById('registrosHoje').textContent = stats.registrosHoje || '0';
+            }).getEstatisticas();
+        }
+        
+        // Impedir zoom acidental
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+    </script>
 </body>
 </html>

@@ -78,6 +78,20 @@
             flex: 1;
         }
         
+        .header-action {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
         /* Conteúdo */
         .content {
             padding: 20px;
@@ -207,31 +221,37 @@
             font-size: 1.2rem;
         }
         
-        /* Cards de Lista */
-        .list-card {
+        /* Cards */
+        .card {
             background: #f8f9fa;
             border-radius: 20px;
-            padding: 15px;
+            padding: 16px;
             margin-bottom: 12px;
             border-left: 5px solid #667eea;
         }
         
-        .list-card-title {
+        .card-title {
             font-weight: 700;
             font-size: 1.1rem;
             color: #333;
             margin-bottom: 5px;
         }
         
-        .list-card-subtitle {
+        .card-subtitle {
             color: #666;
             font-size: 0.9rem;
             margin-bottom: 5px;
         }
         
-        .list-card-detail {
+        .card-detail {
             color: #999;
             font-size: 0.85rem;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
         
         /* Formulários */
@@ -246,7 +266,7 @@
             font-weight: 600;
         }
         
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 16px;
             border: 2px solid #e0e0e0;
@@ -256,7 +276,7 @@
             -webkit-appearance: none;
         }
         
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: #667eea;
             outline: none;
         }
@@ -264,23 +284,6 @@
         /* Botões */
         .btn-primary {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            width: 100%;
-            margin: 10px 0;
-            cursor: pointer;
-        }
-        
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #43e97b, #38f9d7);
             color: white;
             border: none;
             padding: 16px;
@@ -292,6 +295,16 @@
             cursor: pointer;
         }
         
+        .btn-success {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+        
         .btn-danger {
             background: linear-gradient(135deg, #fa709a, #f5576c);
             color: white;
@@ -301,10 +314,11 @@
             padding: 10px 15px;
             font-size: 0.9rem;
             width: auto;
+            flex: 1;
         }
         
         /* Camera */
-        .camera-preview {
+        .camera-container {
             width: 100%;
             aspect-ratio: 4/3;
             background: #000;
@@ -314,7 +328,14 @@
             overflow: hidden;
         }
         
-        .camera-guide {
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        
+        .face-guide {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -323,9 +344,11 @@
             height: 200px;
             border: 3px solid rgba(255,255,255,0.5);
             border-radius: 50%;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+            pointer-events: none;
         }
         
-        .camera-guide::after {
+        .face-guide::after {
             content: '👤';
             position: absolute;
             top: 50%;
@@ -333,6 +356,35 @@
             transform: translate(-50%, -50%);
             font-size: 60px;
             opacity: 0.3;
+        }
+        
+        /* Status */
+        .status {
+            padding: 15px;
+            border-radius: 20px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .status-info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .status-warning {
+            background: #fff3e0;
+            color: #f57c00;
         }
         
         /* Loading */
@@ -410,7 +462,7 @@
         </div>
     </div>
 
-    <!-- Tela 0: Menu Principal -->
+    <!-- Tela Principal -->
     <div id="screenMain" class="main-menu">
         <div class="logo-area">
             <div class="logo">📱</div>
@@ -428,14 +480,14 @@
                 Colaboradores
             </button>
             
-            <button class="menu-item" onclick="navegarPara('manual')">
-                <span>📝</span>
-                Registro Manual
+            <button class="menu-item" onclick="navegarPara('registros')">
+                <span>📊</span>
+                Registros
             </button>
             
             <button class="menu-item" onclick="navegarPara('troca')">
                 <span>🔄</span>
-                Troca de Turnos
+                Troca Turnos
             </button>
             
             <button class="menu-item" onclick="navegarPara('ti')">
@@ -464,57 +516,55 @@
         </div>
         
         <div class="footer">
-            Versão 3.0 • 100% Nativo
+            Versão 4.0 • Todas as funcionalidades
         </div>
     </div>
 
-    <!-- Tela 1: Reconhecimento Facial -->
+    <!-- Tela: Reconhecimento Facial -->
     <div id="screenFacial" class="screen">
         <div class="header">
             <button class="btn-back" onclick="voltarParaMenu()">←</button>
             <div class="header-title">📸 Reconhecimento Facial</div>
         </div>
         <div class="content">
-            <div class="camera-preview" id="cameraPreview">
-                <video id="video" style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);" autoplay playsinline></video>
-                <div class="camera-guide"></div>
+            <div class="camera-container">
+                <video id="video" autoplay playsinline></video>
+                <div class="face-guide"></div>
             </div>
             
-            <div id="facialStatus" class="stats" style="background: #e3f2fd; color: #1976d2; text-align: center;">
-                Posicione o rosto no círculo
+            <div id="facialStatus" class="status status-info">
+                Posicione seu rosto no círculo
             </div>
             
-            <button class="btn-primary" onclick="capturarRosto()">
+            <button class="btn-primary btn-success" onclick="capturarRosto()">
                 📸 Capturar e Registrar
             </button>
             
-            <div id="matriculaGroup" style="display: none;">
+            <div id="matriculaSection" style="display: none;">
                 <div class="form-group">
-                    <label>Matrícula:</label>
+                    <label>Matrícula para cadastro:</label>
                     <input type="text" id="matriculaInput" placeholder="Digite sua matrícula">
                 </div>
-                <button class="btn-success" onclick="cadastrarBiometria()">
+                <button class="btn-primary" onclick="cadastrarBiometria()">
                     ✅ Cadastrar Biometria
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Tela 2: Colaboradores -->
+    <!-- Tela: Colaboradores -->
     <div id="screenColaboradores" class="screen">
         <div class="header">
             <button class="btn-back" onclick="voltarParaMenu()">←</button>
             <div class="header-title">👥 Colaboradores</div>
-            <button class="btn-back" onclick="mostrarFormColaborador()">➕</button>
+            <button class="header-action" onclick="mostrarFormColaborador()">➕</button>
         </div>
         <div class="content" id="colaboradoresList">
-            <div class="stats" style="text-align: center;">
-                Carregando colaboradores...
-            </div>
+            <!-- Lista será preenchida via JavaScript -->
         </div>
     </div>
 
-    <!-- Tela 3: Formulário Colaborador -->
+    <!-- Tela: Formulário Colaborador -->
     <div id="screenFormColaborador" class="screen">
         <div class="header">
             <button class="btn-back" onclick="voltarParaColaboradores()">←</button>
@@ -522,27 +572,32 @@
         </div>
         <div class="content">
             <div class="form-group">
-                <label>Nome completo</label>
+                <label>Nome completo *</label>
                 <input type="text" id="colabNome" placeholder="Digite o nome">
             </div>
+            
             <div class="form-group">
-                <label>Matrícula</label>
+                <label>Matrícula *</label>
                 <input type="text" id="colabMatricula" placeholder="Digite a matrícula">
             </div>
+            
             <div class="form-group">
                 <label>Cargo</label>
                 <input type="text" id="colabCargo" placeholder="Digite o cargo">
             </div>
+            
             <div class="form-group">
                 <label>Departamento</label>
                 <input type="text" id="colabDepartamento" placeholder="Digite o departamento">
             </div>
+            
             <div class="form-group">
                 <label>Escola</label>
                 <input type="text" id="colabEscola" placeholder="Nome da escola">
             </div>
+            
             <div class="form-group">
-                <label>Carga Horária Mensal</label>
+                <label>Carga Horária Mensal (horas)</label>
                 <input type="number" id="colabCarga" value="160">
             </div>
             
@@ -551,96 +606,282 @@
         </div>
     </div>
 
-    <!-- Tela 4: Registro Manual -->
-    <div id="screenManual" class="screen">
+    <!-- Tela: Registros de Ponto -->
+    <div id="screenRegistros" class="screen">
         <div class="header">
             <button class="btn-back" onclick="voltarParaMenu()">←</button>
+            <div class="header-title">📊 Registros de Ponto</div>
+            <button class="header-action" onclick="mostrarFormRegistro()">➕</button>
+        </div>
+        <div class="content" id="registrosList">
+            <!-- Lista será preenchida via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Tela: Formulário Registro Manual -->
+    <div id="screenFormRegistro" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaRegistros()">←</button>
             <div class="header-title">📝 Registro Manual</div>
         </div>
         <div class="content">
             <div class="form-group">
-                <label>Matrícula</label>
-                <input type="text" id="manualMatricula" placeholder="Digite sua matrícula">
+                <label>Matrícula *</label>
+                <input type="text" id="regMatricula" placeholder="Digite a matrícula">
             </div>
             
             <div class="form-group">
                 <label>Tipo</label>
-                <select id="manualTipo">
+                <select id="regTipo">
                     <option value="entrada">🚪 Entrada</option>
                     <option value="saida">🏃 Saída</option>
                 </select>
             </div>
             
             <div class="form-group">
-                <label>Observação</label>
-                <input type="text" id="manualObs" placeholder="Opcional">
+                <label>Data</label>
+                <input type="date" id="regData">
             </div>
             
-            <button class="btn-primary" onclick="registrarPontoManual()">
-                ✅ Registrar
-            </button>
+            <div class="form-group">
+                <label>Hora</label>
+                <input type="time" id="regHora">
+            </div>
+            
+            <div class="form-group">
+                <label>Observação</label>
+                <textarea id="regObs" rows="3" placeholder="Opcional"></textarea>
+            </div>
+            
+            <button class="btn-primary btn-success" onclick="salvarRegistro()">✅ Salvar Registro</button>
+            <button class="btn-danger" onclick="voltarParaRegistros()">❌ Cancelar</button>
         </div>
     </div>
 
-    <!-- Tela 5: Troca de Turnos -->
+    <!-- Tela: Troca de Turnos -->
     <div id="screenTroca" class="screen">
         <div class="header">
             <button class="btn-back" onclick="voltarParaMenu()">←</button>
             <div class="header-title">🔄 Troca de Turnos</div>
+            <button class="header-action" onclick="mostrarFormTroca()">➕</button>
+        </div>
+        <div class="content" id="trocasList">
+            <!-- Lista será preenchida via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Tela: Formulário Troca de Turnos -->
+    <div id="screenFormTroca" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaTrocas()">←</button>
+            <div class="header-title">🔄 Nova Troca</div>
         </div>
         <div class="content">
             <div class="form-group">
-                <label>Colaborador Substituído</label>
+                <label>Colaborador Substituído *</label>
                 <select id="trocaSaida">
                     <option value="">Selecione</option>
                 </select>
             </div>
             
             <div class="form-group">
-                <label>Colaborador Substituto</label>
+                <label>Colaborador Substituto *</label>
                 <select id="trocaEntrada">
                     <option value="">Selecione</option>
                 </select>
             </div>
             
             <div class="form-group">
-                <label>Data</label>
+                <label>Data da Troca</label>
                 <input type="date" id="trocaData">
             </div>
             
             <div class="form-group">
-                <label>Motivo</label>
+                <label>Motivo *</label>
                 <input type="text" id="trocaMotivo" placeholder="Digite o motivo">
             </div>
             
-            <button class="btn-primary" onclick="registrarTroca()">
-                ✅ Registrar Troca
-            </button>
+            <div class="form-group">
+                <label>Observação</label>
+                <textarea id="trocaObs" rows="3" placeholder="Opcional"></textarea>
+            </div>
+            
+            <button class="btn-primary btn-warning" onclick="salvarTroca()">✅ Registrar Troca</button>
+            <button class="btn-danger" onclick="voltarParaTrocas()">❌ Cancelar</button>
         </div>
     </div>
 
-    <!-- Tela 6: Área T.I -->
+    <!-- Tela: Área T.I -->
     <div id="screenTI" class="screen">
         <div class="header">
             <button class="btn-back" onclick="voltarParaMenu()">←</button>
             <div class="header-title">👨‍💻 Área T.I</div>
         </div>
         <div class="content">
-            <div class="stats" style="text-align: center;">
-                <p>🔒 Acesso Restrito</p>
-                <p>Digite a senha:</p>
-                <input type="password" id="tiSenha" placeholder="Senha" style="width:100%; padding:15px; margin:10px 0;">
-                <button class="btn-primary" onclick="acessarTI()">Entrar</button>
+            <div class="status status-warning" id="tiStatus">
+                🔒 Acesso Restrito
             </div>
+            
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="tiUsuario" placeholder="Digite o usuário">
+            </div>
+            
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="tiSenha" placeholder="Digite a senha">
+            </div>
+            
+            <button class="btn-primary" onclick="fazerLoginTI()">🔐 Entrar</button>
+            
+            <div id="tiPainel" style="display: none; margin-top: 30px;">
+                <h3 style="margin-bottom: 15px;">📋 Painel Administrativo</h3>
+                
+                <div class="card">
+                    <div class="card-title">📊 Folha de Ponto</div>
+                    <div class="form-group">
+                        <label>Mês</label>
+                        <select id="tiMes">
+                            <option value="1">Janeiro</option>
+                            <option value="2">Fevereiro</option>
+                            <option value="3">Março</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Maio</option>
+                            <option value="6">Junho</option>
+                            <option value="7">Julho</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Setembro</option>
+                            <option value="10">Outubro</option>
+                            <option value="11">Novembro</option>
+                            <option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ano</label>
+                        <input type="number" id="tiAno" value="2024">
+                    </div>
+                    <button class="btn-small btn-primary" onclick="gerarFolhaPonto()">📄 Gerar Folha</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">👥 Gerenciar Usuários TI</div>
+                    <div id="usuariosTIList"></div>
+                    <button class="btn-small btn-success" onclick="mostrarFormNovoUsuario()">➕ Novo Usuário</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela: Formulário Usuário TI -->
+    <div id="screenFormUsuario" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaTI()">←</button>
+            <div class="header-title">👤 Novo Usuário TI</div>
+        </div>
+        <div class="content">
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="userUsuario" placeholder="Digite o usuário">
+            </div>
+            
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="userSenha" placeholder="Digite a senha">
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo</label>
+                <select id="userTipo">
+                    <option value="Comum">Comum</option>
+                    <option value="Master">Master</option>
+                </select>
+            </div>
+            
+            <button class="btn-primary" onclick="salvarUsuarioTI()">✅ Salvar</button>
+            <button class="btn-danger" onclick="voltarParaTI()">❌ Cancelar</button>
         </div>
     </div>
 
     <script>
         // ================= CONFIGURAÇÕES =================
-        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU";  // <-- TROQUE AQUI!
+        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU";  // <-- COLE SEU ID AQUI
+        
+        // ================= DADOS (SIMULADOS POR ENQUANTO) =================
         let colaboradores = [];
-        let currentColabId = null;
+        let registrosPonto = [];
+        let trocasTurno = [];
+        let usuariosTI = [
+            { usuario: 'admin', senha: 'ti@2024', tipo: 'Master' }
+        ];
+        
+        let colaboradorEditando = null;
+        let registroEditando = null;
+        let trocaEditando = null;
+        let usuarioTIEditando = null;
         let stream = null;
+        let hashTemporario = null;
+        let logadoTI = false;
+        
+        // ================= INICIALIZAÇÃO =================
+        window.onload = function() {
+            document.getElementById('screenMain').style.display = 'flex';
+            carregarDadosIniciais();
+            
+            // PWA
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installBanner').style.display = 'flex';
+            });
+            
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installBanner').style.display = 'none';
+            }
+            
+            // Data atual para inputs
+            const hoje = new Date().toISOString().split('T')[0];
+            if (document.getElementById('regData')) {
+                document.getElementById('regData').value = hoje;
+            }
+            if (document.getElementById('trocaData')) {
+                document.getElementById('trocaData').value = hoje;
+            }
+            
+            // Hora atual
+            const agora = new Date();
+            const hora = agora.getHours().toString().padStart(2,'0') + ':' + agora.getMinutes().toString().padStart(2,'0');
+            if (document.getElementById('regHora')) {
+                document.getElementById('regHora').value = hora;
+            }
+        };
+        
+        function carregarDadosIniciais() {
+            // Dados simulados para teste
+            colaboradores = [
+                { id: 1, nome: 'João Silva', matricula: '1001', cargo: 'Professor', departamento: 'Ensino', escola: 'Escola Municipal', cargaHoraria: 160 },
+                { id: 2, nome: 'Maria Santos', matricula: '1002', cargo: 'Coordenadora', departamento: 'Pedagógico', escola: 'Escola Municipal', cargaHoraria: 160 },
+                { id: 3, nome: 'Pedro Souza', matricula: '1003', cargo: 'Diretor', departamento: 'Administração', escola: 'Escola Municipal', cargaHoraria: 160 }
+            ];
+            
+            registrosPonto = [
+                { id: 1, matricula: '1001', nome: 'João Silva', data: '17/03/2024', entrada: '08:00', saida: '17:00', tipo: 'Facial' },
+                { id: 2, matricula: '1002', nome: 'Maria Santos', data: '17/03/2024', entrada: '07:30', saida: '16:30', tipo: 'Manual' }
+            ];
+            
+            trocasTurno = [
+                { id: 1, saidaNome: 'João Silva', entradaNome: 'Maria Santos', data: '17/03/2024', motivo: 'Afastamento' }
+            ];
+            
+            atualizarEstatisticas();
+        }
+        
+        function atualizarEstatisticas() {
+            document.getElementById('totalColab').textContent = colaboradores.length;
+            
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            const registrosHoje = registrosPonto.filter(r => r.data === hoje).length;
+            document.getElementById('registrosHoje').textContent = registrosHoje;
+        }
         
         // ================= NAVEGAÇÃO =================
         function navegarPara(tela) {
@@ -652,14 +893,18 @@
                 iniciarCamera();
             } else if (tela === 'colaboradores') {
                 document.getElementById('screenColaboradores').classList.add('active');
-                carregarColaboradores();
-            } else if (tela === 'manual') {
-                document.getElementById('screenManual').classList.add('active');
+                renderizarColaboradores();
+            } else if (tela === 'registros') {
+                document.getElementById('screenRegistros').classList.add('active');
+                renderizarRegistros();
             } else if (tela === 'troca') {
                 document.getElementById('screenTroca').classList.add('active');
-                carregarSelectsTroca();
+                renderizarTrocas();
             } else if (tela === 'ti') {
                 document.getElementById('screenTI').classList.add('active');
+                document.getElementById('tiPainel').style.display = 'none';
+                document.getElementById('tiStatus').innerHTML = '🔒 Acesso Restrito';
+                logadoTI = false;
             }
         }
         
@@ -667,7 +912,6 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screenMain').style.display = 'flex';
             
-            // Parar câmera se estiver ativa
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
                 stream = null;
@@ -677,7 +921,21 @@
         function voltarParaColaboradores() {
             document.getElementById('screenFormColaborador').classList.remove('active');
             document.getElementById('screenColaboradores').classList.add('active');
-            carregarColaboradores();
+        }
+        
+        function voltarParaRegistros() {
+            document.getElementById('screenFormRegistro').classList.remove('active');
+            document.getElementById('screenRegistros').classList.add('active');
+        }
+        
+        function voltarParaTrocas() {
+            document.getElementById('screenFormTroca').classList.remove('active');
+            document.getElementById('screenTroca').classList.add('active');
+        }
+        
+        function voltarParaTI() {
+            document.getElementById('screenFormUsuario').classList.remove('active');
+            document.getElementById('screenTI').classList.add('active');
         }
         
         // ================= RECONHECIMENTO FACIAL =================
@@ -690,76 +948,136 @@
                     })
                     .catch(function(error) {
                         document.getElementById('facialStatus').innerHTML = '❌ Erro ao acessar câmera';
+                        document.getElementById('facialStatus').className = 'status status-error';
                     });
             }
         }
         
         function capturarRosto() {
-            document.getElementById('facialStatus').innerHTML = '🔍 Verificando...';
-            // Simular reconhecimento
+            document.getElementById('facialStatus').innerHTML = '🔍 Verificando biometria...';
+            document.getElementById('facialStatus').className = 'status status-info';
+            
+            // Simular captura de foto
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const foto = canvas.toDataURL('image/jpeg');
+            
+            // Gerar hash simples
+            let hash = 0;
+            for (let i = 0; i < foto.length; i++) {
+                hash = ((hash << 5) - hash) + foto.charCodeAt(i);
+                hash = hash & hash;
+            }
+            hashTemporario = hash.toString(36);
+            
+            // Simular verificação (70% de chance de reconhecer)
             setTimeout(() => {
-                if (Math.random() > 0.5) {
+                if (Math.random() > 0.3) {
+                    // Reconheceu
                     document.getElementById('facialStatus').innerHTML = '✅ Biometria reconhecida! Ponto registrado!';
+                    document.getElementById('facialStatus').className = 'status status-success';
+                    
+                    // Registrar ponto
+                    const agora = new Date();
+                    const registro = {
+                        id: Date.now(),
+                        matricula: '1001',
+                        nome: 'João Silva',
+                        data: agora.toLocaleDateString('pt-BR'),
+                        entrada: agora.toLocaleTimeString('pt-BR'),
+                        tipo: 'Facial'
+                    };
+                    registrosPonto.push(registro);
+                    atualizarEstatisticas();
+                    
                     setTimeout(voltarParaMenu, 2000);
                 } else {
-                    document.getElementById('facialStatus').innerHTML = '❌ Biometria não encontrada. Cadastre-se.';
-                    document.getElementById('matriculaGroup').style.display = 'block';
+                    // Não reconheceu
+                    document.getElementById('facialStatus').innerHTML = '❌ Biometria não encontrada. Faça o cadastro.';
+                    document.getElementById('facialStatus').className = 'status status-error';
+                    document.getElementById('matriculaSection').style.display = 'block';
                 }
             }, 1500);
         }
         
         function cadastrarBiometria() {
-            const matricula = document.getElementById('matriculaInput').value;
+            const matricula = document.getElementById('matriculaInput').value.trim();
+            
             if (!matricula) {
                 alert('Digite a matrícula!');
                 return;
             }
-            document.getElementById('facialStatus').innerHTML = '✅ Biometria cadastrada! Ponto registrado!';
-            document.getElementById('matriculaGroup').style.display = 'none';
+            
+            const colaborador = colaboradores.find(c => c.matricula === matricula);
+            
+            if (!colaborador) {
+                alert('Matrícula não encontrada!');
+                return;
+            }
+            
+            document.getElementById('facialStatus').innerHTML = '✅ Biometria cadastrada com sucesso! Ponto registrado!';
+            document.getElementById('facialStatus').className = 'status status-success';
+            document.getElementById('matriculaSection').style.display = 'none';
+            
+            // Registrar ponto
+            const agora = new Date();
+            const registro = {
+                id: Date.now(),
+                matricula: matricula,
+                nome: colaborador.nome,
+                data: agora.toLocaleDateString('pt-BR'),
+                entrada: agora.toLocaleTimeString('pt-BR'),
+                tipo: 'Facial (cadastro)'
+            };
+            registrosPonto.push(registro);
+            atualizarEstatisticas();
+            
             setTimeout(voltarParaMenu, 2000);
         }
         
         // ================= COLABORADORES =================
-        function carregarColaboradores() {
+        function renderizarColaboradores() {
             const lista = document.getElementById('colaboradoresList');
             
-            // Dados simulados (depois virão do Google Sheets)
-            colaboradores = [
-                { id: 1, nome: 'João Silva', matricula: '123', cargo: 'Professor', escola: 'Escola A' },
-                { id: 2, nome: 'Maria Santos', matricula: '456', cargo: 'Coordenadora', escola: 'Escola B' },
-                { id: 3, nome: 'Pedro Souza', matricula: '789', cargo: 'Diretor', escola: 'Escola A' }
-            ];
+            if (colaboradores.length === 0) {
+                lista.innerHTML = '<div class="status status-info">Nenhum colaborador cadastrado</div>';
+                return;
+            }
             
             let html = '';
             colaboradores.forEach(c => {
                 html += `
-                    <div class="list-card">
-                        <div class="list-card-title">${c.nome}</div>
-                        <div class="list-card-subtitle">Mat: ${c.matricula} • ${c.cargo}</div>
-                        <div class="list-card-detail">${c.escola}</div>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <button class="btn-small btn-primary" onclick="editarColaborador(${c.id})">Editar</button>
-                            <button class="btn-small btn-danger" onclick="excluirColaborador(${c.id})">Excluir</button>
+                    <div class="card">
+                        <div class="card-title">${c.nome}</div>
+                        <div class="card-subtitle">Mat: ${c.matricula} • ${c.cargo || '-'}</div>
+                        <div class="card-detail">${c.escola || '-'} • ${c.cargaHoraria || 160}h</div>
+                        <div class="card-actions">
+                            <button class="btn-small btn-primary" onclick="editarColaborador(${c.id})">✏️ Editar</button>
+                            <button class="btn-small btn-danger" onclick="excluirColaborador(${c.id})">❌ Excluir</button>
                         </div>
                     </div>
                 `;
             });
             
             lista.innerHTML = html;
-            document.getElementById('totalColab').textContent = colaboradores.length;
         }
         
         function mostrarFormColaborador() {
             document.getElementById('screenColaboradores').classList.remove('active');
             document.getElementById('screenFormColaborador').classList.add('active');
             document.getElementById('formColabTitle').innerHTML = '➕ Novo Colaborador';
+            
             document.getElementById('colabNome').value = '';
             document.getElementById('colabMatricula').value = '';
             document.getElementById('colabCargo').value = '';
             document.getElementById('colabDepartamento').value = '';
             document.getElementById('colabEscola').value = '';
             document.getElementById('colabCarga').value = '160';
-            currentColabId = null;
+            
+            colaboradorEditando = null;
         }
         
         function editarColaborador(id) {
@@ -769,48 +1087,176 @@
             document.getElementById('screenColaboradores').classList.remove('active');
             document.getElementById('screenFormColaborador').classList.add('active');
             document.getElementById('formColabTitle').innerHTML = '✏️ Editar Colaborador';
-            document.getElementById('colabNome').value = colab.nome;
-            document.getElementById('colabMatricula').value = colab.matricula;
-            document.getElementById('colabCargo').value = colab.cargo;
+            
+            document.getElementById('colabNome').value = colab.nome || '';
+            document.getElementById('colabMatricula').value = colab.matricula || '';
+            document.getElementById('colabCargo').value = colab.cargo || '';
             document.getElementById('colabDepartamento').value = colab.departamento || '';
-            document.getElementById('colabEscola').value = colab.escola;
-            document.getElementById('colabCarga').value = colab.carga || '160';
-            currentColabId = id;
+            document.getElementById('colabEscola').value = colab.escola || '';
+            document.getElementById('colabCarga').value = colab.cargaHoraria || '160';
+            
+            colaboradorEditando = id;
         }
         
         function salvarColaborador() {
-            const nome = document.getElementById('colabNome').value;
-            const matricula = document.getElementById('colabMatricula').value;
+            const nome = document.getElementById('colabNome').value.trim();
+            const matricula = document.getElementById('colabMatricula').value.trim();
+            const cargo = document.getElementById('colabCargo').value.trim();
+            const departamento = document.getElementById('colabDepartamento').value.trim();
+            const escola = document.getElementById('colabEscola').value.trim();
+            const cargaHoraria = document.getElementById('colabCarga').value;
             
             if (!nome || !matricula) {
-                alert('Preencha nome e matrícula!');
+                alert('Nome e matrícula são obrigatórios!');
                 return;
             }
             
-            alert('✅ Colaborador salvo com sucesso!');
+            const dados = {
+                nome: nome,
+                matricula: matricula,
+                cargo: cargo,
+                departamento: departamento,
+                escola: escola,
+                cargaHoraria: cargaHoraria
+            };
+            
+            if (colaboradorEditando) {
+                const index = colaboradores.findIndex(c => c.id === colaboradorEditando);
+                if (index !== -1) {
+                    colaboradores[index] = { id: colaboradorEditando, ...dados };
+                }
+                alert('✅ Colaborador editado com sucesso!');
+            } else {
+                const novoId = Date.now();
+                colaboradores.push({ id: novoId, ...dados });
+                alert('✅ Colaborador adicionado com sucesso!');
+            }
+            
+            atualizarEstatisticas();
             voltarParaColaboradores();
+            renderizarColaboradores();
         }
         
         function excluirColaborador(id) {
-            if (confirm('Tem certeza?')) {
+            if (confirm('Tem certeza que deseja excluir este colaborador?')) {
+                colaboradores = colaboradores.filter(c => c.id !== id);
                 alert('✅ Colaborador excluído!');
-                carregarColaboradores();
+                renderizarColaboradores();
+                atualizarEstatisticas();
             }
         }
         
-        // ================= REGISTRO MANUAL =================
-        function registrarPontoManual() {
-            const matricula = document.getElementById('manualMatricula').value;
+        // ================= REGISTROS DE PONTO =================
+        function renderizarRegistros() {
+            const lista = document.getElementById('registrosList');
+            
+            if (registrosPonto.length === 0) {
+                lista.innerHTML = '<div class="status status-info">Nenhum registro de ponto encontrado</div>';
+                return;
+            }
+            
+            // Ordenar por data (mais recente primeiro)
+            const registrosOrdenados = [...registrosPonto].reverse();
+            
+            let html = '';
+            registrosOrdenados.forEach(r => {
+                html += `
+                    <div class="card">
+                        <div class="card-title">${r.nome}</div>
+                        <div class="card-subtitle">${r.data} • ${r.entrada || ''} ${r.saida ? '→ ' + r.saida : ''}</div>
+                        <div class="card-detail">Tipo: ${r.tipo || 'Manual'}</div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+        }
+        
+        function mostrarFormRegistro() {
+            document.getElementById('screenRegistros').classList.remove('active');
+            document.getElementById('screenFormRegistro').classList.add('active');
+            
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('regData').value = hoje;
+            
+            const agora = new Date();
+            const hora = agora.getHours().toString().padStart(2,'0') + ':' + agora.getMinutes().toString().padStart(2,'0');
+            document.getElementById('regHora').value = hora;
+            
+            document.getElementById('regMatricula').value = '';
+            document.getElementById('regTipo').value = 'entrada';
+            document.getElementById('regObs').value = '';
+        }
+        
+        function salvarRegistro() {
+            const matricula = document.getElementById('regMatricula').value.trim();
+            const tipo = document.getElementById('regTipo').value;
+            const data = document.getElementById('regData').value;
+            const hora = document.getElementById('regHora').value;
+            const obs = document.getElementById('regObs').value;
+            
             if (!matricula) {
                 alert('Digite a matrícula!');
                 return;
             }
-            alert('✅ Ponto registrado com sucesso!');
-            setTimeout(voltarParaMenu, 1000);
+            
+            const colaborador = colaboradores.find(c => c.matricula === matricula);
+            
+            if (!colaborador) {
+                alert('Matrícula não encontrada!');
+                return;
+            }
+            
+            // Converter data para formato BR
+            const partes = data.split('-');
+            const dataBR = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            
+            const registro = {
+                id: Date.now(),
+                matricula: matricula,
+                nome: colaborador.nome,
+                data: dataBR,
+                entrada: tipo === 'entrada' ? hora : null,
+                saida: tipo === 'saida' ? hora : null,
+                tipo: 'Manual',
+                obs: obs
+            };
+            
+            registrosPonto.push(registro);
+            alert('✅ Registro salvo com sucesso!');
+            atualizarEstatisticas();
+            voltarParaRegistros();
+            renderizarRegistros();
         }
         
         // ================= TROCA DE TURNOS =================
-        function carregarSelectsTroca() {
+        function renderizarTrocas() {
+            const lista = document.getElementById('trocasList');
+            
+            if (trocasTurno.length === 0) {
+                lista.innerHTML = '<div class="status status-info">Nenhuma troca de turno registrada</div>';
+                return;
+            }
+            
+            let html = '';
+            trocasTurno.forEach(t => {
+                html += `
+                    <div class="card">
+                        <div class="card-title">🔄 Troca de Turno</div>
+                        <div class="card-subtitle">${t.saidaNome} → ${t.entradaNome}</div>
+                        <div class="card-detail">Data: ${t.data} • Motivo: ${t.motivo}</div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+        }
+        
+        function mostrarFormTroca() {
+            document.getElementById('screenTroca').classList.remove('active');
+            document.getElementById('screenFormTroca').classList.add('active');
+            
+            // Preencher selects
             const saida = document.getElementById('trocaSaida');
             const entrada = document.getElementById('trocaEntrada');
             
@@ -818,62 +1264,161 @@
             entrada.innerHTML = '<option value="">Selecione</option>';
             
             colaboradores.forEach(c => {
-                saida.innerHTML += `<option value="${c.matricula}">${c.nome}</option>`;
-                entrada.innerHTML += `<option value="${c.matricula}">${c.nome}</option>`;
+                saida.innerHTML += `<option value="${c.matricula}">${c.nome} - ${c.matricula}</option>`;
+                entrada.innerHTML += `<option value="${c.matricula}">${c.nome} - ${c.matricula}</option>`;
             });
             
-            document.getElementById('trocaData').valueAsDate = new Date();
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('trocaData').value = hoje;
+            document.getElementById('trocaMotivo').value = '';
+            document.getElementById('trocaObs').value = '';
         }
         
-        function registrarTroca() {
-            const saida = document.getElementById('trocaSaida').value;
-            const entrada = document.getElementById('trocaEntrada').value;
+        function salvarTroca() {
+            const saidaMat = document.getElementById('trocaSaida').value;
+            const entradaMat = document.getElementById('trocaEntrada').value;
+            const data = document.getElementById('trocaData').value;
+            const motivo = document.getElementById('trocaMotivo').value.trim();
+            const obs = document.getElementById('trocaObs').value.trim();
             
-            if (!saida || !entrada) {
-                alert('Selecione os colaboradores!');
+            if (!saidaMat || !entradaMat || !motivo) {
+                alert('Preencha todos os campos obrigatórios!');
                 return;
             }
             
+            if (saidaMat === entradaMat) {
+                alert('Os colaboradores devem ser diferentes!');
+                return;
+            }
+            
+            const saida = colaboradores.find(c => c.matricula === saidaMat);
+            const entrada = colaboradores.find(c => c.matricula === entradaMat);
+            
+            if (!saida || !entrada) {
+                alert('Colaborador não encontrado!');
+                return;
+            }
+            
+            // Converter data
+            const partes = data.split('-');
+            const dataBR = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            
+            const troca = {
+                id: Date.now(),
+                saidaNome: saida.nome,
+                saidaMat: saidaMat,
+                entradaNome: entrada.nome,
+                entradaMat: entradaMat,
+                data: dataBR,
+                motivo: motivo,
+                obs: obs
+            };
+            
+            trocasTurno.push(troca);
             alert('🔄 Troca registrada com sucesso!');
-            setTimeout(voltarParaMenu, 1000);
+            voltarParaTrocas();
+            renderizarTrocas();
         }
         
         // ================= ÁREA T.I =================
-        function acessarTI() {
-            const senha = document.getElementById('tiSenha').value;
-            if (senha === 'ti@2024') {
-                alert('✅ Acesso liberado!');
-                // Aqui você pode mostrar as funções de TI
+        function fazerLoginTI() {
+            const usuario = document.getElementById('tiUsuario').value.trim();
+            const senha = document.getElementById('tiSenha').value.trim();
+            
+            const user = usuariosTI.find(u => u.usuario === usuario && u.senha === senha);
+            
+            if (user) {
+                document.getElementById('tiStatus').innerHTML = '✅ Acesso liberado! Bem-vindo, ' + usuario;
+                document.getElementById('tiStatus').className = 'status status-success';
+                document.getElementById('tiPainel').style.display = 'block';
+                logadoTI = true;
+                renderizarUsuariosTI();
             } else {
-                alert('❌ Senha incorreta!');
+                document.getElementById('tiStatus').innerHTML = '❌ Usuário ou senha incorretos!';
+                document.getElementById('tiStatus').className = 'status status-error';
             }
+        }
+        
+        function renderizarUsuariosTI() {
+            const lista = document.getElementById('usuariosTIList');
+            
+            let html = '';
+            usuariosTI.forEach(u => {
+                html += `
+                    <div class="card" style="margin-top: 10px;">
+                        <div class="card-title">${u.usuario}</div>
+                        <div class="card-subtitle">Tipo: ${u.tipo}</div>
+                        <button class="btn-small btn-danger" onclick="excluirUsuarioTI('${u.usuario}')">Excluir</button>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+        }
+        
+        function mostrarFormNovoUsuario() {
+            document.getElementById('screenTI').classList.remove('active');
+            document.getElementById('screenFormUsuario').classList.add('active');
+            
+            document.getElementById('userUsuario').value = '';
+            document.getElementById('userSenha').value = '';
+            document.getElementById('userTipo').value = 'Comum';
+        }
+        
+        function salvarUsuarioTI() {
+            const usuario = document.getElementById('userUsuario').value.trim();
+            const senha = document.getElementById('userSenha').value.trim();
+            const tipo = document.getElementById('userTipo').value;
+            
+            if (!usuario || !senha) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+            
+            if (usuariosTI.some(u => u.usuario === usuario)) {
+                alert('Usuário já existe!');
+                return;
+            }
+            
+            usuariosTI.push({ usuario, senha, tipo });
+            alert('✅ Usuário adicionado!');
+            voltarParaTI();
+            renderizarUsuariosTI();
+        }
+        
+        function excluirUsuarioTI(usuario) {
+            if (usuario === 'admin') {
+                alert('Não é possível excluir o usuário admin!');
+                return;
+            }
+            
+            if (confirm(`Excluir usuário ${usuario}?`)) {
+                usuariosTI = usuariosTI.filter(u => u.usuario !== usuario);
+                alert('✅ Usuário excluído!');
+                renderizarUsuariosTI();
+            }
+        }
+        
+        function gerarFolhaPonto() {
+            const mes = document.getElementById('tiMes').value;
+            const ano = document.getElementById('tiAno').value;
+            
+            alert(`📄 Gerando folha de ponto para ${mes}/${ano}... (simulação)`);
+            
+            // Simulação de geração
+            setTimeout(() => {
+                alert('✅ Folha de ponto gerada! Verifique seus downloads.');
+            }, 1500);
         }
         
         // ================= PWA =================
         let deferredPrompt;
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBanner').style.display = 'flex';
-        });
         
         function installPWA() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
             }
         }
-        
-        // ================= INICIALIZAÇÃO =================
-        window.onload = function() {
-            document.getElementById('screenMain').style.display = 'flex';
-            document.getElementById('totalColab').textContent = '15';
-            document.getElementById('registrosHoje').textContent = '8';
-            
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('installBanner').style.display = 'none';
-            }
-        };
     </script>
 </body>
 </html>

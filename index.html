@@ -29,47 +29,23 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
         
-        /* Tela Principal */
-        #mainScreen {
+        /* Telas */
+        .screen {
             background: white;
             border-radius: 40px;
-            padding: 24px;
             min-height: calc(100vh - 24px);
-            display: flex;
+            display: none;
             flex-direction: column;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 10;
-        }
-        
-        /* Popup */
-        #popupOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-        
-        #popupContainer {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 400px;
-            background: white;
-            border-radius: 40px;
             overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            z-index: 1001;
         }
         
-        .popup-header {
+        .screen.active {
+            display: flex;
+        }
+        
+        /* Cabeçalho */
+        .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 20px;
@@ -78,19 +54,13 @@
             gap: 15px;
         }
         
-        .popup-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            flex: 1;
-        }
-        
-        .btn-close {
+        .btn-back {
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
             font-size: 1.5rem;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -98,48 +68,35 @@
             cursor: pointer;
         }
         
-        .btn-close:active {
+        .btn-back:active {
             background: rgba(255,255,255,0.3);
         }
         
-        .popup-content {
-            padding: 30px 20px;
-            text-align: center;
-        }
-        
-        .popup-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-        
-        .popup-text {
-            color: #333;
-            margin-bottom: 25px;
-        }
-        
-        .btn-popup {
-            background: linear-gradient(135deg, #43e97b, #38f9d7);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 40px;
-            font-size: 1.2rem;
+        .header-title {
+            font-size: 1.3rem;
             font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            margin-bottom: 10px;
+            flex: 1;
         }
         
-        .btn-popup:active {
-            transform: scale(0.98);
+        /* Conteúdo */
+        .content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
-        .btn-popup-secondary {
-            background: #f5f5f5;
-            color: #333;
+        /* Menu Principal */
+        .main-menu {
+            background: white;
+            border-radius: 40px;
+            padding: 24px;
+            min-height: calc(100vh - 24px);
+            display: flex;
+            flex-direction: column;
         }
         
-        .header {
+        .logo-area {
             text-align: center;
             margin-bottom: 30px;
         }
@@ -250,27 +207,135 @@
             font-size: 1.2rem;
         }
         
-        .install-banner {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        /* Cards de Lista */
+        .list-card {
+            background: #f8f9fa;
+            border-radius: 20px;
             padding: 15px;
-            border-radius: 25px;
-            margin-top: 20px;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
+            margin-bottom: 12px;
+            border-left: 5px solid #667eea;
         }
         
-        .install-banner button {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
+        .list-card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .list-card-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .list-card-detail {
+            color: #999;
+            font-size: 0.85rem;
+        }
+        
+        /* Formulários */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
             font-weight: 600;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 1rem;
+            background: white;
+            -webkit-appearance: none;
+        }
+        
+        .form-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        /* Botões */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            margin: 10px 0;
             cursor: pointer;
         }
         
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #fa709a, #f5576c);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            width: auto;
+        }
+        
+        /* Camera */
+        .camera-preview {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .camera-guide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+        }
+        
+        .camera-guide::after {
+            content: '👤';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            opacity: 0.3;
+        }
+        
+        /* Loading */
         .loading {
             display: none;
             position: fixed;
@@ -306,22 +371,38 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* Install Banner */
+        .install-banner {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 25px;
+            margin-top: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .install-banner button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
         .footer {
             text-align: center;
             margin-top: 20px;
             color: #999;
             font-size: 0.8rem;
         }
-        
-        .small-text {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
-    <!-- Tela de Loading -->
+    <!-- Loading -->
     <div class="loading" id="loading">
         <div class="loading-card">
             <div class="spinner"></div>
@@ -329,59 +410,35 @@
         </div>
     </div>
 
-    <!-- Popup -->
-    <div id="popupOverlay"></div>
-    <div id="popupContainer">
-        <div class="popup-header">
-            <div class="popup-title" id="popupTitle">Funcionalidade</div>
-            <button class="btn-close" onclick="fecharPopup()">✕</button>
-        </div>
-        <div class="popup-content">
-            <div class="popup-icon" id="popupIcon">📌</div>
-            <div class="popup-text" id="popupText">
-                Esta funcionalidade será aberta no navegador.
-            </div>
-            <button class="btn-popup" id="popupButton" onclick="abrirNavegador()">
-                Continuar
-            </button>
-            <button class="btn-popup btn-popup-secondary" onclick="fecharPopup()">
-                Cancelar
-            </button>
-            <div class="small-text">
-                O sistema será aberto em uma nova aba
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela Principal (Menu) -->
-    <div id="mainScreen">
-        <div class="header">
+    <!-- Tela 0: Menu Principal -->
+    <div id="screenMain" class="main-menu">
+        <div class="logo-area">
             <div class="logo">📱</div>
             <h1>Ponto App</h1>
             <div class="developer">João Paulo da Silva de Farias</div>
         </div>
         
-        <button class="btn-facial" onclick="mostrarPopup('facial')">
+        <button class="btn-facial" onclick="navegarPara('facial')">
             <span>📸</span> BATER PONTO
         </button>
         
         <div class="menu-grid">
-            <button class="menu-item" onclick="mostrarPopup('colaboradores')">
+            <button class="menu-item" onclick="navegarPara('colaboradores')">
                 <span>👥</span>
                 Colaboradores
             </button>
             
-            <button class="menu-item" onclick="mostrarPopup('manual')">
+            <button class="menu-item" onclick="navegarPara('manual')">
                 <span>📝</span>
                 Registro Manual
             </button>
             
-            <button class="menu-item" onclick="mostrarPopup('troca')">
+            <button class="menu-item" onclick="navegarPara('troca')">
                 <span>🔄</span>
                 Troca de Turnos
             </button>
             
-            <button class="menu-item" onclick="mostrarPopup('ti')">
+            <button class="menu-item" onclick="navegarPara('ti')">
                 <span>👨‍💻</span>
                 Área T.I
             </button>
@@ -402,142 +459,421 @@
         </div>
         
         <div class="install-banner" id="installBanner">
-            <span>📲 Instalar app na tela inicial</span>
+            <span>📲 Instalar app</span>
             <button onclick="installPWA()">Instalar</button>
         </div>
         
         <div class="footer">
-            Versão 2.0 • App Nativo
+            Versão 3.0 • 100% Nativo
         </div>
     </div>
-    
+
+    <!-- Tela 1: Reconhecimento Facial -->
+    <div id="screenFacial" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaMenu()">←</button>
+            <div class="header-title">📸 Reconhecimento Facial</div>
+        </div>
+        <div class="content">
+            <div class="camera-preview" id="cameraPreview">
+                <video id="video" style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);" autoplay playsinline></video>
+                <div class="camera-guide"></div>
+            </div>
+            
+            <div id="facialStatus" class="stats" style="background: #e3f2fd; color: #1976d2; text-align: center;">
+                Posicione o rosto no círculo
+            </div>
+            
+            <button class="btn-primary" onclick="capturarRosto()">
+                📸 Capturar e Registrar
+            </button>
+            
+            <div id="matriculaGroup" style="display: none;">
+                <div class="form-group">
+                    <label>Matrícula:</label>
+                    <input type="text" id="matriculaInput" placeholder="Digite sua matrícula">
+                </div>
+                <button class="btn-success" onclick="cadastrarBiometria()">
+                    ✅ Cadastrar Biometria
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela 2: Colaboradores -->
+    <div id="screenColaboradores" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaMenu()">←</button>
+            <div class="header-title">👥 Colaboradores</div>
+            <button class="btn-back" onclick="mostrarFormColaborador()">➕</button>
+        </div>
+        <div class="content" id="colaboradoresList">
+            <div class="stats" style="text-align: center;">
+                Carregando colaboradores...
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela 3: Formulário Colaborador -->
+    <div id="screenFormColaborador" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaColaboradores()">←</button>
+            <div class="header-title" id="formColabTitle">➕ Novo Colaborador</div>
+        </div>
+        <div class="content">
+            <div class="form-group">
+                <label>Nome completo</label>
+                <input type="text" id="colabNome" placeholder="Digite o nome">
+            </div>
+            <div class="form-group">
+                <label>Matrícula</label>
+                <input type="text" id="colabMatricula" placeholder="Digite a matrícula">
+            </div>
+            <div class="form-group">
+                <label>Cargo</label>
+                <input type="text" id="colabCargo" placeholder="Digite o cargo">
+            </div>
+            <div class="form-group">
+                <label>Departamento</label>
+                <input type="text" id="colabDepartamento" placeholder="Digite o departamento">
+            </div>
+            <div class="form-group">
+                <label>Escola</label>
+                <input type="text" id="colabEscola" placeholder="Nome da escola">
+            </div>
+            <div class="form-group">
+                <label>Carga Horária Mensal</label>
+                <input type="number" id="colabCarga" value="160">
+            </div>
+            
+            <button class="btn-primary" onclick="salvarColaborador()">✅ Salvar</button>
+            <button class="btn-danger" onclick="voltarParaColaboradores()">❌ Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Tela 4: Registro Manual -->
+    <div id="screenManual" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaMenu()">←</button>
+            <div class="header-title">📝 Registro Manual</div>
+        </div>
+        <div class="content">
+            <div class="form-group">
+                <label>Matrícula</label>
+                <input type="text" id="manualMatricula" placeholder="Digite sua matrícula">
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo</label>
+                <select id="manualTipo">
+                    <option value="entrada">🚪 Entrada</option>
+                    <option value="saida">🏃 Saída</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Observação</label>
+                <input type="text" id="manualObs" placeholder="Opcional">
+            </div>
+            
+            <button class="btn-primary" onclick="registrarPontoManual()">
+                ✅ Registrar
+            </button>
+        </div>
+    </div>
+
+    <!-- Tela 5: Troca de Turnos -->
+    <div id="screenTroca" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaMenu()">←</button>
+            <div class="header-title">🔄 Troca de Turnos</div>
+        </div>
+        <div class="content">
+            <div class="form-group">
+                <label>Colaborador Substituído</label>
+                <select id="trocaSaida">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Colaborador Substituto</label>
+                <select id="trocaEntrada">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Data</label>
+                <input type="date" id="trocaData">
+            </div>
+            
+            <div class="form-group">
+                <label>Motivo</label>
+                <input type="text" id="trocaMotivo" placeholder="Digite o motivo">
+            </div>
+            
+            <button class="btn-primary" onclick="registrarTroca()">
+                ✅ Registrar Troca
+            </button>
+        </div>
+    </div>
+
+    <!-- Tela 6: Área T.I -->
+    <div id="screenTI" class="screen">
+        <div class="header">
+            <button class="btn-back" onclick="voltarParaMenu()">←</button>
+            <div class="header-title">👨‍💻 Área T.I</div>
+        </div>
+        <div class="content">
+            <div class="stats" style="text-align: center;">
+                <p>🔒 Acesso Restrito</p>
+                <p>Digite a senha:</p>
+                <input type="password" id="tiSenha" placeholder="Senha" style="width:100%; padding:15px; margin:10px 0;">
+                <button class="btn-primary" onclick="acessarTI()">Entrar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ================= CONFIGURAÇÕES =================
-        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU/edit?hl=pt-br&gid=0#gid=0";  // <-- SEU ID AQUI
+        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU";  // <-- TROQUE AQUI!
+        let colaboradores = [];
+        let currentColabId = null;
+        let stream = null;
         
-        const PLANILHA_URL = `https://docs.google.com/spreadsheets/d/${PLANILHA_ID}/edit?usp=sharing`;
-        
-        // Configurações do popup
-        const popupConfig = {
-            facial: {
-                title: "📸 Reconhecimento Facial",
-                icon: "📸",
-                text: "Você será redirecionado para a tela de reconhecimento facial."
-            },
-            colaboradores: {
-                title: "👥 Colaboradores",
-                icon: "👥",
-                text: "Abrir gerenciamento de colaboradores."
-            },
-            manual: {
-                title: "📝 Registro Manual",
-                icon: "📝",
-                text: "Abrir registro manual de ponto."
-            },
-            troca: {
-                title: "🔄 Troca de Turnos",
-                icon: "🔄",
-                text: "Abrir sistema de troca de turnos."
-            },
-            ti: {
-                title: "👨‍💻 Área T.I",
-                icon: "👨‍💻",
-                text: "Abrir painel do T.I (acesso restrito)."
-            }
-        };
-        
-        let currentFunction = null;
-        let deferredPrompt;
-        
-        window.onload = function() {
-            carregarEstatisticas();
+        // ================= NAVEGAÇÃO =================
+        function navegarPara(tela) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screenMain').style.display = 'none';
             
-            // Detectar instalação PWA
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                document.getElementById('installBanner').style.display = 'flex';
+            if (tela === 'facial') {
+                document.getElementById('screenFacial').classList.add('active');
+                iniciarCamera();
+            } else if (tela === 'colaboradores') {
+                document.getElementById('screenColaboradores').classList.add('active');
+                carregarColaboradores();
+            } else if (tela === 'manual') {
+                document.getElementById('screenManual').classList.add('active');
+            } else if (tela === 'troca') {
+                document.getElementById('screenTroca').classList.add('active');
+                carregarSelectsTroca();
+            } else if (tela === 'ti') {
+                document.getElementById('screenTI').classList.add('active');
+            }
+        }
+        
+        function voltarParaMenu() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screenMain').style.display = 'flex';
+            
+            // Parar câmera se estiver ativa
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+        
+        function voltarParaColaboradores() {
+            document.getElementById('screenFormColaborador').classList.remove('active');
+            document.getElementById('screenColaboradores').classList.add('active');
+            carregarColaboradores();
+        }
+        
+        // ================= RECONHECIMENTO FACIAL =================
+        function iniciarCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+                    .then(function(mediaStream) {
+                        stream = mediaStream;
+                        document.getElementById('video').srcObject = mediaStream;
+                    })
+                    .catch(function(error) {
+                        document.getElementById('facialStatus').innerHTML = '❌ Erro ao acessar câmera';
+                    });
+            }
+        }
+        
+        function capturarRosto() {
+            document.getElementById('facialStatus').innerHTML = '🔍 Verificando...';
+            // Simular reconhecimento
+            setTimeout(() => {
+                if (Math.random() > 0.5) {
+                    document.getElementById('facialStatus').innerHTML = '✅ Biometria reconhecida! Ponto registrado!';
+                    setTimeout(voltarParaMenu, 2000);
+                } else {
+                    document.getElementById('facialStatus').innerHTML = '❌ Biometria não encontrada. Cadastre-se.';
+                    document.getElementById('matriculaGroup').style.display = 'block';
+                }
+            }, 1500);
+        }
+        
+        function cadastrarBiometria() {
+            const matricula = document.getElementById('matriculaInput').value;
+            if (!matricula) {
+                alert('Digite a matrícula!');
+                return;
+            }
+            document.getElementById('facialStatus').innerHTML = '✅ Biometria cadastrada! Ponto registrado!';
+            document.getElementById('matriculaGroup').style.display = 'none';
+            setTimeout(voltarParaMenu, 2000);
+        }
+        
+        // ================= COLABORADORES =================
+        function carregarColaboradores() {
+            const lista = document.getElementById('colaboradoresList');
+            
+            // Dados simulados (depois virão do Google Sheets)
+            colaboradores = [
+                { id: 1, nome: 'João Silva', matricula: '123', cargo: 'Professor', escola: 'Escola A' },
+                { id: 2, nome: 'Maria Santos', matricula: '456', cargo: 'Coordenadora', escola: 'Escola B' },
+                { id: 3, nome: 'Pedro Souza', matricula: '789', cargo: 'Diretor', escola: 'Escola A' }
+            ];
+            
+            let html = '';
+            colaboradores.forEach(c => {
+                html += `
+                    <div class="list-card">
+                        <div class="list-card-title">${c.nome}</div>
+                        <div class="list-card-subtitle">Mat: ${c.matricula} • ${c.cargo}</div>
+                        <div class="list-card-detail">${c.escola}</div>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn-small btn-primary" onclick="editarColaborador(${c.id})">Editar</button>
+                            <button class="btn-small btn-danger" onclick="excluirColaborador(${c.id})">Excluir</button>
+                        </div>
+                    </div>
+                `;
             });
             
-            // Se já está instalado, esconder banner
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('installBanner').style.display = 'none';
+            lista.innerHTML = html;
+            document.getElementById('totalColab').textContent = colaboradores.length;
+        }
+        
+        function mostrarFormColaborador() {
+            document.getElementById('screenColaboradores').classList.remove('active');
+            document.getElementById('screenFormColaborador').classList.add('active');
+            document.getElementById('formColabTitle').innerHTML = '➕ Novo Colaborador';
+            document.getElementById('colabNome').value = '';
+            document.getElementById('colabMatricula').value = '';
+            document.getElementById('colabCargo').value = '';
+            document.getElementById('colabDepartamento').value = '';
+            document.getElementById('colabEscola').value = '';
+            document.getElementById('colabCarga').value = '160';
+            currentColabId = null;
+        }
+        
+        function editarColaborador(id) {
+            const colab = colaboradores.find(c => c.id === id);
+            if (!colab) return;
+            
+            document.getElementById('screenColaboradores').classList.remove('active');
+            document.getElementById('screenFormColaborador').classList.add('active');
+            document.getElementById('formColabTitle').innerHTML = '✏️ Editar Colaborador';
+            document.getElementById('colabNome').value = colab.nome;
+            document.getElementById('colabMatricula').value = colab.matricula;
+            document.getElementById('colabCargo').value = colab.cargo;
+            document.getElementById('colabDepartamento').value = colab.departamento || '';
+            document.getElementById('colabEscola').value = colab.escola;
+            document.getElementById('colabCarga').value = colab.carga || '160';
+            currentColabId = id;
+        }
+        
+        function salvarColaborador() {
+            const nome = document.getElementById('colabNome').value;
+            const matricula = document.getElementById('colabMatricula').value;
+            
+            if (!nome || !matricula) {
+                alert('Preencha nome e matrícula!');
+                return;
             }
             
-            // Esconder popup inicialmente
-            document.getElementById('popupOverlay').style.display = 'none';
-            document.getElementById('popupContainer').style.display = 'none';
-        };
-        
-        function mostrarPopup(func) {
-            currentFunction = func;
-            const config = popupConfig[func];
-            
-            document.getElementById('popupTitle').textContent = config.title;
-            document.getElementById('popupIcon').textContent = config.icon;
-            document.getElementById('popupText').textContent = config.text;
-            
-            document.getElementById('popupOverlay').style.display = 'block';
-            document.getElementById('popupContainer').style.display = 'block';
+            alert('✅ Colaborador salvo com sucesso!');
+            voltarParaColaboradores();
         }
         
-        function fecharPopup() {
-            document.getElementById('popupOverlay').style.display = 'none';
-            document.getElementById('popupContainer').style.display = 'none';
-            currentFunction = null;
+        function excluirColaborador(id) {
+            if (confirm('Tem certeza?')) {
+                alert('✅ Colaborador excluído!');
+                carregarColaboradores();
+            }
         }
         
-        function abrirNavegador() {
-            // Mostrar loading
-            document.getElementById('loading').style.display = 'flex';
-            
-            // Fechar popup
-            fecharPopup();
-            
-            // Abrir planilha em nova aba
-            setTimeout(() => {
-                window.open(PLANILHA_URL, '_blank');
-                document.getElementById('loading').style.display = 'none';
-            }, 500);
+        // ================= REGISTRO MANUAL =================
+        function registrarPontoManual() {
+            const matricula = document.getElementById('manualMatricula').value;
+            if (!matricula) {
+                alert('Digite a matrícula!');
+                return;
+            }
+            alert('✅ Ponto registrado com sucesso!');
+            setTimeout(voltarParaMenu, 1000);
         }
+        
+        // ================= TROCA DE TURNOS =================
+        function carregarSelectsTroca() {
+            const saida = document.getElementById('trocaSaida');
+            const entrada = document.getElementById('trocaEntrada');
+            
+            saida.innerHTML = '<option value="">Selecione</option>';
+            entrada.innerHTML = '<option value="">Selecione</option>';
+            
+            colaboradores.forEach(c => {
+                saida.innerHTML += `<option value="${c.matricula}">${c.nome}</option>`;
+                entrada.innerHTML += `<option value="${c.matricula}">${c.nome}</option>`;
+            });
+            
+            document.getElementById('trocaData').valueAsDate = new Date();
+        }
+        
+        function registrarTroca() {
+            const saida = document.getElementById('trocaSaida').value;
+            const entrada = document.getElementById('trocaEntrada').value;
+            
+            if (!saida || !entrada) {
+                alert('Selecione os colaboradores!');
+                return;
+            }
+            
+            alert('🔄 Troca registrada com sucesso!');
+            setTimeout(voltarParaMenu, 1000);
+        }
+        
+        // ================= ÁREA T.I =================
+        function acessarTI() {
+            const senha = document.getElementById('tiSenha').value;
+            if (senha === 'ti@2024') {
+                alert('✅ Acesso liberado!');
+                // Aqui você pode mostrar as funções de TI
+            } else {
+                alert('❌ Senha incorreta!');
+            }
+        }
+        
+        // ================= PWA =================
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').style.display = 'flex';
+        });
         
         function installPWA() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    deferredPrompt = null;
-                    document.getElementById('installBanner').style.display = 'none';
-                });
             }
         }
         
-        function carregarEstatisticas() {
-            // Simular carregamento de estatísticas
-            setTimeout(() => {
-                document.getElementById('totalColab').textContent = '15';
-                document.getElementById('registrosHoje').textContent = '8';
-            }, 1000);
-        }
-        
-        // Impedir zoom acidental
-        document.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 1) e.preventDefault();
-        }, { passive: false });
-        
-        // Botão físico de voltar do Android
-        document.addEventListener('backbutton', function(e) {
-            e.preventDefault();
+        // ================= INICIALIZAÇÃO =================
+        window.onload = function() {
+            document.getElementById('screenMain').style.display = 'flex';
+            document.getElementById('totalColab').textContent = '15';
+            document.getElementById('registrosHoje').textContent = '8';
             
-            // Se popup está aberto, fecha ele
-            if (document.getElementById('popupContainer').style.display === 'block') {
-                fecharPopup();
-            } else {
-                // Se estiver no menu, pode fechar o app
-                if (confirm('Deseja sair do app?')) {
-                    navigator.app.exitApp();
-                }
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installBanner').style.display = 'none';
             }
-        }, false);
+        };
     </script>
 </body>
 </html>

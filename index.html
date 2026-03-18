@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Sistema de Ponto Digital v4.0 - ALFA TECH (Cloud)</title>
+    <title>Sistema de Ponto Digital v4.1 - ALFA TECH (Cloud Sync)</title>
     <style>
         * {
             margin: 0;
@@ -65,6 +65,84 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Status de sincronização */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            padding: 8px;
+            border-radius: 50px;
+            background: #f0f4f8;
+        }
+
+        .sync-status.online {
+            color: #43e97b;
+        }
+
+        .sync-status.offline {
+            color: #f5576c;
+        }
+
+        .sync-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .sync-dot.online {
+            background: #43e97b;
+            box-shadow: 0 0 10px #43e97b;
+        }
+
+        .sync-dot.offline {
+            background: #f5576c;
         }
 
         /* Tela de Boas-vindas */
@@ -270,47 +348,6 @@
             margin: clamp(10px, 2vh, 15px) 0;
             font-size: clamp(0.8em, 2.5vw, 0.9em);
             text-align: center;
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            backdrop-filter: blur(5px);
-        }
-
-        .loading-overlay.visible {
-            display: flex;
-        }
-
-        .loading-spinner {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         /* Tela de Login do Admin */
@@ -795,7 +832,7 @@
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-spinner">
             <div class="spinner"></div>
-            <p>Conectando ao servidor...</p>
+            <p>Sincronizando com a nuvem...</p>
         </div>
     </div>
 
@@ -828,7 +865,7 @@
             
             <div class="info-sistema">
                 <p>Sistema de Ponto Digital</p>
-                <p>Versão: 4.0 Cloud</p>
+                <p>Versão: 4.1 Cloud</p>
                 <p class="destaque">ALFA TECH</p>
                 <p style="margin-top: 10px;">Digite a chave de ativação fornecida pelo proprietário</p>
                 <p style="margin-top: 5px; font-size: 0.9em; color: #667eea;">Ativação única em qualquer computador!</p>
@@ -866,9 +903,15 @@
     </div>
 
     <div class="container" id="sistema-container" style="display: none;">
+        <!-- Status de sincronização -->
+        <div class="sync-status" id="sync-status">
+            <span class="sync-dot" id="sync-dot"></span>
+            <span id="sync-text">Verificando conexão...</span>
+        </div>
+
         <!-- Banner de Modo Demonstração -->
         <div id="demo-banner" class="demo-banner" style="display: none;">
-            ⚡ MODO DEMONSTRAÇÃO - Limite de 2 colaboradores ⚡
+            ⚡ MODO DEMONSTRAÇÃO - Dados apenas locais ⚡
         </div>
 
         <!-- Cabeçalho do sistema -->
@@ -1028,24 +1071,22 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v4.0 - ALFA TECH (Cloud)
-        // Agora com banco de dados externo para ativação única em qualquer computador
+        // Sistema de Ponto Digital v4.1 - ALFA TECH (Cloud Sync)
+        // Corrigido: Agora sincroniza corretamente com o servidor
 
         // Configuração
         const CHAVE_ATIVACAO = 'ALFA-TECH-2024-SISTEMA';
         const LIMITE_DEMO = 2;
         
-        // API externa (JSON Server - você pode hospedar em qualquer lugar)
-        // Para testar localmente: npm install -g json-server
-        // Crie um arquivo db.json com: { "ativacao": { "status": false, "chave": "" } }
-        // Execute: json-server --watch db.json --port 3000
-        const API_URL = 'https://seu-servidor.com/api'; // Substitua pela sua URL real
+        // IMPORTANTE: Substitua pela sua URL do Vercel
+        const API_URL = 'https://ponto-digital-api.vercel.app';
         
         let sistemaAtivado = false;
         let modoDemonstracao = false;
         let adminLogado = false;
         let db = null;
         let syncInterval = null;
+        let online = false;
 
         // Dados em memória
         let colaboradores = [];
@@ -1089,10 +1130,14 @@
             registrosTrocaContainer: document.getElementById('registros-troca-container'),
             sistemaContainer: document.getElementById('sistema-container'),
             demoBanner: document.getElementById('demo-banner'),
-            demoLimitMessage: document.getElementById('demo-limit-message')
+            demoLimitMessage: document.getElementById('demo-limit-message'),
+            syncStatus: document.getElementById('sync-status'),
+            syncDot: document.getElementById('sync-dot'),
+            syncText: document.getElementById('sync-text')
         };
 
-        // Funções de API
+        // ==================== FUNÇÕES DE API ====================
+
         async function apiRequest(endpoint, method = 'GET', data = null) {
             const options = {
                 method,
@@ -1107,58 +1152,95 @@
 
             try {
                 const response = await fetch(`${API_URL}/${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 return await response.json();
             } catch (error) {
                 console.error('Erro na requisição API:', error);
+                atualizarStatusConexao(false);
                 return null;
             }
         }
 
-        // Verificar ativação no servidor
+        // ==================== STATUS DE CONEXÃO ====================
+
+        async function verificarConexao() {
+            try {
+                const response = await fetch(`${API_URL}/test`, { method: 'HEAD' });
+                online = response.ok;
+            } catch {
+                online = false;
+            }
+            
+            atualizarStatusConexao(online);
+            return online;
+        }
+
+        function atualizarStatusConexao(conectado) {
+            if (conectado) {
+                elementos.syncStatus.className = 'sync-status online';
+                elementos.syncDot.className = 'sync-dot online';
+                elementos.syncText.textContent = 'Conectado à nuvem';
+            } else {
+                elementos.syncStatus.className = 'sync-status offline';
+                elementos.syncDot.className = 'sync-dot offline';
+                elementos.syncText.textContent = 'Offline - dados apenas locais';
+            }
+        }
+
+        // ==================== FUNÇÕES DE ATIVAÇÃO ====================
+
         async function verificarAtivacaoServidor() {
             mostrarLoading(true);
             
             try {
-                // Tenta buscar do servidor
                 const data = await apiRequest('ativacao');
                 
                 if (data && data.status === true) {
                     sistemaAtivado = true;
-                    localStorage.setItem('sistemaAtivadoCache', 'true'); // Cache local
+                    await verificarConexao();
                 } else {
-                    // Verifica cache local como fallback
-                    const cache = localStorage.getItem('sistemaAtivadoCache');
-                    if (cache === 'true') {
-                        sistemaAtivado = true;
-                    } else {
-                        sistemaAtivado = false;
-                    }
+                    sistemaAtivado = false;
                 }
             } catch (error) {
                 console.error('Erro ao verificar ativação:', error);
-                // Fallback para cache local
-                const cache = localStorage.getItem('sistemaAtivadoCache');
-                sistemaAtivado = cache === 'true';
+                sistemaAtivado = false;
             }
             
             mostrarLoading(false);
             return sistemaAtivado;
         }
 
-        // Salvar ativação no servidor
         async function salvarAtivacaoServidor() {
             mostrarLoading(true);
             
             try {
-                await apiRequest('ativacao', 'PUT', {
-                    status: true,
-                    chave: CHAVE_ATIVACAO,
-                    dataAtivacao: new Date().toISOString()
-                });
+                // Primeiro, verifica se já existe
+                const atual = await apiRequest('ativacao');
                 
-                localStorage.setItem('sistemaAtivadoCache', 'true');
+                let result;
+                if (atual && atual.id) {
+                    // Se existe, faz PUT
+                    result = await apiRequest(`ativacao/${atual.id}`, 'PUT', {
+                        ...atual,
+                        status: true,
+                        chave: CHAVE_ATIVACAO,
+                        dataAtivacao: new Date().toISOString()
+                    });
+                } else {
+                    // Se não existe, faz POST
+                    result = await apiRequest('ativacao', 'POST', {
+                        status: true,
+                        chave: CHAVE_ATIVACAO,
+                        dataAtivacao: new Date().toISOString()
+                    });
+                }
+                
                 mostrarLoading(false);
-                return true;
+                return result !== null;
             } catch (error) {
                 console.error('Erro ao salvar ativação:', error);
                 mostrarLoading(false);
@@ -1166,52 +1248,80 @@
             }
         }
 
-        // Sincronizar dados com servidor
+        // ==================== FUNÇÕES DE DADOS ====================
+
+        async function carregarDadosServidor() {
+            if (!sistemaAtivado || modoDemonstracao) return;
+
+            mostrarLoading(true);
+            
+            try {
+                const data = await apiRequest('dados');
+                
+                if (data && data.colaboradores) {
+                    colaboradores = data.colaboradores || [];
+                    registrosPonto = data.registrosPonto || [];
+                    trocasTurno = data.trocasTurno || [];
+                    
+                    // Salva localmente como backup
+                    salvarDadosLocal();
+                    
+                    atualizarTudo();
+                    mostrarAlerta('✅ Dados carregados da nuvem!', 'sucesso');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do servidor:', error);
+                // Tenta carregar do banco local
+                await carregarDadosLocal();
+            }
+            
+            mostrarLoading(false);
+        }
+
         async function sincronizarDados() {
             if (!sistemaAtivado || modoDemonstracao) return;
 
+            if (!await verificarConexao()) {
+                salvarDadosLocal(); // Salva localmente se offline
+                return;
+            }
+
+            mostrarLoading(true);
+            
             try {
-                // Envia dados locais para servidor
-                await apiRequest('dados', 'POST', {
+                const dadosParaEnviar = {
                     colaboradores,
                     registrosPonto,
                     trocasTurno,
                     ultimaSincronizacao: new Date().toISOString()
-                });
-                
-                console.log('Dados sincronizados com servidor');
-            } catch (error) {
-                console.error('Erro na sincronização:', error);
-            }
-        }
+                };
 
-        // Carregar dados do servidor
-        async function carregarDadosServidor() {
-            if (!sistemaAtivado || modoDemonstracao) return;
-
-            try {
-                const data = await apiRequest('dados');
+                // Primeiro, verifica se já existe
+                const atual = await apiRequest('dados');
                 
-                if (data) {
-                    if (data.colaboradores) colaboradores = data.colaboradores;
-                    if (data.registrosPonto) registrosPonto = data.registrosPonto;
-                    if (data.trocasTurno) trocasTurno = data.trocasTurno;
+                let result;
+                if (atual && atual.id) {
+                    // Se existe, faz PUT
+                    result = await apiRequest(`dados/${atual.id}`, 'PUT', dadosParaEnviar);
+                } else {
+                    // Se não existe, faz POST
+                    result = await apiRequest('dados', 'POST', dadosParaEnviar);
+                }
+                
+                if (result) {
+                    salvarDadosLocal();
+                    mostrarAlerta('💾 Dados sincronizados com a nuvem!', 'sucesso');
                 }
             } catch (error) {
-                console.error('Erro ao carregar dados do servidor:', error);
+                console.error('Erro na sincronização:', error);
+                mostrarAlerta('⚠️ Erro ao sincronizar com nuvem', 'erro');
             }
+            
+            mostrarLoading(false);
         }
 
-        // Mostrar/esconder loading
-        function mostrarLoading(mostrar) {
-            if (mostrar) {
-                elementos.loadingOverlay.classList.add('visible');
-            } else {
-                elementos.loadingOverlay.classList.remove('visible');
-            }
-        }
+        // ==================== FUNÇÕES DE BANCO LOCAL (FALLBACK) ====================
 
-        // Inicialização do banco de dados local (IndexedDB como fallback)
         function initDB() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open('PontoDigitalLocalDB', 1);
@@ -1243,7 +1353,20 @@
             });
         }
 
-        // Carregar dados do banco local (fallback)
+        function salvarDadosLocal() {
+            if (!db || modoDemonstracao) return;
+
+            const transaction = db.transaction(['colaboradores', 'registrosPonto', 'trocasTurno'], 'readwrite');
+            
+            transaction.objectStore('colaboradores').clear();
+            transaction.objectStore('registrosPonto').clear();
+            transaction.objectStore('trocasTurno').clear();
+
+            colaboradores.forEach(c => transaction.objectStore('colaboradores').add(c));
+            registrosPonto.forEach(r => transaction.objectStore('registrosPonto').add(r));
+            trocasTurno.forEach(t => transaction.objectStore('trocasTurno').add(t));
+        }
+
         function carregarDadosLocal() {
             return new Promise((resolve) => {
                 if (!db) {
@@ -1275,104 +1398,24 @@
             });
         }
 
-        // Salvar dados no banco local
-        function salvarDadosLocal() {
-            if (!db || modoDemonstracao) return;
+        // ==================== FUNÇÕES DE INTERFACE ====================
 
-            const transaction = db.transaction(['colaboradores', 'registrosPonto', 'trocasTurno'], 'readwrite');
-            
-            transaction.objectStore('colaboradores').clear();
-            transaction.objectStore('registrosPonto').clear();
-            transaction.objectStore('trocasTurno').clear();
-
-            colaboradores.forEach(c => transaction.objectStore('colaboradores').add(c));
-            registrosPonto.forEach(r => transaction.objectStore('registrosPonto').add(r));
-            trocasTurno.forEach(t => transaction.objectStore('trocasTurno').add(t));
-        }
-
-        // Inicialização principal
-        async function inicializar() {
-            await initDB();
-            
-            // Verifica ativação no servidor
-            const ativado = await verificarAtivacaoServidor();
-            
-            if (ativado) {
-                sistemaAtivado = true;
-                elementos.welcomeScreen.style.display = 'none';
-                elementos.sistemaContainer.style.display = 'block';
-                
-                // Carrega dados do servidor primeiro
-                await carregarDadosServidor();
-                // Se não conseguiu carregar do servidor, carrega do local
-                if (colaboradores.length === 0) {
-                    await carregarDadosLocal();
-                }
-                
-                // Inicia sincronização periódica
-                syncInterval = setInterval(sincronizarDados, 30000); // A cada 30 segundos
+        function mostrarLoading(mostrar) {
+            if (mostrar) {
+                elementos.loadingOverlay.classList.add('visible');
             } else {
-                elementos.welcomeScreen.style.display = 'flex';
-                elementos.sistemaContainer.style.display = 'none';
+                elementos.loadingOverlay.classList.remove('visible');
             }
         }
 
-        // Tela de ativação
-        function mostrarTelaAtivacao() {
-            elementos.welcomeScreen.style.display = 'none';
-            elementos.ativacaoOverlay.classList.add('visible');
-            elementos.chaveAtivacao.value = '';
+        function mostrarAlerta(msg, tipo) {
+            const alerta = document.createElement('div');
+            alerta.className = `alerta ${tipo}`;
+            alerta.textContent = msg;
+            document.body.appendChild(alerta);
+            setTimeout(() => alerta.remove(), 3000);
         }
 
-        function voltarBoasVindas() {
-            elementos.ativacaoOverlay.classList.remove('visible');
-            elementos.welcomeScreen.style.display = 'flex';
-        }
-
-        async function validarAtivacao() {
-            const chave = elementos.chaveAtivacao.value.trim();
-            
-            if (chave === CHAVE_ATIVACAO) {
-                // Salva ativação no servidor (cloud)
-                const salvou = await salvarAtivacaoServidor();
-                
-                if (salvou) {
-                    sistemaAtivado = true;
-                    modoDemonstracao = false;
-                    
-                    elementos.ativacaoOverlay.classList.remove('visible');
-                    elementos.sistemaContainer.style.display = 'block';
-                    elementos.demoBanner.style.display = 'none';
-                    
-                    await carregarDadosServidor();
-                    
-                    // Inicia sincronização
-                    syncInterval = setInterval(sincronizarDados, 30000);
-                    
-                    mostrarAlerta('✅ Sistema ativado com sucesso na nuvem!', 'sucesso');
-                } else {
-                    mostrarAlerta('❌ Erro ao ativar no servidor!', 'erro');
-                }
-            } else {
-                mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
-                elementos.chaveAtivacao.value = '';
-            }
-        }
-
-        // Modo demonstração
-        async function entrarModoDemonstracao() {
-            modoDemonstracao = true;
-            sistemaAtivado = false;
-            
-            elementos.welcomeScreen.style.display = 'none';
-            elementos.sistemaContainer.style.display = 'block';
-            elementos.demoBanner.style.display = 'block';
-            
-            await carregarDadosLocal();
-            mostrarAlerta('⚡ Modo demonstração ativado!', 'info');
-        }
-
-        // Funções existentes mantidas...
         function atualizarTudo() {
             atualizarTabelaColaboradores();
             atualizarRegistrosPonto();
@@ -1405,7 +1448,62 @@
             return false;
         }
 
-        // Login admin
+        // ==================== FUNÇÕES DE TELA ====================
+
+        function mostrarTelaAtivacao() {
+            elementos.welcomeScreen.style.display = 'none';
+            elementos.ativacaoOverlay.classList.add('visible');
+            elementos.chaveAtivacao.value = '';
+        }
+
+        function voltarBoasVindas() {
+            elementos.ativacaoOverlay.classList.remove('visible');
+            elementos.welcomeScreen.style.display = 'flex';
+        }
+
+        async function validarAtivacao() {
+            const chave = elementos.chaveAtivacao.value.trim();
+            
+            if (chave === CHAVE_ATIVACAO) {
+                const salvou = await salvarAtivacaoServidor();
+                
+                if (salvou) {
+                    sistemaAtivado = true;
+                    modoDemonstracao = false;
+                    
+                    elementos.ativacaoOverlay.classList.remove('visible');
+                    elementos.sistemaContainer.style.display = 'block';
+                    elementos.demoBanner.style.display = 'none';
+                    
+                    await carregarDadosServidor();
+                    
+                    // Inicia sincronização periódica
+                    syncInterval = setInterval(sincronizarDados, 30000);
+                    
+                    mostrarAlerta('✅ Sistema ativado com sucesso na nuvem!', 'sucesso');
+                } else {
+                    mostrarAlerta('❌ Erro ao ativar no servidor!', 'erro');
+                }
+            } else {
+                mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
+                elementos.chaveAtivacao.value = '';
+            }
+        }
+
+        async function entrarModoDemonstracao() {
+            modoDemonstracao = true;
+            sistemaAtivado = false;
+            
+            elementos.welcomeScreen.style.display = 'none';
+            elementos.sistemaContainer.style.display = 'block';
+            elementos.demoBanner.style.display = 'block';
+            
+            await carregarDadosLocal();
+            mostrarAlerta('⚡ Modo demonstração ativado!', 'info');
+        }
+
+        // ==================== FUNÇÕES DE ADMIN ====================
+
         function mostrarLoginAdmin() {
             elementos.loginUsuario.value = '';
             elementos.loginSenha.value = '';
@@ -1456,7 +1554,8 @@
             mostrarAlerta('👤 Modo usuário ativado', 'info');
         }
 
-        // Funções de colaborador
+        // ==================== FUNÇÕES DE COLABORADOR ====================
+
         function mostrarFormAdicionar() {
             if (!adminLogado) {
                 mostrarAlerta('Acesso negado!', 'erro');
@@ -1554,8 +1653,9 @@
             verificarLimiteColaboradores();
             
             salvarDadosLocal();
+            
             if (!modoDemonstracao) {
-                sincronizarDados(); // Envia para nuvem
+                await sincronizarDados(); // Envia para nuvem imediatamente
             }
             
             fecharFormColaborador();
@@ -1570,8 +1670,9 @@
                 verificarLimiteColaboradores();
                 
                 salvarDadosLocal();
+                
                 if (!modoDemonstracao) {
-                    sincronizarDados();
+                    await sincronizarDados();
                 }
                 
                 mostrarAlerta('❌ Excluído!', 'sucesso');
@@ -1588,7 +1689,8 @@
             mostrarAlerta('❌ Clique em excluir na tabela', 'info');
         }
 
-        // Funções de troca de turno
+        // ==================== FUNÇÕES DE TROCA DE TURNO ====================
+
         function mostrarTrocaTurno() {
             if (!adminLogado || colaboradores.length < 2) {
                 mostrarAlerta('❌ Necessário 2+ colaboradores', 'erro');
@@ -1642,15 +1744,17 @@
             atualizarRegistrosTroca();
             
             salvarDadosLocal();
+            
             if (!modoDemonstracao) {
-                sincronizarDados();
+                await sincronizarDados();
             }
             
             fecharTrocaTurno();
             mostrarAlerta('🔄 Troca registrada!', 'sucesso');
         }
 
-        // Funções de ponto
+        // ==================== FUNÇÕES DE PONTO ====================
+
         async function registrarPontoManual() {
             if (colaboradores.length === 0) {
                 mostrarAlerta('❌ Sem colaboradores!', 'erro');
@@ -1685,14 +1789,16 @@
             atualizarRegistrosPonto();
             
             salvarDadosLocal();
+            
             if (!modoDemonstracao) {
-                sincronizarDados();
+                await sincronizarDados();
             }
             
             mostrarAlerta(`✅ Ponto registrado!`, 'sucesso');
         }
 
-        // Webcam
+        // ==================== FUNÇÕES DE WEBCAM ====================
+
         async function iniciarReconhecimentoFacial() {
             if (colaboradores.length === 0) {
                 mostrarAlerta('❌ Sem colaboradores!', 'erro');
@@ -1741,8 +1847,9 @@
             atualizarRegistrosPonto();
             
             salvarDadosLocal();
+            
             if (!modoDemonstracao) {
-                sincronizarDados();
+                await sincronizarDados();
             }
             
             fecharWebcam();
@@ -1757,7 +1864,8 @@
             elementos.webcamContainer.style.display = 'none';
         }
 
-        // Atualizações
+        // ==================== FUNÇÕES DE ATUALIZAÇÃO ====================
+
         function atualizarTabelaColaboradores() {
             if (!elementos.tabelaColaboradores) return;
 
@@ -1864,7 +1972,8 @@
             elementos.registrosTroca.appendChild(fragment);
         }
 
-        // Funções T.I
+        // ==================== FUNÇÕES T.I ====================
+
         function toggleTiOpcoes() {
             if (adminLogado) elementos.tiOpcoes.classList.toggle('mostrar');
         }
@@ -1877,7 +1986,7 @@
                 registrosPonto,
                 trocasTurno,
                 data: new Date().toLocaleString(),
-                versao: '4.0'
+                versao: '4.1'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -1939,13 +2048,31 @@
             w.print();
         }
 
-        // Utilitários
-        function mostrarAlerta(msg, tipo) {
-            const alerta = document.createElement('div');
-            alerta.className = `alerta ${tipo}`;
-            alerta.textContent = msg;
-            document.body.appendChild(alerta);
-            setTimeout(() => alerta.remove(), 2000);
+        // ==================== INICIALIZAÇÃO ====================
+
+        async function inicializar() {
+            await initDB();
+            
+            // Verifica ativação no servidor
+            const ativado = await verificarAtivacaoServidor();
+            
+            if (ativado) {
+                sistemaAtivado = true;
+                elementos.welcomeScreen.style.display = 'none';
+                elementos.sistemaContainer.style.display = 'block';
+                
+                // Verifica conexão
+                await verificarConexao();
+                
+                // Carrega dados
+                await carregarDadosServidor();
+                
+                // Inicia sincronização periódica
+                syncInterval = setInterval(sincronizarDados, 30000);
+            } else {
+                elementos.welcomeScreen.style.display = 'flex';
+                elementos.sistemaContainer.style.display = 'none';
+            }
         }
 
         // Event listeners
@@ -1955,6 +2082,7 @@
             }
             
             salvarDadosLocal();
+            
             if (sistemaAtivado && !modoDemonstracao) {
                 await sincronizarDados();
             }

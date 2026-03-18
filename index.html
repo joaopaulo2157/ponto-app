@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Sistema de Ponto Digital v3.7 - ALFA TECH</title>
+    <title>Sistema de Ponto Digital v3.8 - ALFA TECH</title>
     <style>
         * {
             margin: 0;
@@ -15,7 +15,7 @@
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: clamp(5px, 2vw, 15px);
             display: flex;
             flex-direction: column;
         }
@@ -44,38 +44,27 @@
         }
 
         .container {
-            max-width: 1400px;
+            width: 100%;
+            max-width: min(1400px, 98vw);
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.98);
-            border-radius: 30px;
+            border-radius: clamp(15px, 3vw, 30px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 20px;
+            padding: clamp(15px, 3vw, 30px);
             flex: 1;
             animation: fadeIn 0.5s ease;
             backdrop-filter: blur(10px);
         }
 
-        @media (min-width: 768px) {
-            .container {
-                padding: 30px;
-            }
-        }
-
         h1 {
             color: #333;
             text-align: center;
-            margin-bottom: 5px;
-            font-size: 1.8em;
+            margin-bottom: clamp(5px, 1vh, 10px);
+            font-size: clamp(1.5em, 5vw, 2.5em);
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        @media (min-width: 768px) {
-            h1 {
-                font-size: 2.5em;
-            }
         }
 
         /* Tela de Boas-vindas */
@@ -90,52 +79,52 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            padding: 15px;
+            padding: clamp(10px, 3vw, 20px);
             animation: fadeIn 0.5s ease;
         }
 
         .welcome-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 30px 20px;
-            border-radius: 30px;
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: clamp(20px, 4vw, 40px);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 450px;
+            max-width: min(450px, 95%);
             text-align: center;
             animation: fadeIn 0.8s ease;
         }
 
         .welcome-icon {
-            font-size: 5em;
-            margin-bottom: 20px;
+            font-size: clamp(3em, 10vw, 5em);
+            margin-bottom: clamp(10px, 2vh, 20px);
             animation: pulse 2s infinite;
         }
 
         .welcome-container h2 {
             color: #333;
-            margin-bottom: 15px;
-            font-size: 2em;
+            margin-bottom: clamp(10px, 2vh, 15px);
+            font-size: clamp(1.5em, 5vw, 2em);
         }
 
         .welcome-container p {
             color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
+            margin-bottom: clamp(20px, 4vh, 30px);
+            font-size: clamp(0.9em, 3vw, 1.1em);
             line-height: 1.6;
         }
 
         .welcome-buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: clamp(10px, 2vh, 15px);
         }
 
         .btn-welcome {
-            padding: 18px;
+            padding: clamp(12px, 3vh, 18px);
             border: none;
             border-radius: 60px;
-            font-size: 1.2em;
+            font-size: clamp(1em, 4vw, 1.2em);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -162,9 +151,9 @@
         }
 
         .info-dev {
-            margin-top: 30px;
+            margin-top: clamp(20px, 4vh, 30px);
             color: #999;
-            font-size: 0.9em;
+            font-size: clamp(0.8em, 2.5vw, 0.9em);
         }
 
         /* Tela de Ativação */
@@ -179,7 +168,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1900;
-            padding: 15px;
+            padding: clamp(10px, 3vw, 20px);
             animation: fadeIn 0.5s ease;
         }
 
@@ -190,26 +179,26 @@
         .ativacao-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 30px 20px;
-            border-radius: 30px;
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: clamp(20px, 4vw, 40px);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 400px;
+            max-width: min(400px, 95%);
             animation: fadeIn 0.5s ease;
         }
 
         .ativacao-container h2 {
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: clamp(15px, 3vh, 25px);
             text-align: center;
-            font-size: 2em;
+            font-size: clamp(1.5em, 5vw, 2em);
         }
 
         .ativacao-container .info-sistema {
             background: linear-gradient(135deg, #f0f4f8, #ffffff);
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 25px;
+            padding: clamp(15px, 3vh, 20px);
+            border-radius: clamp(15px, 3vw, 20px);
+            margin-bottom: clamp(15px, 3vh, 25px);
             text-align: center;
             border: 2px dashed #667eea;
         }
@@ -217,23 +206,23 @@
         .ativacao-container .info-sistema p {
             color: #666;
             margin: 5px 0;
-            font-size: 0.95em;
+            font-size: clamp(0.85em, 2.5vw, 0.95em);
         }
 
         .ativacao-container .info-sistema .destaque {
             color: #667eea;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: clamp(1em, 3vw, 1.1em);
         }
 
         .ativacao-container input {
             width: 100%;
-            padding: 15px;
+            padding: clamp(12px, 3vh, 15px);
             border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 1.1em;
+            border-radius: clamp(12px, 2.5vw, 15px);
+            font-size: clamp(0.95em, 3vw, 1.1em);
             transition: all 0.3s ease;
-            margin-bottom: 20px;
+            margin-bottom: clamp(15px, 3vh, 20px);
             text-align: center;
             letter-spacing: 2px;
             background: white;
@@ -248,14 +237,15 @@
         .ativacao-container input::placeholder {
             color: #999;
             letter-spacing: normal;
+            font-size: clamp(0.85em, 2.5vw, 0.95em);
         }
 
         .ativacao-container button {
             width: 100%;
-            padding: 15px;
+            padding: clamp(12px, 3vh, 15px);
             border: none;
-            border-radius: 15px;
-            font-size: 1.1em;
+            border-radius: clamp(12px, 2.5vw, 15px);
+            font-size: clamp(0.95em, 3vw, 1.1em);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -275,10 +265,10 @@
         .aviso-ativacao {
             background: #fff3cd;
             color: #856404;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-size: 0.9em;
+            padding: clamp(10px, 2.5vh, 12px);
+            border-radius: clamp(8px, 2vw, 10px);
+            margin: clamp(10px, 2vh, 15px) 0;
+            font-size: clamp(0.8em, 2.5vw, 0.9em);
             text-align: center;
         }
 
@@ -294,7 +284,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1800;
-            padding: 15px;
+            padding: clamp(10px, 3vw, 20px);
         }
 
         .login-overlay.visible {
@@ -304,30 +294,30 @@
         .login-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 30px 20px;
-            border-radius: 30px;
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: clamp(20px, 4vw, 40px);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 400px;
+            max-width: min(400px, 95%);
         }
 
         .login-container h2 {
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: clamp(20px, 4vh, 30px);
             text-align: center;
-            font-size: 2em;
+            font-size: clamp(1.5em, 5vw, 2em);
         }
 
         .login-container .form-grupo {
-            margin-bottom: 20px;
+            margin-bottom: clamp(15px, 3vh, 20px);
         }
 
         .login-container input {
             width: 100%;
-            padding: 15px;
+            padding: clamp(12px, 3vh, 15px);
             border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 1em;
+            border-radius: clamp(12px, 2.5vw, 15px);
+            font-size: clamp(0.9em, 3vw, 1em);
             transition: all 0.3s ease;
         }
 
@@ -339,10 +329,10 @@
 
         .login-container button {
             width: 100%;
-            padding: 15px;
+            padding: clamp(12px, 3vh, 15px);
             border: none;
-            border-radius: 15px;
-            font-size: 1.1em;
+            border-radius: clamp(12px, 2.5vw, 15px);
+            font-size: clamp(0.95em, 3vw, 1.1em);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -358,25 +348,25 @@
         .sistema-header {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: clamp(8px, 2vh, 12px);
             background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
+            padding: clamp(15px, 3vh, 20px);
+            border-radius: clamp(15px, 3vw, 20px);
+            margin-bottom: clamp(15px, 3vh, 20px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
             .sistema-header {
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
-                padding: 15px 25px;
+                padding: clamp(12px, 2.5vh, 15px) clamp(15px, 3vw, 25px);
             }
         }
 
         .sistema-titulo {
-            font-size: 1.4em;
+            font-size: clamp(1.2em, 4vw, 1.5em);
             font-weight: bold;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
@@ -388,20 +378,20 @@
         .admin-controls {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: clamp(8px, 2vh, 10px);
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
             .admin-controls {
                 flex-direction: row;
             }
         }
 
         .btn-admin-login, .btn-admin-logout {
-            padding: 12px 25px;
+            padding: clamp(10px, 2.5vh, 12px) clamp(15px, 3vw, 25px);
             border: none;
             border-radius: 60px;
-            font-size: 0.95em;
+            font-size: clamp(0.85em, 2.5vw, 0.95em);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -425,16 +415,16 @@
         .botoes-principais {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 25px;
+            gap: clamp(8px, 2vh, 12px);
+            margin-bottom: clamp(15px, 3vh, 25px);
             justify-content: center;
         }
 
         button {
-            padding: 14px 22px;
+            padding: clamp(10px, 2.5vh, 14px) clamp(15px, 3vw, 22px);
             border: none;
             border-radius: 60px;
-            font-size: 0.95em;
+            font-size: clamp(0.85em, 2.5vw, 0.95em);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -444,14 +434,14 @@
             gap: 8px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             flex: 1 1 auto;
-            min-width: 150px;
+            min-width: min(120px, 45%);
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
             button {
-                padding: 14px 28px;
-                font-size: 1em;
-                min-width: 170px;
+                padding: clamp(12px, 2.5vh, 14px) clamp(18px, 3vw, 28px);
+                font-size: clamp(0.9em, 2.5vw, 1em);
+                min-width: min(140px, auto);
             }
         }
 
@@ -482,8 +472,8 @@
         .btn-reconhecimento {
             background: linear-gradient(135deg, #43e97b, #38f9d7);
             color: white;
-            font-size: 1.1em;
-            padding: 16px 28px;
+            font-size: clamp(0.95em, 3vw, 1.1em);
+            padding: clamp(12px, 3vh, 16px) clamp(18px, 4vw, 28px);
         }
 
         .btn-ti {
@@ -493,9 +483,9 @@
 
         .secao {
             background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border-radius: 25px;
-            padding: 20px;
-            margin-bottom: 25px;
+            border-radius: clamp(15px, 3vw, 25px);
+            padding: clamp(15px, 3vh, 20px);
+            margin-bottom: clamp(15px, 3vh, 25px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
@@ -506,13 +496,12 @@
 
         .secao-titulo {
             color: #333;
-            margin-bottom: 20px;
-            font-size: 1.3em;
+            margin-bottom: clamp(15px, 3vh, 20px);
+            font-size: clamp(1.1em, 3.5vw, 1.3em);
             border-left: 5px solid #667eea;
-            padding-left: 15px;
+            padding-left: clamp(10px, 2vw, 15px);
         }
 
-        /* Formulário de Colaborador - Agora com destaque e posicionamento melhor */
         .form-colaborador-container {
             scroll-margin-top: 20px;
             animation: highlight 1.5s ease;
@@ -528,11 +517,11 @@
         .form-colaborador {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: clamp(10px, 2.5vh, 15px);
+            margin-bottom: clamp(15px, 3vh, 20px);
         }
 
-        @media (min-width: 600px) {
+        @media (min-width: 480px) {
             .form-colaborador {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -544,17 +533,17 @@
         }
 
         .form-grupo label {
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #555;
             font-weight: 500;
-            font-size: 0.95em;
+            font-size: clamp(0.85em, 2.5vw, 0.95em);
         }
 
         .form-grupo input, .form-grupo select {
-            padding: 14px;
+            padding: clamp(10px, 2.5vh, 14px);
             border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 1em;
+            border-radius: clamp(10px, 2.5vw, 15px);
+            font-size: clamp(0.9em, 2.5vw, 1em);
             transition: all 0.3s ease;
             width: 100%;
             background: white;
@@ -568,8 +557,8 @@
 
         .tabela-container {
             overflow-x: auto;
-            margin-top: 20px;
-            border-radius: 15px;
+            margin-top: clamp(15px, 3vh, 20px);
+            border-radius: clamp(10px, 2vw, 15px);
             -webkit-overflow-scrolling: touch;
         }
 
@@ -577,73 +566,68 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 5px;
-            min-width: 600px;
+            min-width: min(500px, 100%);
         }
 
         .tabela-colaboradores th {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 15px 10px;
+            padding: clamp(10px, 2vh, 15px) clamp(5px, 1.5vw, 10px);
             font-weight: 600;
-            font-size: 0.95em;
+            font-size: clamp(0.8em, 2.5vw, 0.95em);
             white-space: nowrap;
         }
 
         .tabela-colaboradores th:first-child {
-            border-radius: 15px 0 0 15px;
+            border-radius: clamp(10px, 2vw, 15px) 0 0 clamp(10px, 2vw, 15px);
         }
 
         .tabela-colaboradores th:last-child {
-            border-radius: 0 15px 15px 0;
+            border-radius: 0 clamp(10px, 2vw, 15px) clamp(10px, 2vw, 15px) 0;
         }
 
         .tabela-colaboradores td {
-            padding: 12px 10px;
+            padding: clamp(8px, 2vh, 12px) clamp(5px, 1.5vw, 10px);
             background: white;
             text-align: center;
-            font-size: 0.95em;
+            font-size: clamp(0.8em, 2.5vw, 0.95em);
             border-bottom: 1px solid #f0f0f0;
         }
 
         .acoes-colaborador {
             display: flex;
-            gap: 8px;
+            gap: clamp(4px, 1.5vw, 8px);
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .acoes-colaborador button {
-            padding: 8px 15px;
-            font-size: 0.9em;
+            padding: clamp(5px, 1.5vh, 8px) clamp(8px, 2vw, 12px);
+            font-size: clamp(0.75em, 2.2vw, 0.85em);
             min-width: auto;
         }
 
         #webcam-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: clamp(15px, 3vh, 20px);
         }
 
         #webcam-video {
             width: 100%;
-            max-width: 100%;
+            max-width: min(600px, 100%);
             height: auto;
-            border-radius: 20px;
+            border-radius: clamp(15px, 3vw, 20px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        @media (min-width: 768px) {
-            #webcam-video {
-                max-width: 600px;
-            }
         }
 
         .ti-opcoes {
             display: none;
             grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 20px;
+            gap: clamp(8px, 2vh, 12px);
+            margin-top: clamp(15px, 3vh, 20px);
         }
 
-        @media (min-width: 600px) {
+        @media (min-width: 480px) {
             .ti-opcoes {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -657,12 +641,12 @@
             background: white;
             color: #333;
             border: 2px solid #fa709a;
-            padding: 15px;
-            font-size: 0.95em;
+            padding: clamp(12px, 2.5vh, 15px);
+            font-size: clamp(0.85em, 2.5vw, 0.95em);
         }
 
         .registros-ponto {
-            max-height: 350px;
+            max-height: min(350px, 50vh);
             overflow-y: auto;
             padding-right: 5px;
             -webkit-overflow-scrolling: touch;
@@ -670,12 +654,12 @@
 
         .registro-item {
             background: white;
-            padding: 15px;
+            padding: clamp(12px, 2.5vh, 15px);
             margin-bottom: 10px;
-            border-radius: 15px;
+            border-radius: clamp(12px, 2.5vw, 15px);
             border-left: 5px solid #4facfe;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
-            font-size: 0.95em;
+            font-size: clamp(0.85em, 2.5vw, 0.95em);
             transition: all 0.3s ease;
         }
 
@@ -686,25 +670,25 @@
 
         .alerta {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 18px;
+            top: clamp(10px, 2vh, 20px);
+            right: clamp(10px, 2vw, 20px);
+            left: clamp(10px, 2vw, 20px);
+            padding: clamp(12px, 3vh, 18px);
             border-radius: 60px;
             color: white;
             font-weight: 600;
             z-index: 2100;
             animation: slideIn 0.3s ease;
-            font-size: 1em;
+            font-size: clamp(0.9em, 3vw, 1em);
             text-align: center;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
             .alerta {
                 left: auto;
-                min-width: 350px;
+                min-width: min(350px, 90vw);
                 text-align: left;
             }
         }
@@ -723,9 +707,9 @@
 
         .botoes-rodape {
             display: flex;
-            gap: 12px;
+            gap: clamp(8px, 2vh, 12px);
             justify-content: center;
-            margin-top: 20px;
+            margin-top: clamp(15px, 3vh, 20px);
             flex-wrap: wrap;
         }
 
@@ -733,11 +717,11 @@
             background: linear-gradient(135deg, #f093fb, #f5576c);
             color: white;
             text-align: center;
-            padding: 15px;
+            padding: clamp(10px, 2.5vh, 15px);
             border-radius: 60px;
-            margin-bottom: 20px;
+            margin-bottom: clamp(15px, 3vh, 20px);
             font-weight: 600;
-            font-size: 1em;
+            font-size: clamp(0.85em, 2.5vw, 1em);
             animation: pulse 2s infinite;
             box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
         }
@@ -745,15 +729,15 @@
         .footer {
             text-align: center;
             color: white;
-            padding: 25px 10px 10px;
-            font-size: 1em;
+            padding: clamp(15px, 4vh, 25px) clamp(5px, 2vw, 10px) clamp(5px, 2vh, 10px);
+            font-size: clamp(0.85em, 2.5vw, 1em);
             font-weight: 500;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
 
         .footer span {
             background: rgba(255,255,255,0.2);
-            padding: 8px 25px;
+            padding: clamp(5px, 2vh, 8px) clamp(15px, 4vw, 25px);
             border-radius: 60px;
             backdrop-filter: blur(10px);
             display: inline-block;
@@ -762,6 +746,21 @@
         /* Scroll suave */
         html {
             scroll-behavior: smooth;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -795,7 +794,7 @@
             
             <div class="info-sistema">
                 <p>Sistema de Ponto Digital</p>
-                <p>Versão: 3.7</p>
+                <p>Versão: 3.8</p>
                 <p class="destaque">ALFA TECH</p>
                 <p style="margin-top: 10px;">Digite a chave de ativação fornecida pelo proprietário</p>
             </div>
@@ -889,7 +888,7 @@
             <button class="btn-ti-opcao" onclick="imprimirRegistros()">🖨️ Imprimir</button>
         </div>
 
-        <!-- Formulário Colaborador - AGORA APARECE LOGO ABAIXO DO BOTÃO -->
+        <!-- Formulário Colaborador -->
         <div id="form-colaborador" class="secao admin-only form-colaborador-container" style="display: none;">
             <h3 class="secao-titulo" id="form-titulo">➕ Adicionar Colaborador</h3>
             <div class="form-colaborador">
@@ -994,18 +993,21 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v3.7 - ALFA TECH
-        // Chave de ativação: apenas o proprietário conhece (ALFA TECH)
+        // Sistema de Ponto Digital v3.8 - ALFA TECH
+        // Agora com banco de dados IndexedDB e design 100% responsivo
 
-        // Configuração - Chave de ativação (oculta - só o proprietário sabe)
-        const CHAVE_ATIVACAO = 'ALFA-TECH-2024-SISTEMA'; // Esta chave é conhecida apenas pelo proprietário
+        // Configuração
+        const CHAVE_ATIVACAO = 'ALFA-TECH-2024-SISTEMA';
         const LIMITE_DEMO = 2;
+        const DB_NAME = 'PontoDigitalDB';
+        const DB_VERSION = 1;
         
         let sistemaAtivado = localStorage.getItem('sistemaAtivado') === 'true';
         let modoDemonstracao = false;
         let adminLogado = false;
+        let db = null;
 
-        // Dados
+        // Dados em memória
         let colaboradores = [];
         let registrosPonto = [];
         let trocasTurno = [];
@@ -1049,35 +1051,159 @@
             demoLimitMessage: document.getElementById('demo-limit-message')
         };
 
-        // Inicialização
-        function inicializar() {
-            if (sistemaAtivado) {
-                elementos.welcomeScreen.style.display = 'none';
-                elementos.sistemaContainer.style.display = 'block';
-                carregarDados();
-            } else {
-                elementos.welcomeScreen.style.display = 'flex';
-                elementos.sistemaContainer.style.display = 'none';
-            }
+        // Inicialização do banco de dados IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = (event) => {
+                    console.error('Erro ao abrir banco de dados:', event.target.error);
+                    reject(event.target.error);
+                };
+
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log('Banco de dados conectado com sucesso!');
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // Criar object stores se não existirem
+                    if (!db.objectStoreNames.contains('colaboradores')) {
+                        const storeColaboradores = db.createObjectStore('colaboradores', { keyPath: 'id', autoIncrement: true });
+                        storeColaboradores.createIndex('matricula', 'matricula', { unique: true });
+                        storeColaboradores.createIndex('nome', 'nome', { unique: false });
+                    }
+
+                    if (!db.objectStoreNames.contains('registrosPonto')) {
+                        const storeRegistros = db.createObjectStore('registrosPonto', { keyPath: 'id', autoIncrement: true });
+                        storeRegistros.createIndex('matricula', 'matricula', { unique: false });
+                        storeRegistros.createIndex('data', 'data', { unique: false });
+                        storeRegistros.createIndex('matricula_data', ['matricula', 'data'], { unique: true });
+                    }
+
+                    if (!db.objectStoreNames.contains('trocasTurno')) {
+                        const storeTrocas = db.createObjectStore('trocasTurno', { keyPath: 'id', autoIncrement: true });
+                        storeTrocas.createIndex('data', 'data', { unique: false });
+                    }
+
+                    console.log('Banco de dados configurado!');
+                };
+            });
         }
 
-        // Carregar dados
-        function carregarDados() {
-            try {
-                colaboradores = JSON.parse(localStorage.getItem('colaboradores')) || [];
-                registrosPonto = JSON.parse(localStorage.getItem('registrosPonto')) || [];
-                trocasTurno = JSON.parse(localStorage.getItem('trocasTurno')) || [];
-            } catch (e) {
+        // Carregar dados do banco
+        async function carregarDadosDB() {
+            if (!db) await initDB();
+
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['colaboradores', 'registrosPonto', 'trocasTurno'], 'readonly');
+                
                 colaboradores = [];
                 registrosPonto = [];
                 trocasTurno = [];
-            }
 
-            if (modoDemonstracao && colaboradores.length > LIMITE_DEMO) {
-                colaboradores = colaboradores.slice(0, LIMITE_DEMO);
-            }
+                // Carregar colaboradores
+                const storeColab = transaction.objectStore('colaboradores');
+                const requestColab = storeColab.getAll();
+                requestColab.onsuccess = () => {
+                    colaboradores = requestColab.result;
+                };
 
-            atualizarTudo();
+                // Carregar registros
+                const storeReg = transaction.objectStore('registrosPonto');
+                const requestReg = storeReg.getAll();
+                requestReg.onsuccess = () => {
+                    registrosPonto = requestReg.result;
+                };
+
+                // Carregar trocas
+                const storeTroca = transaction.objectStore('trocasTurno');
+                const requestTroca = storeTroca.getAll();
+                requestTroca.onsuccess = () => {
+                    trocasTurno = requestTroca.result;
+                };
+
+                transaction.oncomplete = () => {
+                    if (modoDemonstracao && colaboradores.length > LIMITE_DEMO) {
+                        colaboradores = colaboradores.slice(0, LIMITE_DEMO);
+                    }
+                    atualizarTudo();
+                    resolve();
+                };
+
+                transaction.onerror = (e) => {
+                    console.error('Erro ao carregar dados:', e);
+                    reject(e);
+                };
+            });
+        }
+
+        // Salvar dados no banco
+        async function salvarDadosDB() {
+            if (!db || modoDemonstracao) return;
+
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['colaboradores', 'registrosPonto', 'trocasTurno'], 'readwrite');
+                
+                // Limpar stores
+                transaction.objectStore('colaboradores').clear();
+                transaction.objectStore('registrosPonto').clear();
+                transaction.objectStore('trocasTurno').clear();
+
+                // Salvar colaboradores
+                const storeColab = transaction.objectStore('colaboradores');
+                colaboradores.forEach(colab => {
+                    // Garantir que tenha ID
+                    if (!colab.id) colab.id = Date.now() + Math.random();
+                    storeColab.add(colab);
+                });
+
+                // Salvar registros
+                const storeReg = transaction.objectStore('registrosPonto');
+                registrosPonto.forEach(reg => {
+                    if (!reg.id) reg.id = Date.now() + Math.random();
+                    storeReg.add(reg);
+                });
+
+                // Salvar trocas
+                const storeTroca = transaction.objectStore('trocasTurno');
+                trocasTurno.forEach(troca => {
+                    if (!troca.id) troca.id = Date.now() + Math.random();
+                    storeTroca.add(troca);
+                });
+
+                transaction.oncomplete = () => {
+                    console.log('Dados salvos no banco!');
+                    resolve();
+                };
+
+                transaction.onerror = (e) => {
+                    console.error('Erro ao salvar:', e);
+                    reject(e);
+                };
+            });
+        }
+
+        // Inicialização
+        async function inicializar() {
+            try {
+                await initDB();
+                
+                if (sistemaAtivado) {
+                    elementos.welcomeScreen.style.display = 'none';
+                    elementos.sistemaContainer.style.display = 'block';
+                    await carregarDadosDB();
+                } else {
+                    elementos.welcomeScreen.style.display = 'flex';
+                    elementos.sistemaContainer.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Erro na inicialização:', e);
+                mostrarAlerta('❌ Erro ao inicializar sistema', 'erro');
+            }
         }
 
         // Atualizar interface
@@ -1097,7 +1223,6 @@
                         block: 'start' 
                     });
                     
-                    // Adiciona classe de destaque temporário
                     elementos.formColaborador.classList.add('destaque');
                     setTimeout(() => {
                         elementos.formColaborador.classList.remove('destaque');
@@ -1118,7 +1243,7 @@
             elementos.welcomeScreen.style.display = 'flex';
         }
 
-        function validarAtivacao() {
+        async function validarAtivacao() {
             const chave = elementos.chaveAtivacao.value.trim();
             
             if (chave === CHAVE_ATIVACAO) {
@@ -1130,7 +1255,7 @@
                 elementos.sistemaContainer.style.display = 'block';
                 elementos.demoBanner.style.display = 'none';
                 
-                carregarDados();
+                await carregarDadosDB();
                 mostrarAlerta('✅ Sistema ativado com sucesso!', 'sucesso');
             } else {
                 mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
@@ -1139,7 +1264,7 @@
         }
 
         // Modo demonstração
-        function entrarModoDemonstracao() {
+        async function entrarModoDemonstracao() {
             modoDemonstracao = true;
             sistemaAtivado = false;
             
@@ -1147,7 +1272,7 @@
             elementos.sistemaContainer.style.display = 'block';
             elementos.demoBanner.style.display = 'block';
             
-            carregarDados();
+            await carregarDadosDB();
             mostrarAlerta('⚡ Modo demonstração ativado!', 'info');
         }
 
@@ -1212,7 +1337,7 @@
             mostrarAlerta('👤 Modo usuário ativado', 'info');
         }
 
-        // Funções de colaborador - AGORA COM ROLAGEM AUTOMÁTICA
+        // Funções de colaborador
         function mostrarFormAdicionar() {
             if (!adminLogado) {
                 mostrarAlerta('Acesso negado!', 'erro');
@@ -1229,7 +1354,6 @@
             colaboradorEditando = null;
             elementos.formColaborador.style.display = 'block';
             
-            // Rola até o formulário
             rolarAteFormulario();
         }
 
@@ -1269,11 +1393,10 @@
             colaboradorEditando = index;
             elementos.formColaborador.style.display = 'block';
             
-            // Rola até o formulário
             rolarAteFormulario();
         }
 
-        function salvarColaborador() {
+        async function salvarColaborador() {
             if (!adminLogado) return;
 
             const nome = elementos.nome.value.trim();
@@ -1286,13 +1409,20 @@
                 return;
             }
 
-            // Verifica matrícula duplicada apenas no modo normal
-            if (!modoDemonstracao && colaboradores.some(c => c.matricula === matricula) && colaboradorEditando === null) {
+            // Verifica matrícula duplicada
+            if (!modoDemonstracao && colaboradores.some(c => c.matricula === matricula && 
+                (colaboradorEditando === null || colaboradores[colaboradorEditando].matricula !== matricula))) {
                 mostrarAlerta('❌ Matrícula existe!', 'erro');
                 return;
             }
 
-            const novo = { nome, matricula, cargo, departamento };
+            const novo = { 
+                id: colaboradorEditando !== null ? colaboradores[colaboradorEditando].id : Date.now() + Math.random(),
+                nome, 
+                matricula, 
+                cargo, 
+                departamento 
+            };
 
             if (colaboradorEditando !== null) {
                 colaboradores[colaboradorEditando] = novo;
@@ -1304,18 +1434,30 @@
 
             atualizarTabelaColaboradores();
             verificarLimiteColaboradores();
-            salvarDados();
+            
+            if (!modoDemonstracao) {
+                await salvarDadosDB();
+            } else {
+                salvarDados();
+            }
+            
             fecharFormColaborador();
         }
 
-        function excluirColaborador(index) {
+        async function excluirColaborador(index) {
             if (!adminLogado) return;
             
             if (confirm('Confirmar exclusão?')) {
                 colaboradores.splice(index, 1);
                 atualizarTabelaColaboradores();
                 verificarLimiteColaboradores();
-                salvarDados();
+                
+                if (!modoDemonstracao) {
+                    await salvarDadosDB();
+                } else {
+                    salvarDados();
+                }
+                
                 mostrarAlerta('❌ Excluído!', 'sucesso');
             }
         }
@@ -1339,7 +1481,6 @@
             elementos.dataTurno.value = new Date().toISOString().split('T')[0];
             elementos.trocaTurno.style.display = 'block';
             
-            // Rola até o formulário de troca
             setTimeout(() => {
                 elementos.trocaTurno.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -1349,7 +1490,7 @@
             elementos.trocaTurno.style.display = 'none';
         }
 
-        function registrarTrocaTurno() {
+        async function registrarTrocaTurno() {
             if (!adminLogado) return;
 
             const saida = elementos.colaboradorSaida.value;
@@ -1371,7 +1512,7 @@
             const entradaObj = colaboradores.find(c => c.matricula === entrada);
 
             const troca = {
-                id: Date.now(),
+                id: Date.now() + Math.random(),
                 colaboradorSaida: saidaObj.nome,
                 matriculaSaida: saida,
                 colaboradorEntrada: entradaObj.nome,
@@ -1383,13 +1524,19 @@
 
             trocasTurno.push(troca);
             atualizarRegistrosTroca();
-            salvarDados();
+            
+            if (!modoDemonstracao) {
+                await salvarDadosDB();
+            } else {
+                salvarDados();
+            }
+            
             fecharTrocaTurno();
             mostrarAlerta('🔄 Troca registrada!', 'sucesso');
         }
 
         // Funções de ponto
-        function registrarPontoManual() {
+        async function registrarPontoManual() {
             if (colaboradores.length === 0) {
                 mostrarAlerta('❌ Sem colaboradores!', 'erro');
                 return;
@@ -1411,7 +1558,7 @@
             }
 
             const registro = {
-                id: Date.now(),
+                id: Date.now() + Math.random(),
                 matricula,
                 nome: colaborador.nome,
                 data: hoje,
@@ -1421,7 +1568,13 @@
 
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
-            salvarDados();
+            
+            if (!modoDemonstracao) {
+                await salvarDadosDB();
+            } else {
+                salvarDados();
+            }
+            
             mostrarAlerta(`✅ Ponto registrado!`, 'sucesso');
         }
 
@@ -1437,7 +1590,6 @@
                 elementos.webcamVideo.srcObject = streamWebcam;
                 elementos.webcamContainer.style.display = 'block';
                 
-                // Rola até a webcam
                 setTimeout(() => {
                     elementos.webcamContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
@@ -1446,7 +1598,7 @@
             }
         }
 
-        function capturarFoto() {
+        async function capturarFoto() {
             const matricula = prompt('Matrícula:');
             if (!matricula) return;
 
@@ -1463,7 +1615,7 @@
             }
 
             const registro = {
-                id: Date.now(),
+                id: Date.now() + Math.random(),
                 matricula,
                 nome: colaborador.nome,
                 data: hoje,
@@ -1473,7 +1625,13 @@
 
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
-            salvarDados();
+            
+            if (!modoDemonstracao) {
+                await salvarDadosDB();
+            } else {
+                salvarDados();
+            }
+            
             fecharWebcam();
             mostrarAlerta(`✅ Ponto registrado!`, 'sucesso');
         }
@@ -1598,7 +1756,7 @@
             if (adminLogado) elementos.tiOpcoes.classList.toggle('mostrar');
         }
 
-        function realizarBackup() {
+        async function realizarBackup() {
             if (!adminLogado) return;
             
             const backup = {
@@ -1606,26 +1764,29 @@
                 registrosPonto,
                 trocasTurno,
                 data: new Date().toLocaleString(),
-                versao: '3.7'
+                versao: '3.8'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `backup-ponto-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
             mostrarAlerta('💾 Backup OK!', 'sucesso');
         }
 
-        function salvarDadosAgora() {
+        async function salvarDadosAgora() {
             if (!adminLogado) return;
             
-            localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
-            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
-            localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
-            mostrarAlerta('💿 Salvou!', 'sucesso');
+            if (!modoDemonstracao) {
+                await salvarDadosDB();
+                mostrarAlerta('💿 Dados salvos no banco!', 'sucesso');
+            } else {
+                salvarDados();
+                mostrarAlerta('💿 Salvou!', 'sucesso');
+            }
         }
 
         function exportarPDF() {
@@ -1640,21 +1801,24 @@
             const w = window.open('', '_blank');
             w.document.write(`
                 <html>
-                    <head><title>Registros</title>
-                    <style>
-                        body { font-family: Arial; padding: 20px; }
-                        .reg { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
-                    </style>
+                    <head>
+                        <title>Registros - Ponto Digital</title>
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                            body { font-family: Arial; padding: 20px; }
+                            h1 { color: #667eea; }
+                            .reg { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+                        </style>
                     </head>
                     <body>
-                        <h1>Registros</h1>
+                        <h1>Registros de Ponto</h1>
                         ${registrosPonto.map(r => `
                             <div class="reg">
                                 <strong>${r.nome}</strong> - ${r.data} ${r.hora}<br>
                                 Tipo: ${r.tipo}
                             </div>
                         `).join('')}
-                        <div style="margin-top: 30px;">DESENVOLVIDO POR ALFA TECH.</div>
+                        <div style="margin-top: 30px; text-align: center;">DESENVOLVIDO POR ALFA TECH.</div>
                     </body>
                 </html>
             `);
@@ -1666,9 +1830,11 @@
         function salvarDados() {
             if (timeoutSalvar) clearTimeout(timeoutSalvar);
             timeoutSalvar = setTimeout(() => {
-                localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
-                localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
-                localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
+                if (modoDemonstracao) {
+                    localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
+                    localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+                    localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
+                }
             }, 500);
         }
 
@@ -1681,9 +1847,11 @@
         }
 
         // Event listeners
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('beforeunload', async () => {
             if (timeoutSalvar) clearTimeout(timeoutSalvar);
-            if (sistemaAtivado || modoDemonstracao) {
+            if (sistemaAtivado && !modoDemonstracao) {
+                await salvarDadosDB();
+            } else if (modoDemonstracao) {
                 localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
                 localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
                 localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Sistema de Ponto Digital v3.8 - ALFA TECH</title>
+    <title>Sistema de Ponto Digital v3.9 - ALFA TECH</title>
     <style>
         * {
             margin: 0;
@@ -794,9 +794,10 @@
             
             <div class="info-sistema">
                 <p>Sistema de Ponto Digital</p>
-                <p>Versão: 3.8</p>
+                <p>Versão: 3.9</p>
                 <p class="destaque">ALFA TECH</p>
                 <p style="margin-top: 10px;">Digite a chave de ativação fornecida pelo proprietário</p>
+                <p style="margin-top: 5px; font-size: 0.9em; color: #667eea;">A ativação é permanente e válida para todos os computadores</p>
             </div>
             
             <div class="aviso-ativacao">
@@ -993,16 +994,16 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v3.8 - ALFA TECH
-        // Agora com banco de dados IndexedDB e design 100% responsivo
+        // Sistema de Ponto Digital v3.9 - ALFA TECH
+        // Agora com ativação permanente em qualquer computador
 
         // Configuração
         const CHAVE_ATIVACAO = 'ALFA-TECH-2024-SISTEMA';
         const LIMITE_DEMO = 2;
         const DB_NAME = 'PontoDigitalDB';
-        const DB_VERSION = 1;
+        const DB_VERSION = 2; // Versão atualizada
         
-        let sistemaAtivado = localStorage.getItem('sistemaAtivado') === 'true';
+        let sistemaAtivado = false; // Não usar mais localStorage para ativação
         let modoDemonstracao = false;
         let adminLogado = false;
         let db = null;
@@ -1089,7 +1090,64 @@
                         storeTrocas.createIndex('data', 'data', { unique: false });
                     }
 
+                    // NOVO: Store para controle de ativação
+                    if (!db.objectStoreNames.contains('configuracao')) {
+                        const storeConfig = db.createObjectStore('configuracao', { keyPath: 'id' });
+                        storeConfig.createIndex('chave', 'chave', { unique: true });
+                    }
+
                     console.log('Banco de dados configurado!');
+                };
+            });
+        }
+
+        // Verificar se o sistema já está ativado no banco
+        async function verificarAtivacao() {
+            if (!db) await initDB();
+
+            return new Promise((resolve) => {
+                const transaction = db.transaction(['configuracao'], 'readonly');
+                const store = transaction.objectStore('configuracao');
+                const request = store.get('ativacao');
+
+                request.onsuccess = () => {
+                    const ativacao = request.result;
+                    sistemaAtivado = ativacao ? ativacao.valor === true : false;
+                    resolve(sistemaAtivado);
+                };
+
+                request.onerror = () => {
+                    sistemaAtivado = false;
+                    resolve(false);
+                };
+            });
+        }
+
+        // Salvar ativação no banco
+        async function salvarAtivacao() {
+            if (!db) await initDB();
+
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['configuracao'], 'readwrite');
+                const store = transaction.objectStore('configuracao');
+                
+                const ativacao = {
+                    id: 'ativacao',
+                    chave: 'ativacao',
+                    valor: true,
+                    dataAtivacao: new Date().toISOString()
+                };
+
+                const request = store.put(ativacao);
+
+                request.onsuccess = () => {
+                    console.log('Ativação salva no banco!');
+                    resolve();
+                };
+
+                request.onerror = (e) => {
+                    console.error('Erro ao salvar ativação:', e);
+                    reject(e);
                 };
             });
         }
@@ -1156,7 +1214,6 @@
                 // Salvar colaboradores
                 const storeColab = transaction.objectStore('colaboradores');
                 colaboradores.forEach(colab => {
-                    // Garantir que tenha ID
                     if (!colab.id) colab.id = Date.now() + Math.random();
                     storeColab.add(colab);
                 });
@@ -1192,7 +1249,11 @@
             try {
                 await initDB();
                 
-                if (sistemaAtivado) {
+                // Verifica se já está ativado no banco
+                const ativado = await verificarAtivacao();
+                
+                if (ativado) {
+                    sistemaAtivado = true;
                     elementos.welcomeScreen.style.display = 'none';
                     elementos.sistemaContainer.style.display = 'block';
                     await carregarDadosDB();
@@ -1247,9 +1308,11 @@
             const chave = elementos.chaveAtivacao.value.trim();
             
             if (chave === CHAVE_ATIVACAO) {
+                // Salva ativação no banco de dados (permanente em qualquer computador)
+                await salvarAtivacao();
+                
                 sistemaAtivado = true;
                 modoDemonstracao = false;
-                localStorage.setItem('sistemaAtivado', 'true');
                 
                 elementos.ativacaoOverlay.classList.remove('visible');
                 elementos.sistemaContainer.style.display = 'block';
@@ -1764,7 +1827,7 @@
                 registrosPonto,
                 trocasTurno,
                 data: new Date().toLocaleString(),
-                versao: '3.8'
+                versao: '3.9'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });

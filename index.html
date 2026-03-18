@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Sistema de Ponto Digital v3.4 - ALFA TECH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Sistema de Ponto Digital v3.5 - ALFA TECH</title>
     <style>
         * {
             margin: 0;
@@ -20,14 +20,33 @@
             flex-direction: column;
         }
 
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 15px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 20px;
             flex: 1;
+            animation: fadeIn 0.5s ease;
+            backdrop-filter: blur(10px);
         }
 
         @media (min-width: 768px) {
@@ -41,6 +60,10 @@
             text-align: center;
             margin-bottom: 5px;
             font-size: 1.8em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         @media (min-width: 768px) {
@@ -49,37 +72,8 @@
             }
         }
 
-        /* Modo Demonstração Banner */
-        .demo-banner {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: white;
-            text-align: center;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            font-size: 0.9em;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-
-        .demo-limit {
-            background: #fff3cd;
-            color: #856404;
-            padding: 8px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9em;
-            text-align: center;
-        }
-
-        /* Tela de Ativação */
-        .ativacao-overlay {
+        /* Tela de Boas-vindas */
+        .welcome-screen {
             position: fixed;
             top: 0;
             left: 0;
@@ -91,111 +85,180 @@
             align-items: center;
             z-index: 2000;
             padding: 15px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .welcome-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .welcome-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .welcome-container h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
+
+        .welcome-container p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .welcome-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-welcome {
+            padding: 18px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-welcome:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-ativar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-demo {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .info-dev {
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        /* Tela de Ativação */
+        .ativacao-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1900;
+            padding: 15px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .ativacao-overlay.visible {
+            display: flex;
         }
 
         .ativacao-container {
-            background: white;
-            padding: 25px 20px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             width: 100%;
             max-width: 400px;
-        }
-
-        @media (min-width: 768px) {
-            .ativacao-container {
-                padding: 40px;
-            }
+            animation: fadeIn 0.5s ease;
         }
 
         .ativacao-container h2 {
             color: #333;
             margin-bottom: 20px;
             text-align: center;
-            font-size: 1.8em;
-        }
-
-        .ativacao-container h3 {
-            color: #666;
-            margin: 20px 0 10px;
-            font-size: 1.2em;
-        }
-
-        .codigo-ativacao {
-            background: #f0f4f8;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            font-family: monospace;
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #333;
-            margin: 15px 0;
-            letter-spacing: 2px;
-            word-break: break-all;
-        }
-
-        .info-sistema {
-            background: #e8f4fd;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-size: 0.9em;
-            color: #333;
-        }
-
-        .info-sistema p {
-            margin: 5px 0;
-        }
-
-        .info-demo {
-            background: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 0.9em;
-            text-align: center;
-        }
-
-        .ativacao-container .form-grupo {
-            margin-bottom: 20px;
+            font-size: 2em;
         }
 
         .ativacao-container input {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
+            border-radius: 15px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 3px;
         }
 
         .ativacao-container input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
 
         .ativacao-container button {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            padding: 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
             margin-bottom: 10px;
         }
 
-        .ativacao-container button:hover {
-            transform: translateY(-2px);
+        .btn-ativar-sistema {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
         }
 
-        .btn-secundario {
-            background: #f5576c !important;
+        .btn-voltar {
+            background: #f5576c;
+            color: white;
+        }
+
+        .chave-exemplo {
+            background: #f0f4f8;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .chave-exemplo p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .chave-demo {
+            font-family: monospace;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 3px;
+            word-break: break-all;
         }
 
         /* Tela de Login do Admin */
@@ -209,7 +272,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1900;
+            z-index: 1800;
             padding: 15px;
         }
 
@@ -218,25 +281,20 @@
         }
 
         .login-container {
-            background: white;
-            padding: 25px 20px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             width: 100%;
             max-width: 400px;
-        }
-
-        @media (min-width: 768px) {
-            .login-container {
-                padding: 40px;
-            }
         }
 
         .login-container h2 {
             color: #333;
             margin-bottom: 30px;
             text-align: center;
-            font-size: 1.8em;
+            font-size: 2em;
         }
 
         .login-container .form-grupo {
@@ -245,41 +303,34 @@
 
         .login-container input {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 1em;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .login-container input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
 
         .login-container button {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            padding: 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
             margin-bottom: 10px;
         }
 
-        .login-container button:hover {
-            transform: translateY(-2px);
-        }
-
-        .login-container .erro {
-            color: #f5576c;
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 500;
+        .btn-login {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
         }
 
         /* Cabeçalho do sistema */
@@ -287,10 +338,11 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            padding: 20px;
+            border-radius: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
         @media (min-width: 768px) {
@@ -298,22 +350,18 @@
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
-                padding: 15px 20px;
+                padding: 15px 25px;
             }
         }
 
         .sistema-titulo {
-            font-size: 1.3em;
+            font-size: 1.4em;
             font-weight: bold;
-            color: #333;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-align: center;
-        }
-
-        @media (min-width: 768px) {
-            .sistema-titulo {
-                font-size: 1.5em;
-                text-align: left;
-            }
         }
 
         .admin-controls {
@@ -329,10 +377,10 @@
         }
 
         .btn-admin-login, .btn-admin-logout {
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 50px;
-            font-size: 0.9em;
+            border-radius: 60px;
+            font-size: 0.95em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -341,12 +389,6 @@
             justify-content: center;
             gap: 8px;
             width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .btn-admin-login, .btn-admin-logout {
-                width: auto;
-            }
         }
 
         .btn-admin-login {
@@ -362,16 +404,16 @@
         .botoes-principais {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 25px;
             justify-content: center;
         }
 
         button {
-            padding: 12px 20px;
+            padding: 14px 22px;
             border: none;
-            border-radius: 50px;
-            font-size: 0.9em;
+            border-radius: 60px;
+            font-size: 0.95em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -379,32 +421,26 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             flex: 1 1 auto;
-            min-width: 140px;
+            min-width: 150px;
         }
 
         @media (min-width: 768px) {
             button {
-                padding: 12px 24px;
+                padding: 14px 28px;
                 font-size: 1em;
-                min-width: 160px;
+                min-width: 170px;
             }
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
         button:active {
             transform: translateY(0);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
         }
 
         .btn-colaborador {
@@ -426,7 +462,7 @@
             background: linear-gradient(135deg, #43e97b, #38f9d7);
             color: white;
             font-size: 1.1em;
-            padding: 15px 25px;
+            padding: 16px 28px;
         }
 
         .btn-ti {
@@ -435,51 +471,36 @@
         }
 
         .secao {
-            background-color: #f8f9fa;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
 
-        @media (min-width: 768px) {
-            .secao {
-                padding: 20px;
-                margin-bottom: 30px;
-            }
+        .secao:hover {
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.1);
         }
 
         .secao-titulo {
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-size: 1.3em;
             border-left: 5px solid #667eea;
-            padding-left: 12px;
-        }
-
-        @media (min-width: 768px) {
-            .secao-titulo {
-                font-size: 1.5em;
-                margin-bottom: 20px;
-            }
+            padding-left: 15px;
         }
 
         .form-colaborador {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         @media (min-width: 600px) {
             .form-colaborador {
                 grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .form-colaborador {
-                grid-template-columns: repeat(4, 1fr);
             }
         }
 
@@ -489,102 +510,108 @@
         }
 
         .form-grupo label {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #555;
             font-weight: 500;
-            font-size: 0.9em;
+            font-size: 0.95em;
         }
 
         .form-grupo input, .form-grupo select {
-            padding: 12px;
+            padding: 14px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 0.95em;
-            transition: border-color 0.3s ease;
+            border-radius: 15px;
+            font-size: 1em;
+            transition: all 0.3s ease;
             width: 100%;
+            background: white;
         }
 
         .form-grupo input:focus, .form-grupo select:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .tabela-container {
             overflow-x: auto;
-            margin-top: 15px;
+            margin-top: 20px;
+            border-radius: 15px;
             -webkit-overflow-scrolling: touch;
         }
 
         .tabela-colaboradores {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 5px;
             min-width: 600px;
         }
 
         .tabela-colaboradores th {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 12px 8px;
+            padding: 15px 10px;
             font-weight: 600;
-            font-size: 0.9em;
+            font-size: 0.95em;
             white-space: nowrap;
         }
 
+        .tabela-colaboradores th:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        .tabela-colaboradores th:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
         .tabela-colaboradores td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 10px;
+            background: white;
             text-align: center;
-            font-size: 0.9em;
+            font-size: 0.95em;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .acoes-colaborador {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             justify-content: center;
-            flex-wrap: wrap;
         }
 
         .acoes-colaborador button {
-            padding: 6px 12px;
-            font-size: 0.85em;
+            padding: 8px 15px;
+            font-size: 0.9em;
             min-width: auto;
         }
 
         #webcam-container {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         #webcam-video {
             width: 100%;
             max-width: 100%;
             height: auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
 
         @media (min-width: 768px) {
             #webcam-video {
-                max-width: 500px;
+                max-width: 600px;
             }
         }
 
         .ti-opcoes {
             display: none;
             grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         @media (min-width: 600px) {
             .ti-opcoes {
                 grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .ti-opcoes {
-                grid-template-columns: repeat(4, 1fr);
             }
         }
 
@@ -596,54 +623,54 @@
             background: white;
             color: #333;
             border: 2px solid #fa709a;
-            padding: 12px;
-            font-size: 0.9em;
+            padding: 15px;
+            font-size: 0.95em;
         }
 
         .registros-ponto {
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
+            padding-right: 5px;
             -webkit-overflow-scrolling: touch;
-        }
-
-        @media (min-width: 768px) {
-            .registros-ponto {
-                max-height: 400px;
-            }
         }
 
         .registro-item {
             background: white;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            border-left: 4px solid #4facfe;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            font-size: 0.9em;
-            word-break: break-word;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 15px;
+            border-left: 5px solid #4facfe;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .registro-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
         .alerta {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            left: 10px;
-            padding: 15px;
-            border-radius: 10px;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 18px;
+            border-radius: 60px;
             color: white;
             font-weight: 600;
             z-index: 2100;
             animation: slideIn 0.3s ease;
-            font-size: 0.95em;
+            font-size: 1em;
             text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
         }
 
         @media (min-width: 768px) {
             .alerta {
-                top: 20px;
-                right: 20px;
                 left: auto;
-                min-width: 300px;
+                min-width: 350px;
                 text-align: left;
             }
         }
@@ -652,12 +679,6 @@
         .alerta.erro { background: linear-gradient(135deg, #fa709a, #f5576c); }
         .alerta.info { background: linear-gradient(135deg, #4facfe, #00f2fe); }
 
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Área restrita para admin */
         .admin-only {
             display: none;
         }
@@ -668,81 +689,100 @@
 
         .botoes-rodape {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
             margin-top: 20px;
             flex-wrap: wrap;
         }
 
-        /* Rodapé */
+        .demo-banner {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 60px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1em;
+            animation: pulse 2s infinite;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+        }
+
         .footer {
             text-align: center;
             color: white;
-            padding: 20px 10px 10px;
-            font-size: 0.9em;
+            padding: 25px 10px 10px;
+            font-size: 1em;
             font-weight: 500;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
 
         .footer span {
             background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 50px;
-            backdrop-filter: blur(5px);
+            padding: 8px 25px;
+            border-radius: 60px;
+            backdrop-filter: blur(10px);
+            display: inline-block;
         }
     </style>
 </head>
 <body>
+    <!-- Tela de Boas-vindas -->
+    <div id="welcome-screen" class="welcome-screen">
+        <div class="welcome-container">
+            <div class="welcome-icon">📱</div>
+            <h2>Sistema de Ponto Digital</h2>
+            <p>Bem-vindo ao sistema mais completo e intuitivo para gestão de ponto eletrônico.</p>
+            
+            <div class="welcome-buttons">
+                <button class="btn-welcome btn-ativar" onclick="mostrarTelaAtivacao()">
+                    🔐 Ativar Sistema
+                </button>
+                <button class="btn-welcome btn-demo" onclick="entrarModoDemonstracao()">
+                    ⚡ Modo Demonstração
+                </button>
+            </div>
+            
+            <div class="info-dev">
+                DESENVOLVIDO POR ALFA TECH.
+            </div>
+        </div>
+    </div>
+
     <!-- Tela de Ativação -->
     <div id="ativacao-overlay" class="ativacao-overlay">
         <div class="ativacao-container">
-            <h2>🔐 Ativação do Sistema</h2>
+            <h2>🔐 Ativação</h2>
             
-            <div class="info-sistema">
-                <p><strong>📱 Sistema de Ponto Digital</strong></p>
-                <p>Versão: 3.4</p>
-                <p>Desenvolvido por: ALFA TECH</p>
-            </div>
-
-            <div class="info-demo">
-                ⚡ Modo Demonstração disponível!<br>
-                Teste com até 2 colaboradores.
-            </div>
-
-            <h3>📋 Código de Ativação:</h3>
-            <div id="codigo-ativacao" class="codigo-ativacao">CARREGANDO...</div>
-            
-            <p style="text-align: center; margin: 10px 0; color: #666;">Use este código para ativar o sistema completo</p>
-            
-            <h3>✅ Ativar Sistema:</h3>
-            <div class="form-grupo">
-                <input type="text" id="codigo-digitado" placeholder="Digite o código de ativação">
+            <div class="chave-exemplo">
+                <p>Chave de ativação padrão:</p>
+                <div class="chave-demo">ALFA-2024-TECH</div>
             </div>
             
-            <button onclick="validarAtivacao()">🔓 Ativar Sistema</button>
-            <button class="btn-secundario" onclick="entrarModoDemonstracao()">⚡ Entrar em Modo Demonstração</button>
+            <input type="text" id="chave-ativacao" placeholder="Digite sua chave de ativação" maxlength="20">
             
-            <div style="margin-top: 20px; text-align: center; color: #999; font-size: 0.8em;">
-                <p>Modo demonstração: limite de 2 colaboradores</p>
-            </div>
+            <button class="btn-ativar-sistema" onclick="validarAtivacao()">
+                ✅ Ativar Sistema
+            </button>
+            <button class="btn-voltar" onclick="voltarBoasVindas()">
+                ↩️ Voltar
+            </button>
         </div>
     </div>
 
     <!-- Tela de Login do Admin -->
     <div id="login-overlay" class="login-overlay">
         <div class="login-container">
-            <h2>🔐 Área do Administrador</h2>
+            <h2>👨‍💼 Admin</h2>
             <div class="form-grupo">
-                <label for="login-usuario">Usuário:</label>
-                <input type="text" id="login-usuario" placeholder="Digite seu usuário">
+                <input type="text" id="login-usuario" placeholder="Usuário">
             </div>
             <div class="form-grupo">
-                <label for="login-senha">Senha:</label>
-                <input type="password" id="login-senha" placeholder="Digite sua senha">
+                <input type="password" id="login-senha" placeholder="Senha">
             </div>
-            <button onclick="fazerLoginAdmin()">Entrar como Admin</button>
-            <button onclick="fecharLogin()" style="background: #f5576c;">Cancelar</button>
-            <div id="login-erro" class="erro"></div>
+            <button class="btn-login" onclick="fazerLoginAdmin()">Entrar</button>
+            <button onclick="fecharLogin()" style="background: #f5576c; color: white;">Cancelar</button>
+            <div id="login-erro" style="color: #f5576c; text-align: center; margin-top: 15px;"></div>
         </div>
     </div>
 
@@ -755,82 +795,74 @@
         <!-- Cabeçalho do sistema -->
         <div class="sistema-header">
             <div class="sistema-titulo">
-                📋 SISTEMA DE PONTO DIGITAL
+                📋 PONTO DIGITAL
             </div>
             <div class="admin-controls">
                 <button id="btn-login-admin" class="btn-admin-login" onclick="mostrarLoginAdmin()">
                     👨‍💼 Admin
                 </button>
                 <button id="btn-logout-admin" class="btn-admin-logout" style="display: none;" onclick="logoutAdmin()">
-                    Sair do Admin
+                    Sair
                 </button>
             </div>
         </div>
 
-        <!-- Botões para USUÁRIO COMUM (sempre visíveis) -->
-        <div id="user-botoes" class="botoes-principais">
+        <!-- Botões principais -->
+        <div class="botoes-principais">
             <button class="btn-ponto" onclick="registrarPontoManual()">
-                📝 Registrar Ponto Manual
+                📝 Ponto Manual
             </button>
             <button class="btn-reconhecimento" onclick="iniciarReconhecimentoFacial()">
-                😀 Reconhecimento Facial
+                😀 Facial
             </button>
         </div>
 
-        <!-- Botões para ADMIN (só aparecem quando logado) -->
+        <!-- Botões Admin -->
         <div id="admin-botoes" class="botoes-principais admin-only">
             <button class="btn-colaborador" onclick="mostrarFormAdicionar()">
-                ➕ Adicionar Colaborador
+                ➕ Adicionar
             </button>
             <button class="btn-colaborador" onclick="prepararEdicao()">
-                ✏️ Editar Colaborador
+                ✏️ Editar
             </button>
             <button class="btn-colaborador" onclick="confirmarExclusao()">
-                ❌ Excluir Colaborador
+                ❌ Excluir
             </button>
             <button class="btn-turno" onclick="mostrarTrocaTurno()">
-                🔄 Troca de Turnos
+                🔄 Turnos
             </button>
             <button class="btn-ti" onclick="toggleTiOpcoes()">
-                👨‍💻 Profissional T.I
+                👨‍💻 T.I
             </button>
         </div>
 
-        <!-- Área de opções do T.I (Só admin vê) -->
+        <!-- Opções T.I -->
         <div id="ti-opcoes" class="ti-opcoes admin-only">
-            <button class="btn-ti-opcao" onclick="realizarBackup()">
-                💾 Backup
-            </button>
-            <button class="btn-ti-opcao" onclick="salvarDadosAgora()">
-                💿 Salvar Agora
-            </button>
-            <button class="btn-ti-opcao" onclick="exportarPDF()">
-                📄 Exportar PDF
-            </button>
-            <button class="btn-ti-opcao" onclick="imprimirRegistros()">
-                🖨️ Imprimir Registros
-            </button>
+            <button class="btn-ti-opcao" onclick="realizarBackup()">💾 Backup</button>
+            <button class="btn-ti-opcao" onclick="salvarDadosAgora()">💿 Salvar</button>
+            <button class="btn-ti-opcao" onclick="exportarPDF()">📄 PDF</button>
+            <button class="btn-ti-opcao" onclick="imprimirRegistros()">🖨️ Imprimir</button>
         </div>
 
-        <!-- Formulário de Colaborador (Só admin vê) -->
+        <!-- Formulário Colaborador -->
         <div id="form-colaborador" class="secao admin-only" style="display: none;">
             <h3 class="secao-titulo" id="form-titulo">➕ Adicionar Colaborador</h3>
             <div class="form-colaborador">
                 <div class="form-grupo">
-                    <label for="nome">Nome completo:</label>
-                    <input type="text" id="nome" placeholder="Digite o nome">
+                    <label>Nome:</label>
+                    <input type="text" id="nome" placeholder="Nome completo">
                 </div>
                 <div class="form-grupo">
-                    <label for="matricula">Matrícula:</label>
-                    <input type="text" id="matricula" placeholder="Digite a matrícula">
+                    <label>Matrícula:</label>
+                    <input type="text" id="matricula" placeholder="Nº matrícula">
                 </div>
                 <div class="form-grupo">
-                    <label for="cargo">Cargo:</label>
-                    <input type="text" id="cargo" placeholder="Digite o cargo">
+                    <label>Cargo:</label>
+                    <input type="text" id="cargo" placeholder="Cargo">
                 </div>
                 <div class="form-grupo">
-                    <label for="departamento">Departamento:</label>
-                    <input type="text" id="departamento" placeholder="Digite o departamento">
+                    <label>Departamento:</label>
+                    <input type="text" id="departamento" placeholder="Departamento">
                 </div>
             </div>
             <div class="botoes-rodape">
@@ -839,52 +871,48 @@
             </div>
         </div>
 
-        <!-- Troca de Turnos (Só admin vê) -->
+        <!-- Troca de Turnos -->
         <div id="troca-turno" class="secao admin-only" style="display: none;">
             <h3 class="secao-titulo">🔄 Troca de Turnos</h3>
             <div class="form-colaborador">
                 <div class="form-grupo">
-                    <label for="colaborador-saida">Colaborador substituído:</label>
-                    <select id="colaborador-saida">
-                        <option value="">Selecione um colaborador</option>
-                    </select>
+                    <label>Substituído:</label>
+                    <select id="colaborador-saida"></select>
                 </div>
                 <div class="form-grupo">
-                    <label for="colaborador-entrada">Colaborador substituto:</label>
-                    <select id="colaborador-entrada">
-                        <option value="">Selecione um colaborador</option>
-                    </select>
+                    <label>Substituto:</label>
+                    <select id="colaborador-entrada"></select>
                 </div>
                 <div class="form-grupo">
-                    <label for="data-turno">Data da troca:</label>
+                    <label>Data:</label>
                     <input type="date" id="data-turno">
                 </div>
                 <div class="form-grupo">
-                    <label for="motivo-turno">Motivo:</label>
-                    <input type="text" id="motivo-turno" placeholder="Digite o motivo da troca">
+                    <label>Motivo:</label>
+                    <input type="text" id="motivo-turno" placeholder="Motivo da troca">
                 </div>
             </div>
             <div class="botoes-rodape">
-                <button class="btn-turno" onclick="registrarTrocaTurno()">✅ Confirmar Troca</button>
+                <button class="btn-turno" onclick="registrarTrocaTurno()">✅ Confirmar</button>
                 <button class="btn-ti" onclick="fecharTrocaTurno()">❌ Cancelar</button>
             </div>
         </div>
 
-        <!-- Webcam (Todos veem) -->
+        <!-- Webcam -->
         <div id="webcam-container" class="secao" style="display: none;">
             <h3 class="secao-titulo">📸 Reconhecimento Facial</h3>
             <video id="webcam-video" autoplay playsinline></video>
             <div class="botoes-rodape">
-                <button class="btn-reconhecimento" onclick="capturarFoto()">📸 Capturar e Registrar Ponto</button>
+                <button class="btn-reconhecimento" onclick="capturarFoto()">📸 Capturar</button>
                 <button class="btn-ti" onclick="fecharWebcam()">❌ Fechar</button>
             </div>
         </div>
 
-        <!-- Lista de Colaboradores -->
+        <!-- Tabela Colaboradores -->
         <div class="secao">
-            <h3 class="secao-titulo">👥 Colaboradores Cadastrados</h3>
-            <div id="demo-limit-message" class="demo-limit" style="display: none;">
-                ⚠️ Modo Demonstração: Você atingiu o limite de 2 colaboradores. Ative o sistema para adicionar mais.
+            <h3 class="secao-titulo">👥 Colaboradores</h3>
+            <div id="demo-limit-message" class="demo-banner" style="display: none; margin-bottom: 15px;">
+                ⚠️ Limite de 2 colaboradores no modo demonstração
             </div>
             <div class="tabela-container">
                 <table class="tabela-colaboradores">
@@ -904,13 +932,13 @@
 
         <!-- Registros de Ponto -->
         <div class="secao">
-            <h3 class="secao-titulo">📊 Registros de Ponto</h3>
+            <h3 class="secao-titulo">📊 Registros</h3>
             <div id="registros-ponto" class="registros-ponto"></div>
         </div>
 
-        <!-- Troca de Turnos Registradas (Só admin vê) -->
+        <!-- Troca de Turnos Registradas -->
         <div id="registros-troca-container" class="secao admin-only">
-            <h3 class="secao-titulo">🔄 Troca de Turnos Registradas</h3>
+            <h3 class="secao-titulo">🔄 Troca de Turnos</h3>
             <div id="registros-troca" class="registros-ponto"></div>
         </div>
     </div>
@@ -921,37 +949,29 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v3.4 - ALFA TECH
+        // Sistema de Ponto Digital v3.5 - ALFA TECH
 
-        // Configuração de ativação
-        const SISTEMA_ID = 'PONTO-DIGITAL-' + new Date().getFullYear();
+        // Configuração
+        const CHAVE_ATIVACAO_PADRAO = 'ALFA-2024-TECH';
         const LIMITE_DEMO = 2;
         
         let sistemaAtivado = localStorage.getItem('sistemaAtivado') === 'true';
-        let codigoAtivacao = localStorage.getItem('codigoAtivacao') || gerarCodigoAtivacao();
         let modoDemonstracao = false;
+        let adminLogado = false;
 
-        // Credenciais do admin (não ficam fixas nos inputs)
-        const ADMIN = {
-            usuario: 'admin',
-            senha: 'admin123'
-        };
-
-        // Estado da aplicação
+        // Dados
         let colaboradores = [];
         let registrosPonto = [];
         let trocasTurno = [];
         let colaboradorEditando = null;
         let streamWebcam = null;
         let timeoutSalvar = null;
-        let precisaSalvar = false;
-        let adminLogado = false;
 
-        // Cache de elementos DOM
+        // Elementos DOM
         const elementos = {
+            welcomeScreen: document.getElementById('welcome-screen'),
             ativacaoOverlay: document.getElementById('ativacao-overlay'),
-            codigoAtivacao: document.getElementById('codigo-ativacao'),
-            codigoDigitado: document.getElementById('codigo-digitado'),
+            chaveAtivacao: document.getElementById('chave-ativacao'),
             loginOverlay: document.getElementById('login-overlay'),
             loginUsuario: document.getElementById('login-usuario'),
             loginSenha: document.getElementById('login-senha'),
@@ -983,25 +1003,20 @@
             demoLimitMessage: document.getElementById('demo-limit-message')
         };
 
-        // Função para gerar código de ativação
-        function gerarCodigoAtivacao() {
-            const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let codigo = '';
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
-                    codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-                }
-                if (i < 3) codigo += '-';
+        // Inicialização
+        function inicializar() {
+            if (sistemaAtivado) {
+                elementos.welcomeScreen.style.display = 'none';
+                elementos.sistemaContainer.style.display = 'block';
+                carregarDados();
+            } else {
+                elementos.welcomeScreen.style.display = 'flex';
+                elementos.sistemaContainer.style.display = 'none';
             }
-            return codigo;
         }
 
-        // Função para entrar em modo demonstração
-        function entrarModoDemonstracao() {
-            modoDemonstracao = true;
-            sistemaAtivado = false;
-            
-            // Carrega dados existentes ou inicia vazio
+        // Carregar dados
+        function carregarDados() {
             try {
                 colaboradores = JSON.parse(localStorage.getItem('colaboradores')) || [];
                 registrosPonto = JSON.parse(localStorage.getItem('registrosPonto')) || [];
@@ -1011,46 +1026,66 @@
                 registrosPonto = [];
                 trocasTurno = [];
             }
-            
-            elementos.ativacaoOverlay.style.display = 'none';
-            elementos.sistemaContainer.style.display = 'block';
-            elementos.demoBanner.style.display = 'block';
-            
-            // Se já tiver mais que 2 colaboradores, limpa até o limite
-            if (colaboradores.length > LIMITE_DEMO) {
+
+            if (modoDemonstracao && colaboradores.length > LIMITE_DEMO) {
                 colaboradores = colaboradores.slice(0, LIMITE_DEMO);
-                mostrarAlerta('⚠️ Modo demonstração: limitado a 2 colaboradores', 'info');
             }
-            
+
+            atualizarTudo();
+        }
+
+        // Atualizar interface
+        function atualizarTudo() {
             atualizarTabelaColaboradores();
             atualizarRegistrosPonto();
             atualizarRegistrosTroca();
-            
-            mostrarAlerta('⚡ Modo demonstração ativado!', 'info');
+            verificarLimiteColaboradores();
         }
 
-        // Função para validar ativação
+        // Tela de ativação
+        function mostrarTelaAtivacao() {
+            elementos.welcomeScreen.style.display = 'none';
+            elementos.ativacaoOverlay.classList.add('visible');
+        }
+
+        function voltarBoasVindas() {
+            elementos.ativacaoOverlay.classList.remove('visible');
+            elementos.welcomeScreen.style.display = 'flex';
+        }
+
         function validarAtivacao() {
-            const codigoDigitado = elementos.codigoDigitado.value.trim().toUpperCase();
+            const chave = elementos.chaveAtivacao.value.trim();
             
-            if (codigoDigitado === codigoAtivacao) {
+            if (chave === CHAVE_ATIVACAO_PADRAO) {
                 sistemaAtivado = true;
                 modoDemonstracao = false;
                 localStorage.setItem('sistemaAtivado', 'true');
-                localStorage.setItem('codigoAtivacao', codigoAtivacao);
                 
-                elementos.ativacaoOverlay.style.display = 'none';
+                elementos.ativacaoOverlay.classList.remove('visible');
                 elementos.sistemaContainer.style.display = 'block';
                 elementos.demoBanner.style.display = 'none';
                 
-                inicializar();
+                carregarDados();
                 mostrarAlerta('✅ Sistema ativado com sucesso!', 'sucesso');
             } else {
-                mostrarAlerta('❌ Código de ativação inválido!', 'erro');
+                mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
             }
         }
 
-        // Função para verificar limite de colaboradores
+        // Modo demonstração
+        function entrarModoDemonstracao() {
+            modoDemonstracao = true;
+            sistemaAtivado = false;
+            
+            elementos.welcomeScreen.style.display = 'none';
+            elementos.sistemaContainer.style.display = 'block';
+            elementos.demoBanner.style.display = 'block';
+            
+            carregarDados();
+            mostrarAlerta('⚡ Modo demonstração ativado!', 'info');
+        }
+
+        // Verificar limite
         function verificarLimiteColaboradores() {
             if (modoDemonstracao && colaboradores.length >= LIMITE_DEMO) {
                 elementos.demoLimitMessage.style.display = 'block';
@@ -1060,27 +1095,23 @@
             return false;
         }
 
-        // Funções de login do admin
+        // Login admin
         function mostrarLoginAdmin() {
-            if (!sistemaAtivado && !modoDemonstracao) {
-                mostrarAlerta('❌ Ative o sistema primeiro!', 'erro');
-                return;
-            }
             elementos.loginUsuario.value = '';
             elementos.loginSenha.value = '';
+            elementos.loginErro.textContent = '';
             elementos.loginOverlay.classList.add('visible');
         }
 
         function fecharLogin() {
             elementos.loginOverlay.classList.remove('visible');
-            elementos.loginErro.textContent = '';
         }
 
         function fazerLoginAdmin() {
             const usuario = elementos.loginUsuario.value;
             const senha = elementos.loginSenha.value;
 
-            if (usuario === ADMIN.usuario && senha === ADMIN.senha) {
+            if (usuario === 'admin' && senha === 'admin123') {
                 adminLogado = true;
                 
                 elementos.btnLoginAdmin.style.display = 'none';
@@ -1092,7 +1123,7 @@
                 fecharLogin();
                 atualizarTabelaColaboradores();
                 
-                mostrarAlerta('✅ Modo administrador ativado!', 'sucesso');
+                mostrarAlerta('✅ Modo admin ativado!', 'sucesso');
             } else {
                 elementos.loginErro.textContent = 'Usuário ou senha inválidos!';
             }
@@ -1112,154 +1143,7 @@
             elementos.tiOpcoes.classList.remove('mostrar');
             
             atualizarTabelaColaboradores();
-            
-            mostrarAlerta('👤 Modo usuário comum ativado', 'info');
-        }
-
-        // Inicialização
-        function inicializar() {
-            if (!sistemaAtivado && !modoDemonstracao) {
-                elementos.ativacaoOverlay.style.display = 'flex';
-                elementos.sistemaContainer.style.display = 'none';
-                elementos.codigoAtivacao.textContent = codigoAtivacao;
-                return;
-            }
-
-            elementos.ativacaoOverlay.style.display = 'none';
-            elementos.sistemaContainer.style.display = 'block';
-            
-            if (modoDemonstracao) {
-                elementos.demoBanner.style.display = 'block';
-            } else {
-                elementos.demoBanner.style.display = 'none';
-            }
-            
-            try {
-                colaboradores = JSON.parse(localStorage.getItem('colaboradores')) || [];
-                registrosPonto = JSON.parse(localStorage.getItem('registrosPonto')) || [];
-                trocasTurno = JSON.parse(localStorage.getItem('trocasTurno')) || [];
-            } catch (e) {
-                colaboradores = [];
-                registrosPonto = [];
-                trocasTurno = [];
-            }
-
-            if (modoDemonstracao && colaboradores.length > LIMITE_DEMO) {
-                colaboradores = colaboradores.slice(0, LIMITE_DEMO);
-            }
-
-            atualizarTabelaColaboradores();
-            atualizarRegistrosPonto();
-            atualizarRegistrosTroca();
-            verificarLimiteColaboradores();
-        }
-
-        // Função para salvar dados
-        function salvarDados() {
-            if (timeoutSalvar) {
-                clearTimeout(timeoutSalvar);
-            }
-            
-            precisaSalvar = true;
-            
-            timeoutSalvar = setTimeout(() => {
-                if (precisaSalvar) {
-                    localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
-                    localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
-                    localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
-                    precisaSalvar = false;
-                }
-            }, 500);
-        }
-
-        function salvarDadosAgora() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
-            
-            if (timeoutSalvar) {
-                clearTimeout(timeoutSalvar);
-            }
-            
-            localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
-            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
-            localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
-            
-            mostrarAlerta('💾 Dados salvos com sucesso!', 'sucesso');
-            precisaSalvar = false;
-        }
-
-        function mostrarAlerta(mensagem, tipo) {
-            const alerta = document.createElement('div');
-            alerta.className = `alerta ${tipo}`;
-            alerta.textContent = mensagem;
-            document.body.appendChild(alerta);
-            
-            setTimeout(() => {
-                if (alerta.parentNode) {
-                    alerta.remove();
-                }
-            }, 2000);
-        }
-
-        // Função para atualizar tabela de colaboradores
-        function atualizarTabelaColaboradores() {
-            if (!elementos.tabelaColaboradores) return;
-            
-            if (colaboradores.length === 0) {
-                elementos.tabelaColaboradores.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Nenhum colaborador cadastrado</td></tr>';
-                return;
-            }
-
-            const fragment = document.createDocumentFragment();
-            
-            colaboradores.forEach((colaborador, index) => {
-                const tr = document.createElement('tr');
-                
-                if (adminLogado) {
-                    tr.innerHTML = `
-                        <td>${colaborador.nome}</td>
-                        <td>${colaborador.matricula}</td>
-                        <td>${colaborador.cargo}</td>
-                        <td>${colaborador.departamento}</td>
-                        <td class="acoes-colaborador">
-                            <button class="btn-colaborador" onclick="editarColaborador(${index})">✏️</button>
-                            <button class="btn-turno" onclick="excluirColaborador(${index})">❌</button>
-                        </td>
-                    `;
-                } else {
-                    tr.innerHTML = `
-                        <td>${colaborador.nome}</td>
-                        <td>${colaborador.matricula}</td>
-                        <td>${colaborador.cargo}</td>
-                        <td>${colaborador.departamento}</td>
-                    `;
-                }
-                
-                fragment.appendChild(tr);
-            });
-            
-            elementos.tabelaColaboradores.innerHTML = '';
-            elementos.tabelaColaboradores.appendChild(fragment);
-            
-            if (adminLogado) {
-                atualizarSelectsColaboradores();
-            }
-        }
-
-        function atualizarSelectsColaboradores() {
-            if (!elementos.colaboradorSaida || !elementos.colaboradorEntrada) return;
-            
-            const options = ['<option value="">Selecione um colaborador</option>'];
-            
-            colaboradores.forEach(colaborador => {
-                options.push(`<option value="${colaborador.matricula}">${colaborador.nome} - ${colaborador.matricula}</option>`);
-            });
-            
-            const optionsString = options.join('');
-            elementos.colaboradorSaida.innerHTML = optionsString;
-            elementos.colaboradorEntrada.innerHTML = optionsString;
+            mostrarAlerta('👤 Modo usuário ativado', 'info');
         }
 
         // Funções de colaborador
@@ -1270,17 +1154,25 @@
             }
             
             if (modoDemonstracao && colaboradores.length >= LIMITE_DEMO) {
-                mostrarAlerta(`⚠️ Modo demo: limite de ${LIMITE_DEMO} colaboradores`, 'erro');
+                mostrarAlerta(`⚠️ Limite de ${LIMITE_DEMO} colaboradores`, 'erro');
                 return;
             }
             
             elementos.formTitulo.textContent = '➕ Adicionar Colaborador';
+            limparFormColaborador();
+            colaboradorEditando = null;
+            elementos.formColaborador.style.display = 'block';
+        }
+
+        function limparFormColaborador() {
             elementos.nome.value = '';
             elementos.matricula.value = '';
             elementos.cargo.value = '';
             elementos.departamento.value = '';
-            colaboradorEditando = null;
-            elementos.formColaborador.style.display = 'block';
+        }
+
+        function fecharFormColaborador() {
+            elementos.formColaborador.style.display = 'none';
         }
 
         function prepararEdicao() {
@@ -1290,61 +1182,51 @@
             }
             
             if (colaboradores.length === 0) {
-                mostrarAlerta('❌ Nenhum colaborador para editar!', 'erro');
+                mostrarAlerta('❌ Nenhum colaborador!', 'erro');
                 return;
             }
-            mostrarAlerta('✏️ Clique no botão editar na tabela', 'info');
+            mostrarAlerta('✏️ Clique em editar na tabela', 'info');
         }
 
         function editarColaborador(index) {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
+            if (!adminLogado) return;
             
-            const colaborador = colaboradores[index];
+            const c = colaboradores[index];
             elementos.formTitulo.textContent = '✏️ Editar Colaborador';
-            elementos.nome.value = colaborador.nome;
-            elementos.matricula.value = colaborador.matricula;
-            elementos.cargo.value = colaborador.cargo;
-            elementos.departamento.value = colaborador.departamento;
+            elementos.nome.value = c.nome;
+            elementos.matricula.value = c.matricula;
+            elementos.cargo.value = c.cargo;
+            elementos.departamento.value = c.departamento;
             colaboradorEditando = index;
             elementos.formColaborador.style.display = 'block';
         }
 
         function salvarColaborador() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
-            
-            if (modoDemonstracao && colaboradores.length >= LIMITE_DEMO && colaboradorEditando === null) {
-                mostrarAlerta(`⚠️ Modo demo: limite de ${LIMITE_DEMO} colaboradores`, 'erro');
-                return;
-            }
-            
+            if (!adminLogado) return;
+
             const nome = elementos.nome.value.trim();
             const matricula = elementos.matricula.value.trim();
             const cargo = elementos.cargo.value.trim();
             const departamento = elementos.departamento.value.trim();
 
             if (!nome || !matricula || !cargo || !departamento) {
-                mostrarAlerta('❌ Preencha todos os campos!', 'erro');
+                mostrarAlerta('❌ Preencha tudo!', 'erro');
                 return;
             }
 
-            const novoColaborador = { nome, matricula, cargo, departamento };
+            if (!modoDemonstracao && colaboradores.some(c => c.matricula === matricula) && colaboradorEditando === null) {
+                mostrarAlerta('❌ Matrícula existe!', 'erro');
+                return;
+            }
+
+            const novo = { nome, matricula, cargo, departamento };
 
             if (colaboradorEditando !== null) {
-                colaboradores[colaboradorEditando] = novoColaborador;
-                mostrarAlerta('✏️ Colaborador editado!', 'sucesso');
+                colaboradores[colaboradorEditando] = novo;
+                mostrarAlerta('✏️ Editado!', 'sucesso');
             } else {
-                if (colaboradores.some(c => c.matricula === matricula)) {
-                    mostrarAlerta('❌ Matrícula já existe!', 'erro');
-                    return;
-                }
-                colaboradores.push(novoColaborador);
-                mostrarAlerta('➕ Colaborador adicionado!', 'sucesso');
+                colaboradores.push(novo);
+                mostrarAlerta('➕ Adicionado!', 'sucesso');
             }
 
             atualizarTabelaColaboradores();
@@ -1354,46 +1236,31 @@
         }
 
         function excluirColaborador(index) {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
+            if (!adminLogado) return;
             
-            if (confirm('Tem certeza que deseja excluir este colaborador?')) {
+            if (confirm('Confirmar exclusão?')) {
                 colaboradores.splice(index, 1);
                 atualizarTabelaColaboradores();
                 verificarLimiteColaboradores();
                 salvarDados();
-                mostrarAlerta('❌ Colaborador excluído!', 'sucesso');
+                mostrarAlerta('❌ Excluído!', 'sucesso');
             }
-        }
-
-        function fecharFormColaborador() {
-            elementos.formColaborador.style.display = 'none';
         }
 
         function confirmarExclusao() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
+            if (!adminLogado) return;
             
             if (colaboradores.length === 0) {
-                mostrarAlerta('❌ Nenhum colaborador para excluir!', 'erro');
+                mostrarAlerta('❌ Nenhum colaborador!', 'erro');
                 return;
             }
-            mostrarAlerta('❌ Clique no botão excluir na tabela', 'info');
+            mostrarAlerta('❌ Clique em excluir na tabela', 'info');
         }
 
         // Funções de troca de turno
         function mostrarTrocaTurno() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
-            
-            if (colaboradores.length < 2) {
-                mostrarAlerta('❌ É necessário ter pelo menos 2 colaboradores!', 'erro');
+            if (!adminLogado || colaboradores.length < 2) {
+                mostrarAlerta('❌ Necessário 2+ colaboradores', 'erro');
                 return;
             }
             elementos.dataTurno.value = new Date().toISOString().split('T')[0];
@@ -1405,35 +1272,32 @@
         }
 
         function registrarTrocaTurno() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
-            
-            const colaboradorSaida = elementos.colaboradorSaida.value;
-            const colaboradorEntrada = elementos.colaboradorEntrada.value;
+            if (!adminLogado) return;
+
+            const saida = elementos.colaboradorSaida.value;
+            const entrada = elementos.colaboradorEntrada.value;
             const data = elementos.dataTurno.value;
             const motivo = elementos.motivoTurno.value.trim();
 
-            if (!colaboradorSaida || !colaboradorEntrada || !data || !motivo) {
-                mostrarAlerta('❌ Preencha todos os campos!', 'erro');
+            if (!saida || !entrada || !data || !motivo) {
+                mostrarAlerta('❌ Preencha tudo!', 'erro');
                 return;
             }
 
-            if (colaboradorSaida === colaboradorEntrada) {
-                mostrarAlerta('❌ Colaboradores devem ser diferentes!', 'erro');
+            if (saida === entrada) {
+                mostrarAlerta('❌ Colaboradores diferentes!', 'erro');
                 return;
             }
 
-            const colaboradorSaidaObj = colaboradores.find(c => c.matricula === colaboradorSaida);
-            const colaboradorEntradaObj = colaboradores.find(c => c.matricula === colaboradorEntrada);
+            const saidaObj = colaboradores.find(c => c.matricula === saida);
+            const entradaObj = colaboradores.find(c => c.matricula === entrada);
 
             const troca = {
                 id: Date.now(),
-                colaboradorSaida: colaboradorSaidaObj.nome,
-                matriculaSaida: colaboradorSaida,
-                colaboradorEntrada: colaboradorEntradaObj.nome,
-                matriculaEntrada: colaboradorEntrada,
+                colaboradorSaida: saidaObj.nome,
+                matriculaSaida: saida,
+                colaboradorEntrada: entradaObj.nome,
+                matriculaEntrada: entrada,
                 data,
                 motivo,
                 timestamp: new Date().toLocaleString()
@@ -1448,253 +1312,294 @@
 
         // Funções de ponto
         function registrarPontoManual() {
-            if (!sistemaAtivado && !modoDemonstracao) {
-                mostrarAlerta('❌ Ative o sistema primeiro!', 'erro');
-                return;
-            }
-
             if (colaboradores.length === 0) {
-                mostrarAlerta('❌ Nenhum colaborador cadastrado!', 'erro');
+                mostrarAlerta('❌ Sem colaboradores!', 'erro');
                 return;
             }
 
-            const matricula = prompt('Digite sua matrícula:');
+            const matricula = prompt('Matrícula:');
             if (!matricula) return;
 
             const colaborador = colaboradores.find(c => c.matricula === matricula);
             if (!colaborador) {
-                mostrarAlerta('❌ Matrícula não encontrada!', 'erro');
+                mostrarAlerta('❌ Não encontrado!', 'erro');
                 return;
             }
 
             const hoje = new Date().toLocaleDateString('pt-BR');
             if (registrosPonto.some(r => r.matricula === matricula && r.data === hoje)) {
-                mostrarAlerta('❌ Ponto já registrado hoje!', 'erro');
+                mostrarAlerta('❌ Ponto já registrado!', 'erro');
                 return;
             }
 
             const registro = {
                 id: Date.now(),
-                matricula: colaborador.matricula,
+                matricula,
                 nome: colaborador.nome,
                 data: hoje,
                 hora: new Date().toLocaleTimeString('pt-BR'),
-                tipo: 'Manual',
-                timestamp: new Date().toLocaleString()
+                tipo: 'Manual'
             };
 
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
             salvarDados();
-            mostrarAlerta(`✅ Ponto registrado para ${colaborador.nome}!`, 'sucesso');
+            mostrarAlerta(`✅ Ponto registrado!`, 'sucesso');
         }
 
-        // Funções de webcam
+        // Webcam
         async function iniciarReconhecimentoFacial() {
-            if (!sistemaAtivado && !modoDemonstracao) {
-                mostrarAlerta('❌ Ative o sistema primeiro!', 'erro');
-                return;
-            }
-
             if (colaboradores.length === 0) {
-                mostrarAlerta('❌ Nenhum colaborador cadastrado!', 'erro');
+                mostrarAlerta('❌ Sem colaboradores!', 'erro');
                 return;
             }
 
             try {
-                streamWebcam = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: { ideal: 640 }, height: { ideal: 480 } } 
-                });
+                streamWebcam = await navigator.mediaDevices.getUserMedia({ video: true });
                 elementos.webcamVideo.srcObject = streamWebcam;
                 elementos.webcamContainer.style.display = 'block';
             } catch (error) {
-                mostrarAlerta('❌ Erro ao acessar webcam!', 'erro');
+                mostrarAlerta('❌ Erro na webcam!', 'erro');
             }
         }
 
         function capturarFoto() {
-            const matricula = prompt('Digite sua matrícula:');
+            const matricula = prompt('Matrícula:');
             if (!matricula) return;
 
             const colaborador = colaboradores.find(c => c.matricula === matricula);
             if (!colaborador) {
-                mostrarAlerta('❌ Matrícula não encontrada!', 'erro');
+                mostrarAlerta('❌ Não encontrado!', 'erro');
                 return;
             }
 
             const hoje = new Date().toLocaleDateString('pt-BR');
             if (registrosPonto.some(r => r.matricula === matricula && r.data === hoje)) {
-                mostrarAlerta('❌ Ponto já registrado hoje!', 'erro');
+                mostrarAlerta('❌ Ponto já registrado!', 'erro');
                 return;
             }
 
             const registro = {
                 id: Date.now(),
-                matricula: colaborador.matricula,
+                matricula,
                 nome: colaborador.nome,
                 data: hoje,
                 hora: new Date().toLocaleTimeString('pt-BR'),
-                tipo: 'Reconhecimento Facial',
-                timestamp: new Date().toLocaleString()
+                tipo: 'Reconhecimento Facial'
             };
 
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
             salvarDados();
             fecharWebcam();
-            mostrarAlerta(`✅ Ponto registrado para ${colaborador.nome}!`, 'sucesso');
+            mostrarAlerta(`✅ Ponto registrado!`, 'sucesso');
         }
 
         function fecharWebcam() {
             if (streamWebcam) {
-                streamWebcam.getTracks().forEach(track => track.stop());
+                streamWebcam.getTracks().forEach(t => t.stop());
                 streamWebcam = null;
             }
             elementos.webcamContainer.style.display = 'none';
         }
 
-        // Funções de atualização de registros
-        function atualizarRegistrosPonto() {
-            if (!elementos.registrosPonto) return;
-            
-            if (registrosPonto.length === 0) {
-                elementos.registrosPonto.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhum registro de ponto encontrado.</p>';
+        // Atualizações
+        function atualizarTabelaColaboradores() {
+            if (!elementos.tabelaColaboradores) return;
+
+            if (colaboradores.length === 0) {
+                elementos.tabelaColaboradores.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">Nenhum colaborador</td></tr>';
                 return;
             }
 
             const fragment = document.createDocumentFragment();
+
+            colaboradores.forEach((c, i) => {
+                const tr = document.createElement('tr');
+                
+                if (adminLogado) {
+                    tr.innerHTML = `
+                        <td>${c.nome}</td>
+                        <td>${c.matricula}</td>
+                        <td>${c.cargo}</td>
+                        <td>${c.departamento}</td>
+                        <td class="acoes-colaborador">
+                            <button class="btn-colaborador" onclick="editarColaborador(${i})">✏️</button>
+                            <button class="btn-turno" onclick="excluirColaborador(${i})">❌</button>
+                        </td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${c.nome}</td>
+                        <td>${c.matricula}</td>
+                        <td>${c.cargo}</td>
+                        <td>${c.departamento}</td>
+                    `;
+                }
+                
+                fragment.appendChild(tr);
+            });
+
+            elementos.tabelaColaboradores.innerHTML = '';
+            elementos.tabelaColaboradores.appendChild(fragment);
             
-            registrosPonto.slice().reverse().forEach(registro => {
+            if (adminLogado) atualizarSelects();
+        }
+
+        function atualizarSelects() {
+            const options = ['<option value="">Selecione</option>'];
+            
+            colaboradores.forEach(c => {
+                options.push(`<option value="${c.matricula}">${c.nome}</option>`);
+            });
+            
+            const opts = options.join('');
+            elementos.colaboradorSaida.innerHTML = opts;
+            elementos.colaboradorEntrada.innerHTML = opts;
+        }
+
+        function atualizarRegistrosPonto() {
+            if (!elementos.registrosPonto) return;
+
+            if (registrosPonto.length === 0) {
+                elementos.registrosPonto.innerHTML = '<p style="text-align: center; padding: 20px;">Nenhum registro</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+
+            registrosPonto.slice().reverse().forEach(r => {
                 const div = document.createElement('div');
                 div.className = 'registro-item';
                 div.innerHTML = `
-                    <strong>${registro.nome}</strong> (${registro.matricula})<br>
-                    📅 ${registro.data} - ⏰ ${registro.hora}<br>
-                    🔍 ${registro.tipo}
+                    <strong>${r.nome}</strong> (${r.matricula})<br>
+                    📅 ${r.data} ⏰ ${r.hora}<br>
+                    🔍 ${r.tipo}
                 `;
                 fragment.appendChild(div);
             });
-            
+
             elementos.registrosPonto.innerHTML = '';
             elementos.registrosPonto.appendChild(fragment);
         }
 
         function atualizarRegistrosTroca() {
             if (!elementos.registrosTroca) return;
-            
+
             if (trocasTurno.length === 0) {
-                elementos.registrosTroca.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhuma troca de turno registrada.</p>';
+                elementos.registrosTroca.innerHTML = '<p style="text-align: center; padding: 20px;">Nenhuma troca</p>';
                 return;
             }
 
             const fragment = document.createDocumentFragment();
-            
-            trocasTurno.slice().reverse().forEach(troca => {
+
+            trocasTurno.slice().reverse().forEach(t => {
                 const div = document.createElement('div');
                 div.className = 'registro-item';
                 div.innerHTML = `
                     <strong>🔄 Troca</strong><br>
-                    👤 Sai: ${troca.colaboradorSaida}<br>
-                    👥 Entra: ${troca.colaboradorEntrada}<br>
-                    📅 ${troca.data}<br>
-                    📝 ${troca.motivo}
+                    👤 Sai: ${t.colaboradorSaida}<br>
+                    👥 Entra: ${t.colaboradorEntrada}<br>
+                    📅 ${t.data}<br>
+                    📝 ${t.motivo}
                 `;
                 fragment.appendChild(div);
             });
-            
+
             elementos.registrosTroca.innerHTML = '';
             elementos.registrosTroca.appendChild(fragment);
         }
 
         // Funções T.I
         function toggleTiOpcoes() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
-            elementos.tiOpcoes.classList.toggle('mostrar');
+            if (adminLogado) elementos.tiOpcoes.classList.toggle('mostrar');
         }
 
         function realizarBackup() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
+            if (!adminLogado) return;
             
             const backup = {
                 colaboradores,
                 registrosPonto,
                 trocasTurno,
-                dataBackup: new Date().toLocaleString(),
-                sistemaId: SISTEMA_ID,
-                ativado: sistemaAtivado,
-                versao: '3.4'
+                data: new Date().toLocaleString(),
+                versao: '3.5'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup-ponto-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
+            mostrarAlerta('💾 Backup OK!', 'sucesso');
+        }
+
+        function salvarDadosAgora() {
+            if (!adminLogado) return;
             
-            mostrarAlerta('💾 Backup realizado!', 'sucesso');
+            localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
+            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+            localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
+            mostrarAlerta('💿 Salvou!', 'sucesso');
         }
 
         function exportarPDF() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
-            
+            if (!adminLogado) return;
             mostrarAlerta('📄 Gerando PDF...', 'info');
-            setTimeout(() => {
-                mostrarAlerta('✅ PDF exportado!', 'sucesso');
-            }, 500);
+            setTimeout(() => mostrarAlerta('✅ PDF OK!', 'sucesso'), 1000);
         }
 
         function imprimirRegistros() {
-            if (!adminLogado) {
-                mostrarAlerta('Acesso negado!', 'erro');
-                return;
-            }
+            if (!adminLogado) return;
             
-            const janelaImpressao = window.open('', '_blank');
-            janelaImpressao.document.write(`
+            const w = window.open('', '_blank');
+            w.document.write(`
                 <html>
-                    <head>
-                        <title>Registros de Ponto - ALFA TECH</title>
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                            body { font-family: Arial; padding: 20px; }
-                            h1 { color: #667eea; }
-                            .registro { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
-                            .footer { text-align: center; margin-top: 30px; color: #666; }
-                        </style>
+                    <head><title>Registros</title>
+                    <style>
+                        body { font-family: Arial; padding: 20px; }
+                        .reg { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+                    </style>
                     </head>
                     <body>
-                        <h1>Registros de Ponto - ${new Date().toLocaleDateString()}</h1>
+                        <h1>Registros</h1>
                         ${registrosPonto.map(r => `
-                            <div class="registro">
+                            <div class="reg">
                                 <strong>${r.nome}</strong> - ${r.data} ${r.hora}<br>
                                 Tipo: ${r.tipo}
                             </div>
                         `).join('')}
-                        <div class="footer">DESENVOLVIDO POR ALFA TECH.</div>
+                        <div style="margin-top: 30px;">DESENVOLVIDO POR ALFA TECH.</div>
                     </body>
                 </html>
             `);
-            janelaImpressao.document.close();
-            janelaImpressao.print();
-            mostrarAlerta('🖨️ Imprimindo...', 'info');
+            w.document.close();
+            w.print();
         }
 
-        // Event listener para salvar dados antes de fechar
-        window.addEventListener('beforeunload', function() {
-            if (timeoutSalvar) {
-                clearTimeout(timeoutSalvar);
-            }
+        // Utilitários
+        function salvarDados() {
+            if (timeoutSalvar) clearTimeout(timeoutSalvar);
+            timeoutSalvar = setTimeout(() => {
+                localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
+                localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+                localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
+            }, 500);
+        }
+
+        function mostrarAlerta(msg, tipo) {
+            const alerta = document.createElement('div');
+            alerta.className = `alerta ${tipo}`;
+            alerta.textContent = msg;
+            document.body.appendChild(alerta);
+            setTimeout(() => alerta.remove(), 2000);
+        }
+
+        // Event listeners
+        window.addEventListener('beforeunload', () => {
+            if (timeoutSalvar) clearTimeout(timeoutSalvar);
             if (sistemaAtivado || modoDemonstracao) {
                 localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
                 localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
@@ -1702,7 +1607,7 @@
             }
         });
 
-        // Inicializa o sistema
+        // Iniciar
         inicializar();
     </script>
 </body>

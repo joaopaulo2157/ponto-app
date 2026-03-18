@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Sistema de Ponto Digital v3.9 - ALFA TECH</title>
+    <title>Sistema de Ponto Digital v4.0 - ALFA TECH (Cloud)</title>
     <style>
         * {
             margin: 0;
@@ -270,6 +270,47 @@
             margin: clamp(10px, 2vh, 15px) 0;
             font-size: clamp(0.8em, 2.5vw, 0.9em);
             text-align: center;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Tela de Login do Admin */
@@ -747,24 +788,17 @@
         html {
             scroll-behavior: smooth;
         }
-
-        /* Loading */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Conectando ao servidor...</p>
+        </div>
+    </div>
+
     <!-- Tela de Boas-vindas -->
     <div id="welcome-screen" class="welcome-screen">
         <div class="welcome-container">
@@ -794,10 +828,10 @@
             
             <div class="info-sistema">
                 <p>Sistema de Ponto Digital</p>
-                <p>Versão: 3.9</p>
+                <p>Versão: 4.0 Cloud</p>
                 <p class="destaque">ALFA TECH</p>
                 <p style="margin-top: 10px;">Digite a chave de ativação fornecida pelo proprietário</p>
-                <p style="margin-top: 5px; font-size: 0.9em; color: #667eea;">A ativação é permanente e válida para todos os computadores</p>
+                <p style="margin-top: 5px; font-size: 0.9em; color: #667eea;">Ativação única em qualquer computador!</p>
             </div>
             
             <div class="aviso-ativacao">
@@ -994,19 +1028,24 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v3.9 - ALFA TECH
-        // Agora com ativação permanente em qualquer computador
+        // Sistema de Ponto Digital v4.0 - ALFA TECH (Cloud)
+        // Agora com banco de dados externo para ativação única em qualquer computador
 
         // Configuração
         const CHAVE_ATIVACAO = 'ALFA-TECH-2024-SISTEMA';
         const LIMITE_DEMO = 2;
-        const DB_NAME = 'PontoDigitalDB';
-        const DB_VERSION = 2; // Versão atualizada
         
-        let sistemaAtivado = false; // Não usar mais localStorage para ativação
+        // API externa (JSON Server - você pode hospedar em qualquer lugar)
+        // Para testar localmente: npm install -g json-server
+        // Crie um arquivo db.json com: { "ativacao": { "status": false, "chave": "" } }
+        // Execute: json-server --watch db.json --port 3000
+        const API_URL = 'https://seu-servidor.com/api'; // Substitua pela sua URL real
+        
+        let sistemaAtivado = false;
         let modoDemonstracao = false;
         let adminLogado = false;
         let db = null;
+        let syncInterval = null;
 
         // Dados em memória
         let colaboradores = [];
@@ -1018,6 +1057,7 @@
 
         // Elementos DOM
         const elementos = {
+            loadingOverlay: document.getElementById('loading-overlay'),
             welcomeScreen: document.getElementById('welcome-screen'),
             ativacaoOverlay: document.getElementById('ativacao-overlay'),
             chaveAtivacao: document.getElementById('chave-ativacao'),
@@ -1052,136 +1092,177 @@
             demoLimitMessage: document.getElementById('demo-limit-message')
         };
 
-        // Inicialização do banco de dados IndexedDB
+        // Funções de API
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${endpoint}`, options);
+                return await response.json();
+            } catch (error) {
+                console.error('Erro na requisição API:', error);
+                return null;
+            }
+        }
+
+        // Verificar ativação no servidor
+        async function verificarAtivacaoServidor() {
+            mostrarLoading(true);
+            
+            try {
+                // Tenta buscar do servidor
+                const data = await apiRequest('ativacao');
+                
+                if (data && data.status === true) {
+                    sistemaAtivado = true;
+                    localStorage.setItem('sistemaAtivadoCache', 'true'); // Cache local
+                } else {
+                    // Verifica cache local como fallback
+                    const cache = localStorage.getItem('sistemaAtivadoCache');
+                    if (cache === 'true') {
+                        sistemaAtivado = true;
+                    } else {
+                        sistemaAtivado = false;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao verificar ativação:', error);
+                // Fallback para cache local
+                const cache = localStorage.getItem('sistemaAtivadoCache');
+                sistemaAtivado = cache === 'true';
+            }
+            
+            mostrarLoading(false);
+            return sistemaAtivado;
+        }
+
+        // Salvar ativação no servidor
+        async function salvarAtivacaoServidor() {
+            mostrarLoading(true);
+            
+            try {
+                await apiRequest('ativacao', 'PUT', {
+                    status: true,
+                    chave: CHAVE_ATIVACAO,
+                    dataAtivacao: new Date().toISOString()
+                });
+                
+                localStorage.setItem('sistemaAtivadoCache', 'true');
+                mostrarLoading(false);
+                return true;
+            } catch (error) {
+                console.error('Erro ao salvar ativação:', error);
+                mostrarLoading(false);
+                return false;
+            }
+        }
+
+        // Sincronizar dados com servidor
+        async function sincronizarDados() {
+            if (!sistemaAtivado || modoDemonstracao) return;
+
+            try {
+                // Envia dados locais para servidor
+                await apiRequest('dados', 'POST', {
+                    colaboradores,
+                    registrosPonto,
+                    trocasTurno,
+                    ultimaSincronizacao: new Date().toISOString()
+                });
+                
+                console.log('Dados sincronizados com servidor');
+            } catch (error) {
+                console.error('Erro na sincronização:', error);
+            }
+        }
+
+        // Carregar dados do servidor
+        async function carregarDadosServidor() {
+            if (!sistemaAtivado || modoDemonstracao) return;
+
+            try {
+                const data = await apiRequest('dados');
+                
+                if (data) {
+                    if (data.colaboradores) colaboradores = data.colaboradores;
+                    if (data.registrosPonto) registrosPonto = data.registrosPonto;
+                    if (data.trocasTurno) trocasTurno = data.trocasTurno;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do servidor:', error);
+            }
+        }
+
+        // Mostrar/esconder loading
+        function mostrarLoading(mostrar) {
+            if (mostrar) {
+                elementos.loadingOverlay.classList.add('visible');
+            } else {
+                elementos.loadingOverlay.classList.remove('visible');
+            }
+        }
+
+        // Inicialização do banco de dados local (IndexedDB como fallback)
         function initDB() {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                const request = indexedDB.open('PontoDigitalLocalDB', 1);
 
                 request.onerror = (event) => {
-                    console.error('Erro ao abrir banco de dados:', event.target.error);
+                    console.error('Erro ao abrir banco local:', event.target.error);
                     reject(event.target.error);
                 };
 
                 request.onsuccess = (event) => {
                     db = event.target.result;
-                    console.log('Banco de dados conectado com sucesso!');
+                    console.log('Banco local conectado');
                     resolve(db);
                 };
 
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
                     
-                    // Criar object stores se não existirem
                     if (!db.objectStoreNames.contains('colaboradores')) {
-                        const storeColaboradores = db.createObjectStore('colaboradores', { keyPath: 'id', autoIncrement: true });
-                        storeColaboradores.createIndex('matricula', 'matricula', { unique: true });
-                        storeColaboradores.createIndex('nome', 'nome', { unique: false });
+                        db.createObjectStore('colaboradores', { keyPath: 'id' });
                     }
-
                     if (!db.objectStoreNames.contains('registrosPonto')) {
-                        const storeRegistros = db.createObjectStore('registrosPonto', { keyPath: 'id', autoIncrement: true });
-                        storeRegistros.createIndex('matricula', 'matricula', { unique: false });
-                        storeRegistros.createIndex('data', 'data', { unique: false });
-                        storeRegistros.createIndex('matricula_data', ['matricula', 'data'], { unique: true });
+                        db.createObjectStore('registrosPonto', { keyPath: 'id' });
                     }
-
                     if (!db.objectStoreNames.contains('trocasTurno')) {
-                        const storeTrocas = db.createObjectStore('trocasTurno', { keyPath: 'id', autoIncrement: true });
-                        storeTrocas.createIndex('data', 'data', { unique: false });
+                        db.createObjectStore('trocasTurno', { keyPath: 'id' });
                     }
-
-                    // NOVO: Store para controle de ativação
-                    if (!db.objectStoreNames.contains('configuracao')) {
-                        const storeConfig = db.createObjectStore('configuracao', { keyPath: 'id' });
-                        storeConfig.createIndex('chave', 'chave', { unique: true });
-                    }
-
-                    console.log('Banco de dados configurado!');
                 };
             });
         }
 
-        // Verificar se o sistema já está ativado no banco
-        async function verificarAtivacao() {
-            if (!db) await initDB();
-
+        // Carregar dados do banco local (fallback)
+        function carregarDadosLocal() {
             return new Promise((resolve) => {
-                const transaction = db.transaction(['configuracao'], 'readonly');
-                const store = transaction.objectStore('configuracao');
-                const request = store.get('ativacao');
-
-                request.onsuccess = () => {
-                    const ativacao = request.result;
-                    sistemaAtivado = ativacao ? ativacao.valor === true : false;
-                    resolve(sistemaAtivado);
-                };
-
-                request.onerror = () => {
-                    sistemaAtivado = false;
-                    resolve(false);
-                };
-            });
-        }
-
-        // Salvar ativação no banco
-        async function salvarAtivacao() {
-            if (!db) await initDB();
-
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['configuracao'], 'readwrite');
-                const store = transaction.objectStore('configuracao');
-                
-                const ativacao = {
-                    id: 'ativacao',
-                    chave: 'ativacao',
-                    valor: true,
-                    dataAtivacao: new Date().toISOString()
-                };
-
-                const request = store.put(ativacao);
-
-                request.onsuccess = () => {
-                    console.log('Ativação salva no banco!');
+                if (!db) {
                     resolve();
-                };
+                    return;
+                }
 
-                request.onerror = (e) => {
-                    console.error('Erro ao salvar ativação:', e);
-                    reject(e);
-                };
-            });
-        }
-
-        // Carregar dados do banco
-        async function carregarDadosDB() {
-            if (!db) await initDB();
-
-            return new Promise((resolve, reject) => {
                 const transaction = db.transaction(['colaboradores', 'registrosPonto', 'trocasTurno'], 'readonly');
                 
-                colaboradores = [];
-                registrosPonto = [];
-                trocasTurno = [];
-
-                // Carregar colaboradores
-                const storeColab = transaction.objectStore('colaboradores');
-                const requestColab = storeColab.getAll();
-                requestColab.onsuccess = () => {
-                    colaboradores = requestColab.result;
+                transaction.objectStore('colaboradores').getAll().onsuccess = (e) => {
+                    colaboradores = e.target.result || [];
                 };
-
-                // Carregar registros
-                const storeReg = transaction.objectStore('registrosPonto');
-                const requestReg = storeReg.getAll();
-                requestReg.onsuccess = () => {
-                    registrosPonto = requestReg.result;
+                
+                transaction.objectStore('registrosPonto').getAll().onsuccess = (e) => {
+                    registrosPonto = e.target.result || [];
                 };
-
-                // Carregar trocas
-                const storeTroca = transaction.objectStore('trocasTurno');
-                const requestTroca = storeTroca.getAll();
-                requestTroca.onsuccess = () => {
-                    trocasTurno = requestTroca.result;
+                
+                transaction.objectStore('trocasTurno').getAll().onsuccess = (e) => {
+                    trocasTurno = e.target.result || [];
                 };
 
                 transaction.oncomplete = () => {
@@ -1191,105 +1272,49 @@
                     atualizarTudo();
                     resolve();
                 };
-
-                transaction.onerror = (e) => {
-                    console.error('Erro ao carregar dados:', e);
-                    reject(e);
-                };
             });
         }
 
-        // Salvar dados no banco
-        async function salvarDadosDB() {
+        // Salvar dados no banco local
+        function salvarDadosLocal() {
             if (!db || modoDemonstracao) return;
 
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['colaboradores', 'registrosPonto', 'trocasTurno'], 'readwrite');
-                
-                // Limpar stores
-                transaction.objectStore('colaboradores').clear();
-                transaction.objectStore('registrosPonto').clear();
-                transaction.objectStore('trocasTurno').clear();
+            const transaction = db.transaction(['colaboradores', 'registrosPonto', 'trocasTurno'], 'readwrite');
+            
+            transaction.objectStore('colaboradores').clear();
+            transaction.objectStore('registrosPonto').clear();
+            transaction.objectStore('trocasTurno').clear();
 
-                // Salvar colaboradores
-                const storeColab = transaction.objectStore('colaboradores');
-                colaboradores.forEach(colab => {
-                    if (!colab.id) colab.id = Date.now() + Math.random();
-                    storeColab.add(colab);
-                });
-
-                // Salvar registros
-                const storeReg = transaction.objectStore('registrosPonto');
-                registrosPonto.forEach(reg => {
-                    if (!reg.id) reg.id = Date.now() + Math.random();
-                    storeReg.add(reg);
-                });
-
-                // Salvar trocas
-                const storeTroca = transaction.objectStore('trocasTurno');
-                trocasTurno.forEach(troca => {
-                    if (!troca.id) troca.id = Date.now() + Math.random();
-                    storeTroca.add(troca);
-                });
-
-                transaction.oncomplete = () => {
-                    console.log('Dados salvos no banco!');
-                    resolve();
-                };
-
-                transaction.onerror = (e) => {
-                    console.error('Erro ao salvar:', e);
-                    reject(e);
-                };
-            });
+            colaboradores.forEach(c => transaction.objectStore('colaboradores').add(c));
+            registrosPonto.forEach(r => transaction.objectStore('registrosPonto').add(r));
+            trocasTurno.forEach(t => transaction.objectStore('trocasTurno').add(t));
         }
 
-        // Inicialização
+        // Inicialização principal
         async function inicializar() {
-            try {
-                await initDB();
+            await initDB();
+            
+            // Verifica ativação no servidor
+            const ativado = await verificarAtivacaoServidor();
+            
+            if (ativado) {
+                sistemaAtivado = true;
+                elementos.welcomeScreen.style.display = 'none';
+                elementos.sistemaContainer.style.display = 'block';
                 
-                // Verifica se já está ativado no banco
-                const ativado = await verificarAtivacao();
-                
-                if (ativado) {
-                    sistemaAtivado = true;
-                    elementos.welcomeScreen.style.display = 'none';
-                    elementos.sistemaContainer.style.display = 'block';
-                    await carregarDadosDB();
-                } else {
-                    elementos.welcomeScreen.style.display = 'flex';
-                    elementos.sistemaContainer.style.display = 'none';
+                // Carrega dados do servidor primeiro
+                await carregarDadosServidor();
+                // Se não conseguiu carregar do servidor, carrega do local
+                if (colaboradores.length === 0) {
+                    await carregarDadosLocal();
                 }
-            } catch (e) {
-                console.error('Erro na inicialização:', e);
-                mostrarAlerta('❌ Erro ao inicializar sistema', 'erro');
+                
+                // Inicia sincronização periódica
+                syncInterval = setInterval(sincronizarDados, 30000); // A cada 30 segundos
+            } else {
+                elementos.welcomeScreen.style.display = 'flex';
+                elementos.sistemaContainer.style.display = 'none';
             }
-        }
-
-        // Atualizar interface
-        function atualizarTudo() {
-            atualizarTabelaColaboradores();
-            atualizarRegistrosPonto();
-            atualizarRegistrosTroca();
-            verificarLimiteColaboradores();
-        }
-
-        // Função para rolar até o formulário
-        function rolarAteFormulario() {
-            setTimeout(() => {
-                if (elementos.formColaborador.style.display === 'block') {
-                    elementos.formColaborador.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
-                    
-                    elementos.formColaborador.classList.add('destaque');
-                    setTimeout(() => {
-                        elementos.formColaborador.classList.remove('destaque');
-                    }, 1500);
-                }
-            }, 100);
         }
 
         // Tela de ativação
@@ -1308,18 +1333,26 @@
             const chave = elementos.chaveAtivacao.value.trim();
             
             if (chave === CHAVE_ATIVACAO) {
-                // Salva ativação no banco de dados (permanente em qualquer computador)
-                await salvarAtivacao();
+                // Salva ativação no servidor (cloud)
+                const salvou = await salvarAtivacaoServidor();
                 
-                sistemaAtivado = true;
-                modoDemonstracao = false;
-                
-                elementos.ativacaoOverlay.classList.remove('visible');
-                elementos.sistemaContainer.style.display = 'block';
-                elementos.demoBanner.style.display = 'none';
-                
-                await carregarDadosDB();
-                mostrarAlerta('✅ Sistema ativado com sucesso!', 'sucesso');
+                if (salvou) {
+                    sistemaAtivado = true;
+                    modoDemonstracao = false;
+                    
+                    elementos.ativacaoOverlay.classList.remove('visible');
+                    elementos.sistemaContainer.style.display = 'block';
+                    elementos.demoBanner.style.display = 'none';
+                    
+                    await carregarDadosServidor();
+                    
+                    // Inicia sincronização
+                    syncInterval = setInterval(sincronizarDados, 30000);
+                    
+                    mostrarAlerta('✅ Sistema ativado com sucesso na nuvem!', 'sucesso');
+                } else {
+                    mostrarAlerta('❌ Erro ao ativar no servidor!', 'erro');
+                }
             } else {
                 mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
                 elementos.chaveAtivacao.value = '';
@@ -1335,11 +1368,34 @@
             elementos.sistemaContainer.style.display = 'block';
             elementos.demoBanner.style.display = 'block';
             
-            await carregarDadosDB();
+            await carregarDadosLocal();
             mostrarAlerta('⚡ Modo demonstração ativado!', 'info');
         }
 
-        // Verificar limite
+        // Funções existentes mantidas...
+        function atualizarTudo() {
+            atualizarTabelaColaboradores();
+            atualizarRegistrosPonto();
+            atualizarRegistrosTroca();
+            verificarLimiteColaboradores();
+        }
+
+        function rolarAteFormulario() {
+            setTimeout(() => {
+                if (elementos.formColaborador.style.display === 'block') {
+                    elementos.formColaborador.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                    
+                    elementos.formColaborador.classList.add('destaque');
+                    setTimeout(() => {
+                        elementos.formColaborador.classList.remove('destaque');
+                    }, 1500);
+                }
+            }, 100);
+        }
+
         function verificarLimiteColaboradores() {
             if (modoDemonstracao && colaboradores.length >= LIMITE_DEMO) {
                 elementos.demoLimitMessage.style.display = 'block';
@@ -1472,7 +1528,6 @@
                 return;
             }
 
-            // Verifica matrícula duplicada
             if (!modoDemonstracao && colaboradores.some(c => c.matricula === matricula && 
                 (colaboradorEditando === null || colaboradores[colaboradorEditando].matricula !== matricula))) {
                 mostrarAlerta('❌ Matrícula existe!', 'erro');
@@ -1498,10 +1553,9 @@
             atualizarTabelaColaboradores();
             verificarLimiteColaboradores();
             
+            salvarDadosLocal();
             if (!modoDemonstracao) {
-                await salvarDadosDB();
-            } else {
-                salvarDados();
+                sincronizarDados(); // Envia para nuvem
             }
             
             fecharFormColaborador();
@@ -1515,10 +1569,9 @@
                 atualizarTabelaColaboradores();
                 verificarLimiteColaboradores();
                 
+                salvarDadosLocal();
                 if (!modoDemonstracao) {
-                    await salvarDadosDB();
-                } else {
-                    salvarDados();
+                    sincronizarDados();
                 }
                 
                 mostrarAlerta('❌ Excluído!', 'sucesso');
@@ -1588,10 +1641,9 @@
             trocasTurno.push(troca);
             atualizarRegistrosTroca();
             
+            salvarDadosLocal();
             if (!modoDemonstracao) {
-                await salvarDadosDB();
-            } else {
-                salvarDados();
+                sincronizarDados();
             }
             
             fecharTrocaTurno();
@@ -1632,10 +1684,9 @@
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
             
+            salvarDadosLocal();
             if (!modoDemonstracao) {
-                await salvarDadosDB();
-            } else {
-                salvarDados();
+                sincronizarDados();
             }
             
             mostrarAlerta(`✅ Ponto registrado!`, 'sucesso');
@@ -1689,10 +1740,9 @@
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
             
+            salvarDadosLocal();
             if (!modoDemonstracao) {
-                await salvarDadosDB();
-            } else {
-                salvarDados();
+                sincronizarDados();
             }
             
             fecharWebcam();
@@ -1827,7 +1877,7 @@
                 registrosPonto,
                 trocasTurno,
                 data: new Date().toLocaleString(),
-                versao: '3.9'
+                versao: '4.0'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -1843,12 +1893,12 @@
         async function salvarDadosAgora() {
             if (!adminLogado) return;
             
+            salvarDadosLocal();
             if (!modoDemonstracao) {
-                await salvarDadosDB();
-                mostrarAlerta('💿 Dados salvos no banco!', 'sucesso');
+                await sincronizarDados();
+                mostrarAlerta('💿 Dados salvos na nuvem!', 'sucesso');
             } else {
-                salvarDados();
-                mostrarAlerta('💿 Salvou!', 'sucesso');
+                mostrarAlerta('💿 Salvou localmente!', 'sucesso');
             }
         }
 
@@ -1890,17 +1940,6 @@
         }
 
         // Utilitários
-        function salvarDados() {
-            if (timeoutSalvar) clearTimeout(timeoutSalvar);
-            timeoutSalvar = setTimeout(() => {
-                if (modoDemonstracao) {
-                    localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
-                    localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
-                    localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
-                }
-            }, 500);
-        }
-
         function mostrarAlerta(msg, tipo) {
             const alerta = document.createElement('div');
             alerta.className = `alerta ${tipo}`;
@@ -1911,13 +1950,13 @@
 
         // Event listeners
         window.addEventListener('beforeunload', async () => {
-            if (timeoutSalvar) clearTimeout(timeoutSalvar);
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+            
+            salvarDadosLocal();
             if (sistemaAtivado && !modoDemonstracao) {
-                await salvarDadosDB();
-            } else if (modoDemonstracao) {
-                localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
-                localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
-                localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
+                await sincronizarDados();
             }
         });
 

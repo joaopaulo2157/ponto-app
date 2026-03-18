@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Sistema de Ponto Digital v3.5 - ALFA TECH</title>
+    <title>Sistema de Ponto Digital v3.6 - ALFA TECH</title>
     <style>
         * {
             margin: 0;
@@ -199,6 +199,27 @@
             font-size: 2em;
         }
 
+        .ativacao-container .info-sistema {
+            background: linear-gradient(135deg, #f0f4f8, #ffffff);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 2px dashed #667eea;
+        }
+
+        .ativacao-container .info-sistema p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .ativacao-container .info-sistema .destaque {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
         .ativacao-container input {
             width: 100%;
             padding: 15px;
@@ -206,15 +227,21 @@
             border-radius: 15px;
             font-size: 1.1em;
             transition: all 0.3s ease;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
+            background: white;
         }
 
         .ativacao-container input:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .ativacao-container input::placeholder {
+            color: #999;
+            letter-spacing: normal;
         }
 
         .ativacao-container button {
@@ -239,26 +266,14 @@
             color: white;
         }
 
-        .chave-exemplo {
-            background: #f0f4f8;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
+        .aviso-ativacao {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.9em;
             text-align: center;
-        }
-
-        .chave-exemplo p {
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .chave-demo {
-            font-family: monospace;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #667eea;
-            letter-spacing: 3px;
-            word-break: break-all;
         }
 
         /* Tela de Login do Admin */
@@ -749,17 +764,23 @@
         </div>
     </div>
 
-    <!-- Tela de Ativação -->
+    <!-- Tela de Ativação (Chave oculta - só o proprietário sabe) -->
     <div id="ativacao-overlay" class="ativacao-overlay">
         <div class="ativacao-container">
             <h2>🔐 Ativação</h2>
             
-            <div class="chave-exemplo">
-                <p>Chave de ativação padrão:</p>
-                <div class="chave-demo">ALFA-2024-TECH</div>
+            <div class="info-sistema">
+                <p>Sistema de Ponto Digital</p>
+                <p>Versão: 3.6</p>
+                <p class="destaque">ALFA TECH</p>
+                <p style="margin-top: 10px;">Digite a chave de ativação fornecida pelo proprietário</p>
             </div>
             
-            <input type="text" id="chave-ativacao" placeholder="Digite sua chave de ativação" maxlength="20">
+            <div class="aviso-ativacao">
+                ⚠️ A chave de ativação é fornecida apenas pelo proprietário do sistema (ALFA TECH)
+            </div>
+            
+            <input type="text" id="chave-ativacao" placeholder="Digite a chave de ativação" maxlength="30" autocomplete="off">
             
             <button class="btn-ativar-sistema" onclick="validarAtivacao()">
                 ✅ Ativar Sistema
@@ -949,10 +970,11 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v3.5 - ALFA TECH
+        // Sistema de Ponto Digital v3.6 - ALFA TECH
+        // Chave de ativação: apenas o proprietário conhece (ALFA TECH)
 
-        // Configuração
-        const CHAVE_ATIVACAO_PADRAO = 'ALFA-2024-TECH';
+        // Configuração - Chave de ativação (oculta - só o proprietário sabe)
+        const CHAVE_ATIVACAO = 'ALFA-TECH-2024-SISTEMA'; // Esta chave é conhecida apenas pelo proprietário
         const LIMITE_DEMO = 2;
         
         let sistemaAtivado = localStorage.getItem('sistemaAtivado') === 'true';
@@ -1046,6 +1068,7 @@
         function mostrarTelaAtivacao() {
             elementos.welcomeScreen.style.display = 'none';
             elementos.ativacaoOverlay.classList.add('visible');
+            elementos.chaveAtivacao.value = ''; // Limpa o campo
         }
 
         function voltarBoasVindas() {
@@ -1056,7 +1079,8 @@
         function validarAtivacao() {
             const chave = elementos.chaveAtivacao.value.trim();
             
-            if (chave === CHAVE_ATIVACAO_PADRAO) {
+            // Verifica se a chave corresponde à chave do proprietário
+            if (chave === CHAVE_ATIVACAO) {
                 sistemaAtivado = true;
                 modoDemonstracao = false;
                 localStorage.setItem('sistemaAtivado', 'true');
@@ -1069,6 +1093,7 @@
                 mostrarAlerta('✅ Sistema ativado com sucesso!', 'sucesso');
             } else {
                 mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
+                elementos.chaveAtivacao.value = ''; // Limpa o campo em caso de erro
             }
         }
 
@@ -1214,6 +1239,7 @@
                 return;
             }
 
+            // Verifica matrícula duplicada apenas no modo normal
             if (!modoDemonstracao && colaboradores.some(c => c.matricula === matricula) && colaboradorEditando === null) {
                 mostrarAlerta('❌ Matrícula existe!', 'erro');
                 return;
@@ -1523,7 +1549,7 @@
                 registrosPonto,
                 trocasTurno,
                 data: new Date().toLocaleString(),
-                versao: '3.5'
+                versao: '3.6'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });

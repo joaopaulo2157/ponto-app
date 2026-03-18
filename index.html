@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Sistema de Ponto Digital v3.6 - ALFA TECH</title>
+    <title>Sistema de Ponto Digital v3.7 - ALFA TECH</title>
     <style>
         * {
             margin: 0;
@@ -35,6 +35,12 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+
+        @keyframes highlight {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
         }
 
         .container {
@@ -506,6 +512,19 @@
             padding-left: 15px;
         }
 
+        /* Formulário de Colaborador - Agora com destaque e posicionamento melhor */
+        .form-colaborador-container {
+            scroll-margin-top: 20px;
+            animation: highlight 1.5s ease;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .form-colaborador-container.destaque {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
         .form-colaborador {
             display: grid;
             grid-template-columns: 1fr;
@@ -739,6 +758,11 @@
             backdrop-filter: blur(10px);
             display: inline-block;
         }
+
+        /* Scroll suave */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body>
@@ -764,14 +788,14 @@
         </div>
     </div>
 
-    <!-- Tela de Ativação (Chave oculta - só o proprietário sabe) -->
+    <!-- Tela de Ativação -->
     <div id="ativacao-overlay" class="ativacao-overlay">
         <div class="ativacao-container">
             <h2>🔐 Ativação</h2>
             
             <div class="info-sistema">
                 <p>Sistema de Ponto Digital</p>
-                <p>Versão: 3.6</p>
+                <p>Versão: 3.7</p>
                 <p class="destaque">ALFA TECH</p>
                 <p style="margin-top: 10px;">Digite a chave de ativação fornecida pelo proprietário</p>
             </div>
@@ -865,8 +889,8 @@
             <button class="btn-ti-opcao" onclick="imprimirRegistros()">🖨️ Imprimir</button>
         </div>
 
-        <!-- Formulário Colaborador -->
-        <div id="form-colaborador" class="secao admin-only" style="display: none;">
+        <!-- Formulário Colaborador - AGORA APARECE LOGO ABAIXO DO BOTÃO -->
+        <div id="form-colaborador" class="secao admin-only form-colaborador-container" style="display: none;">
             <h3 class="secao-titulo" id="form-titulo">➕ Adicionar Colaborador</h3>
             <div class="form-colaborador">
                 <div class="form-grupo">
@@ -970,7 +994,7 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v3.6 - ALFA TECH
+        // Sistema de Ponto Digital v3.7 - ALFA TECH
         // Chave de ativação: apenas o proprietário conhece (ALFA TECH)
 
         // Configuração - Chave de ativação (oculta - só o proprietário sabe)
@@ -1064,11 +1088,29 @@
             verificarLimiteColaboradores();
         }
 
+        // Função para rolar até o formulário
+        function rolarAteFormulario() {
+            setTimeout(() => {
+                if (elementos.formColaborador.style.display === 'block') {
+                    elementos.formColaborador.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                    
+                    // Adiciona classe de destaque temporário
+                    elementos.formColaborador.classList.add('destaque');
+                    setTimeout(() => {
+                        elementos.formColaborador.classList.remove('destaque');
+                    }, 1500);
+                }
+            }, 100);
+        }
+
         // Tela de ativação
         function mostrarTelaAtivacao() {
             elementos.welcomeScreen.style.display = 'none';
             elementos.ativacaoOverlay.classList.add('visible');
-            elementos.chaveAtivacao.value = ''; // Limpa o campo
+            elementos.chaveAtivacao.value = '';
         }
 
         function voltarBoasVindas() {
@@ -1079,7 +1121,6 @@
         function validarAtivacao() {
             const chave = elementos.chaveAtivacao.value.trim();
             
-            // Verifica se a chave corresponde à chave do proprietário
             if (chave === CHAVE_ATIVACAO) {
                 sistemaAtivado = true;
                 modoDemonstracao = false;
@@ -1093,7 +1134,7 @@
                 mostrarAlerta('✅ Sistema ativado com sucesso!', 'sucesso');
             } else {
                 mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
-                elementos.chaveAtivacao.value = ''; // Limpa o campo em caso de erro
+                elementos.chaveAtivacao.value = '';
             }
         }
 
@@ -1171,7 +1212,7 @@
             mostrarAlerta('👤 Modo usuário ativado', 'info');
         }
 
-        // Funções de colaborador
+        // Funções de colaborador - AGORA COM ROLAGEM AUTOMÁTICA
         function mostrarFormAdicionar() {
             if (!adminLogado) {
                 mostrarAlerta('Acesso negado!', 'erro');
@@ -1187,6 +1228,9 @@
             limparFormColaborador();
             colaboradorEditando = null;
             elementos.formColaborador.style.display = 'block';
+            
+            // Rola até o formulário
+            rolarAteFormulario();
         }
 
         function limparFormColaborador() {
@@ -1224,6 +1268,9 @@
             elementos.departamento.value = c.departamento;
             colaboradorEditando = index;
             elementos.formColaborador.style.display = 'block';
+            
+            // Rola até o formulário
+            rolarAteFormulario();
         }
 
         function salvarColaborador() {
@@ -1291,6 +1338,11 @@
             }
             elementos.dataTurno.value = new Date().toISOString().split('T')[0];
             elementos.trocaTurno.style.display = 'block';
+            
+            // Rola até o formulário de troca
+            setTimeout(() => {
+                elementos.trocaTurno.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
 
         function fecharTrocaTurno() {
@@ -1384,6 +1436,11 @@
                 streamWebcam = await navigator.mediaDevices.getUserMedia({ video: true });
                 elementos.webcamVideo.srcObject = streamWebcam;
                 elementos.webcamContainer.style.display = 'block';
+                
+                // Rola até a webcam
+                setTimeout(() => {
+                    elementos.webcamContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             } catch (error) {
                 mostrarAlerta('❌ Erro na webcam!', 'erro');
             }
@@ -1549,7 +1606,7 @@
                 registrosPonto,
                 trocasTurno,
                 data: new Date().toLocaleString(),
-                versao: '3.6'
+                versao: '3.7'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });

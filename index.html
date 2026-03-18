@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Ponto Eletrônico Otimizado - Desenvolvido por João Paulo da Silva de Farias</title>
+    <title>Sistema de Ponto Eletrônico v3.2 - Desenvolvido por João Paulo da Silva de Farias</title>
     <style>
         * {
             margin: 0;
@@ -43,6 +43,140 @@
             padding-bottom: 15px;
         }
 
+        /* Tela de Login do Admin */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .login-overlay.visible {
+            display: flex;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .login-container .form-grupo {
+            margin-bottom: 20px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .login-container button:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-container .erro {
+            color: #f5576c;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        /* Cabeçalho com modo admin */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .btn-admin-login {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-admin-login:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-admin-logout {
+            padding: 8px 16px;
+            background: #f5576c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-admin-logout:hover {
+            background: #fa709a;
+        }
+
         .botoes-principais {
             display: flex;
             flex-wrap: wrap;
@@ -69,6 +203,12 @@
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-colaborador {
@@ -243,27 +383,77 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        /* Área restrita para admin */
+        .admin-only {
+            display: none;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .admin-only.visible {
+            display: block;
+        }
+
+        .admin-only-flex.visible {
+            display: flex;
+        }
+
+        .admin-only-inline.visible {
+            display: inline-block;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📋 Sistema de Ponto Eletrônico (Otimizado)</h1>
+    <!-- Tela de Login do Admin -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-container">
+            <h2>🔐 Área do Administrador</h2>
+            <div class="form-grupo">
+                <label for="login-usuario">Usuário:</label>
+                <input type="text" id="login-usuario" placeholder="Digite seu usuário" value="admin">
+            </div>
+            <div class="form-grupo">
+                <label for="login-senha">Senha:</label>
+                <input type="password" id="login-senha" placeholder="Digite sua senha" value="admin123">
+            </div>
+            <button onclick="fazerLoginAdmin()">Entrar como Admin</button>
+            <button onclick="fecharLogin()" style="margin-top: 10px; background: #f5576c;">Cancelar</button>
+            <div id="login-erro" class="erro"></div>
+        </div>
+    </div>
+
+    <div class="container" id="sistema-container">
+        <!-- Cabeçalho com modo admin -->
+        <div class="admin-header">
+            <div class="admin-info">
+                <div class="admin-avatar" id="admin-avatar">A</div>
+                <div>
+                    <span id="admin-status">Modo Usuário Comum</span>
+                </div>
+            </div>
+            <div>
+                <button id="btn-login-admin" class="btn-admin-login" onclick="mostrarLoginAdmin()">
+                    👨‍💼 Login Admin
+                </button>
+                <button id="btn-logout-admin" class="btn-admin-logout" style="display: none;" onclick="logoutAdmin()">
+                    Sair do Modo Admin
+                </button>
+            </div>
+        </div>
+
+        <h1>📋 Sistema de Ponto Eletrônico</h1>
         <div class="developer">Desenvolvido por: João Paulo da Silva de Farias</div>
 
-        <div class="botoes-principais">
+        <!-- Botões para USUÁRIO COMUM (sempre visíveis) -->
+        <div id="user-botoes" class="botoes-principais">
+            <button class="btn-ponto" onclick="registrarPontoManual()">
+                📝 Registrar Ponto Manual
+            </button>
+            <button class="btn-reconhecimento" onclick="iniciarReconhecimentoFacial()">
+                😀 Reconhecimento Facial
+            </button>
+        </div>
+
+        <!-- Botões para ADMIN (só aparecem quando logado) -->
+        <div id="admin-botoes" class="botoes-principais admin-only">
             <button class="btn-colaborador" onclick="mostrarFormAdicionar()">
                 ➕ Adicionar Colaborador
             </button>
@@ -281,17 +471,8 @@
             </button>
         </div>
 
-        <div class="botoes-principais">
-            <button class="btn-ponto" onclick="registrarPontoManual()">
-                📝 Registrar Ponto
-            </button>
-            <button class="btn-reconhecimento" onclick="iniciarReconhecimentoFacial()">
-                😀 Reconhecimento Facial
-            </button>
-        </div>
-
-        <!-- Área de opções do T.I -->
-        <div id="ti-opcoes" class="ti-opcoes">
+        <!-- Área de opções do T.I (Só admin vê) -->
+        <div id="ti-opcoes" class="ti-opcoes admin-only">
             <button class="btn-ti-opcao" onclick="realizarBackup()">
                 💾 Backup
             </button>
@@ -306,8 +487,8 @@
             </button>
         </div>
 
-        <!-- Formulário de Colaborador -->
-        <div id="form-colaborador" class="secao" style="display: none;">
+        <!-- Formulário de Colaborador (Só admin vê) -->
+        <div id="form-colaborador" class="secao admin-only" style="display: none;">
             <h3 class="secao-titulo" id="form-titulo">➕ Adicionar Colaborador</h3>
             <div class="form-colaborador">
                 <div class="form-grupo">
@@ -333,8 +514,8 @@
             </div>
         </div>
 
-        <!-- Troca de Turnos -->
-        <div id="troca-turno" class="secao" style="display: none;">
+        <!-- Troca de Turnos (Só admin vê) -->
+        <div id="troca-turno" class="secao admin-only" style="display: none;">
             <h3 class="secao-titulo">🔄 Troca de Turnos</h3>
             <div class="form-colaborador">
                 <div class="form-grupo">
@@ -364,7 +545,7 @@
             </div>
         </div>
 
-        <!-- Webcam -->
+        <!-- Webcam (Todos veem) -->
         <div id="webcam-container" class="secao" style="display: none;">
             <h3 class="secao-titulo">📸 Reconhecimento Facial</h3>
             <video id="webcam-video" autoplay playsinline></video>
@@ -374,7 +555,7 @@
             </div>
         </div>
 
-        <!-- Lista de Colaboradores -->
+        <!-- Lista de Colaboradores (Todos veem, mas só admin vê coluna de ações) -->
         <div class="secao">
             <h3 class="secao-titulo">👥 Colaboradores Cadastrados</h3>
             <table class="tabela-colaboradores">
@@ -384,31 +565,57 @@
                         <th>Matrícula</th>
                         <th>Cargo</th>
                         <th>Departamento</th>
-                        <th>Ações</th>
+                        <th id="acoes-header" style="display: none;">Ações</th>
                     </tr>
                 </thead>
                 <tbody id="tabela-colaboradores-body"></tbody>
             </table>
         </div>
 
-        <!-- Registros de Ponto -->
+        <!-- Registros de Ponto (Todos veem) -->
         <div class="secao">
             <h3 class="secao-titulo">📊 Registros de Ponto</h3>
             <div id="registros-ponto" class="registros-ponto"></div>
         </div>
 
-        <!-- Troca de Turnos Registradas -->
-        <div class="secao">
+        <!-- Troca de Turnos Registradas (Só admin vê) -->
+        <div id="registros-troca-container" class="secao admin-only">
             <h3 class="secao-titulo">🔄 Troca de Turnos Registradas</h3>
             <div id="registros-troca" class="registros-ponto"></div>
         </div>
     </div>
 
     <script>
-        // Sistema de Ponto Eletrônico Otimizado - Desenvolvido por João Paulo da Silva de Farias
+        // Sistema de Ponto Eletrônico v3.2 - Desenvolvido por João Paulo da Silva de Farias
+
+        // Credenciais do admin
+        const ADMIN = {
+            usuario: 'admin',
+            senha: 'admin123'
+        };
+
+        // Estado da aplicação
+        let colaboradores = [];
+        let registrosPonto = [];
+        let trocasTurno = [];
+        let colaboradorEditando = null;
+        let streamWebcam = null;
+        let timeoutSalvar = null;
+        let precisaSalvar = false;
+        let adminLogado = false;
 
         // Cache de elementos DOM
         const elementos = {
+            loginOverlay: document.getElementById('login-overlay'),
+            loginUsuario: document.getElementById('login-usuario'),
+            loginSenha: document.getElementById('login-senha'),
+            loginErro: document.getElementById('login-erro'),
+            adminAvatar: document.getElementById('admin-avatar'),
+            adminStatus: document.getElementById('admin-status'),
+            btnLoginAdmin: document.getElementById('btn-login-admin'),
+            btnLogoutAdmin: document.getElementById('btn-logout-admin'),
+            adminBotoes: document.getElementById('admin-botoes'),
+            tiOpcoes: document.getElementById('ti-opcoes'),
             formColaborador: document.getElementById('form-colaborador'),
             formTitulo: document.getElementById('form-titulo'),
             nome: document.getElementById('nome'),
@@ -422,24 +629,78 @@
             motivoTurno: document.getElementById('motivo-turno'),
             webcamContainer: document.getElementById('webcam-container'),
             webcamVideo: document.getElementById('webcam-video'),
-            tiOpcoes: document.getElementById('ti-opcoes'),
             tabelaColaboradores: document.getElementById('tabela-colaboradores-body'),
+            acoesHeader: document.getElementById('acoes-header'),
             registrosPonto: document.getElementById('registros-ponto'),
-            registrosTroca: document.getElementById('registros-troca')
+            registrosTroca: document.getElementById('registros-troca'),
+            registrosTrocaContainer: document.getElementById('registros-troca-container')
         };
 
-        // Estado da aplicação
-        let colaboradores = [];
-        let registrosPonto = [];
-        let trocasTurno = [];
-        let colaboradorEditando = null;
-        let streamWebcam = null;
-        let timeoutSalvar = null;
-        let precisaSalvar = false;
+        // Funções de login do admin
+        function mostrarLoginAdmin() {
+            elementos.loginOverlay.classList.add('visible');
+        }
+
+        function fecharLogin() {
+            elementos.loginOverlay.classList.remove('visible');
+            elementos.loginErro.textContent = '';
+        }
+
+        function fazerLoginAdmin() {
+            const usuario = elementos.loginUsuario.value;
+            const senha = elementos.loginSenha.value;
+
+            if (usuario === ADMIN.usuario && senha === ADMIN.senha) {
+                adminLogado = true;
+                
+                // Atualiza interface
+                elementos.adminAvatar.textContent = 'A';
+                elementos.adminStatus.textContent = 'Modo Administrador';
+                elementos.btnLoginAdmin.style.display = 'none';
+                elementos.btnLogoutAdmin.style.display = 'inline-block';
+                
+                // Mostra elementos de admin
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('visible'));
+                elementos.acoesHeader.style.display = 'table-cell';
+                
+                // Fecha login
+                fecharLogin();
+                
+                // Atualiza tabela para mostrar ações
+                atualizarTabelaColaboradores();
+                
+                mostrarAlerta('✅ Modo administrador ativado!', 'sucesso');
+            } else {
+                elementos.loginErro.textContent = 'Usuário ou senha inválidos!';
+            }
+        }
+
+        function logoutAdmin() {
+            adminLogado = false;
+            
+            // Atualiza interface
+            elementos.adminAvatar.textContent = 'U';
+            elementos.adminStatus.textContent = 'Modo Usuário Comum';
+            elementos.btnLoginAdmin.style.display = 'inline-block';
+            elementos.btnLogoutAdmin.style.display = 'none';
+            
+            // Esconde elementos de admin
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('visible'));
+            elementos.acoesHeader.style.display = 'none';
+            
+            // Fecha formulários abertos
+            fecharFormColaborador();
+            fecharTrocaTurno();
+            elementos.tiOpcoes.classList.remove('mostrar');
+            
+            // Atualiza tabela para esconder ações
+            atualizarTabelaColaboradores();
+            
+            mostrarAlerta('👤 Modo usuário comum ativado', 'info');
+        }
 
         // Inicialização otimizada
         function inicializar() {
-            // Carrega dados de uma vez só
             const startTime = performance.now();
             
             try {
@@ -453,7 +714,6 @@
                 trocasTurno = [];
             }
 
-            // Atualiza interface
             atualizarTabelaColaboradores();
             atualizarRegistrosPonto();
             atualizarRegistrosTroca();
@@ -483,11 +743,16 @@
                     
                     precisaSalvar = false;
                 }
-            }, 500); // Aguarda 500ms antes de salvar
+            }, 500);
         }
 
         // Função para salvar imediatamente
         function salvarDadosAgora() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado!', 'erro');
+                return;
+            }
+            
             if (timeoutSalvar) {
                 clearTimeout(timeoutSalvar);
             }
@@ -507,7 +772,6 @@
             alerta.textContent = mensagem;
             document.body.appendChild(alerta);
             
-            // Remove após 2 segundos
             setTimeout(() => {
                 if (alerta.parentNode) {
                     alerta.remove();
@@ -517,8 +781,6 @@
 
         // Função otimizada para atualizar tabela de colaboradores
         function atualizarTabelaColaboradores() {
-            const startTime = performance.now();
-            
             if (!elementos.tabelaColaboradores) return;
             
             if (colaboradores.length === 0) {
@@ -526,31 +788,41 @@
                 return;
             }
 
-            // Usa DocumentFragment para melhor performance
             const fragment = document.createDocumentFragment();
             
             colaboradores.forEach((colaborador, index) => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${colaborador.nome}</td>
-                    <td>${colaborador.matricula}</td>
-                    <td>${colaborador.cargo}</td>
-                    <td>${colaborador.departamento}</td>
-                    <td class="acoes-colaborador">
-                        <button class="btn-colaborador" onclick="editarColaborador(${index})">✏️</button>
-                        <button class="btn-turno" onclick="excluirColaborador(${index})">❌</button>
-                    </td>
-                `;
+                
+                // Se for admin, mostra coluna de ações
+                if (adminLogado) {
+                    tr.innerHTML = `
+                        <td>${colaborador.nome}</td>
+                        <td>${colaborador.matricula}</td>
+                        <td>${colaborador.cargo}</td>
+                        <td>${colaborador.departamento}</td>
+                        <td class="acoes-colaborador">
+                            <button class="btn-colaborador" onclick="editarColaborador(${index})">✏️</button>
+                            <button class="btn-turno" onclick="excluirColaborador(${index})">❌</button>
+                        </td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${colaborador.nome}</td>
+                        <td>${colaborador.matricula}</td>
+                        <td>${colaborador.cargo}</td>
+                        <td>${colaborador.departamento}</td>
+                    `;
+                }
+                
                 fragment.appendChild(tr);
             });
             
             elementos.tabelaColaboradores.innerHTML = '';
             elementos.tabelaColaboradores.appendChild(fragment);
             
-            atualizarSelectsColaboradores();
-            
-            const endTime = performance.now();
-            console.log(`Tabela atualizada em ${(endTime - startTime).toFixed(2)}ms`);
+            if (adminLogado) {
+                atualizarSelectsColaboradores();
+            }
         }
 
         // Função otimizada para atualizar selects
@@ -568,8 +840,13 @@
             elementos.colaboradorEntrada.innerHTML = optionsString;
         }
 
-        // Funções de colaborador otimizadas
+        // Funções de colaborador (só admin pode executar)
         function mostrarFormAdicionar() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             elementos.formTitulo.textContent = '➕ Adicionar Colaborador';
             elementos.nome.value = '';
             elementos.matricula.value = '';
@@ -580,6 +857,11 @@
         }
 
         function prepararEdicao() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             if (colaboradores.length === 0) {
                 mostrarAlerta('❌ Nenhum colaborador para editar!', 'erro');
                 return;
@@ -588,6 +870,11 @@
         }
 
         function editarColaborador(index) {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             const colaborador = colaboradores[index];
             elementos.formTitulo.textContent = '✏️ Editar Colaborador';
             elementos.nome.value = colaborador.nome;
@@ -599,6 +886,11 @@
         }
 
         function salvarColaborador() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             const nome = elementos.nome.value.trim();
             const matricula = elementos.matricula.value.trim();
             const cargo = elementos.cargo.value.trim();
@@ -624,15 +916,20 @@
             }
 
             atualizarTabelaColaboradores();
-            salvarDados(); // Salvamento otimizado
+            salvarDados();
             fecharFormColaborador();
         }
 
         function excluirColaborador(index) {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             if (confirm('Tem certeza que deseja excluir este colaborador?')) {
                 colaboradores.splice(index, 1);
                 atualizarTabelaColaboradores();
-                salvarDados(); // Salvamento otimizado
+                salvarDados();
                 mostrarAlerta('❌ Colaborador excluído!', 'sucesso');
             }
         }
@@ -642,6 +939,11 @@
         }
 
         function confirmarExclusao() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             if (colaboradores.length === 0) {
                 mostrarAlerta('❌ Nenhum colaborador para excluir!', 'erro');
                 return;
@@ -649,8 +951,13 @@
             mostrarAlerta('❌ Clique no botão excluir na tabela', 'info');
         }
 
-        // Funções de troca de turno otimizadas
+        // Funções de troca de turno (só admin)
         function mostrarTrocaTurno() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             if (colaboradores.length < 2) {
                 mostrarAlerta('❌ É necessário ter pelo menos 2 colaboradores!', 'erro');
                 return;
@@ -664,6 +971,11 @@
         }
 
         function registrarTrocaTurno() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             const colaboradorSaida = elementos.colaboradorSaida.value;
             const colaboradorEntrada = elementos.colaboradorEntrada.value;
             const data = elementos.dataTurno.value;
@@ -695,24 +1007,24 @@
 
             trocasTurno.push(troca);
             atualizarRegistrosTroca();
-            salvarDados(); // Salvamento otimizado
+            salvarDados();
             fecharTrocaTurno();
             mostrarAlerta('🔄 Troca registrada!', 'sucesso');
         }
 
-        // Funções de ponto otimizadas
+        // Funções de ponto (todos podem)
         function registrarPontoManual() {
             if (colaboradores.length === 0) {
                 mostrarAlerta('❌ Nenhum colaborador cadastrado!', 'erro');
                 return;
             }
 
-            const matricula = prompt('Digite a matrícula do colaborador:');
+            const matricula = prompt('Digite sua matrícula:');
             if (!matricula) return;
 
             const colaborador = colaboradores.find(c => c.matricula === matricula);
             if (!colaborador) {
-                mostrarAlerta('❌ Colaborador não encontrado!', 'erro');
+                mostrarAlerta('❌ Matrícula não encontrada!', 'erro');
                 return;
             }
 
@@ -734,11 +1046,11 @@
 
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
-            salvarDados(); // Salvamento otimizado
-            mostrarAlerta('✅ Ponto registrado!', 'sucesso');
+            salvarDados();
+            mostrarAlerta(`✅ Ponto registrado para ${colaborador.nome}!`, 'sucesso');
         }
 
-        // Funções de webcam otimizadas
+        // Funções de webcam (todos podem)
         async function iniciarReconhecimentoFacial() {
             if (colaboradores.length === 0) {
                 mostrarAlerta('❌ Nenhum colaborador cadastrado!', 'erro');
@@ -757,12 +1069,12 @@
         }
 
         function capturarFoto() {
-            const matricula = prompt('Digite a matrícula:');
+            const matricula = prompt('Digite sua matrícula:');
             if (!matricula) return;
 
             const colaborador = colaboradores.find(c => c.matricula === matricula);
             if (!colaborador) {
-                mostrarAlerta('❌ Colaborador não encontrado!', 'erro');
+                mostrarAlerta('❌ Matrícula não encontrada!', 'erro');
                 return;
             }
 
@@ -784,9 +1096,9 @@
 
             registrosPonto.push(registro);
             atualizarRegistrosPonto();
-            salvarDados(); // Salvamento otimizado
+            salvarDados();
             fecharWebcam();
-            mostrarAlerta('✅ Ponto registrado!', 'sucesso');
+            mostrarAlerta(`✅ Ponto registrado para ${colaborador.nome}!`, 'sucesso');
         }
 
         function fecharWebcam() {
@@ -797,10 +1109,8 @@
             elementos.webcamContainer.style.display = 'none';
         }
 
-        // Funções de atualização de registros otimizadas
+        // Funções de atualização de registros
         function atualizarRegistrosPonto() {
-            const startTime = performance.now();
-            
             if (!elementos.registrosPonto) return;
             
             if (registrosPonto.length === 0) {
@@ -823,9 +1133,6 @@
             
             elementos.registrosPonto.innerHTML = '';
             elementos.registrosPonto.appendChild(fragment);
-            
-            const endTime = performance.now();
-            console.log(`Registros atualizados em ${(endTime - startTime).toFixed(2)}ms`);
         }
 
         function atualizarRegistrosTroca() {
@@ -855,12 +1162,21 @@
             elementos.registrosTroca.appendChild(fragment);
         }
 
-        // Funções T.I otimizadas
+        // Funções T.I (só admin)
         function toggleTiOpcoes() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
             elementos.tiOpcoes.classList.toggle('mostrar');
         }
 
         function realizarBackup() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             const backup = {
                 colaboradores,
                 registrosPonto,
@@ -880,6 +1196,11 @@
         }
 
         function exportarPDF() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             mostrarAlerta('📄 Gerando PDF...', 'info');
             setTimeout(() => {
                 mostrarAlerta('✅ PDF exportado!', 'sucesso');
@@ -887,6 +1208,11 @@
         }
 
         function imprimirRegistros() {
+            if (!adminLogado) {
+                mostrarAlerta('Acesso negado! Área restrita para administradores.', 'erro');
+                return;
+            }
+            
             const janelaImpressao = window.open('', '_blank');
             janelaImpressao.document.write(`
                 <html>
@@ -914,7 +1240,7 @@
             mostrarAlerta('🖨️ Imprimindo...', 'info');
         }
 
-        // Event listener otimizado
+        // Event listener para salvar dados antes de fechar
         window.addEventListener('beforeunload', function() {
             if (timeoutSalvar) {
                 clearTimeout(timeoutSalvar);
@@ -927,7 +1253,6 @@
     </script>
 </body>
 </html>
-
 // ================= CONFIGURAÇÕES =================
         const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU";  // <-- COLE SEU ID AQUI
         const API_KEY = "AIzaSyBD7Rmat8O_Ilf9QrORwB3Asyjw8t4uQ00";       // <-- COLE SUA API KEY

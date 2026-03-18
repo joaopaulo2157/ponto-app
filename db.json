@@ -1,0 +1,12 @@
+{
+  "ativacao": {
+    "status": false,
+    "chave": ""
+  },
+  "dados": {
+    "colaboradores": [],
+    "registrosPonto": [],
+    "trocasTurno": [],
+    "ultimaSincronizacao": ""
+  }
+}

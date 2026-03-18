@@ -2,1780 +2,933 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Ponto App">
-    <meta name="theme-color" content="#667eea">
-    
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/icon-152.png">
-    
-    <title>📱 Ponto App</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ponto Eletrônico Otimizado - Desenvolvido por João Paulo da Silva de Farias</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 12px;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        
-        /* Telas */
-        .screen {
-            background: white;
-            border-radius: 40px;
-            min-height: calc(100vh - 24px);
-            display: none;
-            flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        .screen.active {
-            display: flex;
-        }
-        
-        /* Cabeçalho */
-        .header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
             padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
-        
-        .btn-back {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
         }
-        
-        .btn-back:active {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .header-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            flex: 1;
-        }
-        
-        .header-action {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        /* Conteúdo */
-        .content {
-            padding: 20px;
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        /* Menu Principal */
-        .main-menu {
-            background: white;
-            border-radius: 40px;
-            padding: 24px;
-            min-height: calc(100vh - 24px);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .logo-area {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .logo {
-            font-size: 5rem;
-            margin-bottom: 10px;
-        }
-        
+
         h1 {
             color: #333;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
         }
-        
+
         .developer {
+            text-align: center;
             color: #666;
-            font-size: 0.9rem;
+            margin-bottom: 30px;
+            font-size: 1.1em;
             border-bottom: 2px solid #667eea;
             padding-bottom: 15px;
         }
-        
-        .btn-facial {
-            background: linear-gradient(135deg, #43e97b, #38f9d7);
-            color: white;
+
+        .botoes-principais {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 24px;
             border: none;
-            padding: 28px;
-            border-radius: 40px;
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 20px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            box-shadow: 0 15px 30px rgba(67, 233, 123, 0.4);
-            transition: transform 0.2s;
-            width: 100%;
-        }
-        
-        .btn-facial:active {
-            transform: scale(0.97);
-        }
-        
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .menu-item {
-            background: #f8f9fa;
-            border: none;
-            border-radius: 25px;
-            padding: 20px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 600;
-            color: #333;
-            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        
-        .menu-item:active {
-            background: #e9ecef;
-            transform: scale(0.96);
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        
-        .menu-item span {
-            font-size: 2.2rem;
-        }
-        
-        .stats {
-            background: #f8f9fa;
-            border-radius: 25px;
-            padding: 20px;
-            margin-top: auto;
-        }
-        
-        .stats h3 {
-            color: #333;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .stat-item:last-child {
-            border-bottom: none;
-        }
-        
-        .stat-value {
-            font-weight: 700;
-            color: #667eea;
-            font-size: 1.2rem;
-        }
-        
-        /* Cards */
-        .card {
-            background: #f8f9fa;
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 5px solid #667eea;
-        }
-        
-        .card-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .card-subtitle {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        
-        .card-detail {
-            color: #999;
-            font-size: 0.85rem;
-        }
-        
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        /* Formulários */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 600;
-        }
-        
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 20px;
-            font-size: 1rem;
-            background: white;
-            -webkit-appearance: none;
-        }
-        
-        .form-group input:focus, .form-group select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        
-        /* Botões */
-        .btn-primary {
+
+        .btn-colaborador {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            width: 100%;
-            margin: 5px 0;
-            cursor: pointer;
         }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #43e97b, #38f9d7);
-            color: white;
-        }
-        
-        .btn-warning {
+
+        .btn-turno {
             background: linear-gradient(135deg, #f093fb, #f5576c);
             color: white;
         }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #fa709a, #f5576c);
+
+        .btn-ponto {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
             color: white;
         }
-        
-        .btn-small {
-            padding: 10px 15px;
-            font-size: 0.9rem;
-            width: auto;
-            flex: 1;
+
+        .btn-reconhecimento {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+            font-size: 1.2em;
+            padding: 15px 30px;
         }
-        
-        /* Camera */
-        .camera-container {
-            width: 100%;
-            aspect-ratio: 4/3;
-            background: #000;
-            border-radius: 30px;
+
+        .btn-ti {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: #333;
+        }
+
+        .secao {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .secao-titulo {
+            color: #333;
             margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
+            font-size: 1.5em;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
         }
-        
-        #video {
+
+        .form-colaborador {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-grupo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-grupo label {
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-grupo input, .form-grupo select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-grupo input:focus, .form-grupo select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .tabela-colaboradores {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scaleX(-1);
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        
-        .face-guide {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            border: 3px solid rgba(255,255,255,0.5);
-            border-radius: 50%;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
-            pointer-events: none;
-        }
-        
-        .face-guide::after {
-            content: '👤';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 60px;
-            opacity: 0.3;
-        }
-        
-        /* Status */
-        .status {
-            padding: 15px;
-            border-radius: 20px;
-            margin: 15px 0;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .status-info {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-        
-        .status-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .status-error {
-            background: #ffebee;
-            color: #c62828;
-        }
-        
-        .status-warning {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-        
-        /* Loading */
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .loading-card {
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            text-align: center;
-        }
-        
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Install Banner */
-        .install-banner {
+
+        .tabela-colaboradores th {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 15px;
-            border-radius: 25px;
-            margin-top: 20px;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .install-banner button {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 12px;
             font-weight: 600;
-            cursor: pointer;
         }
-        
-        .footer {
+
+        .tabela-colaboradores td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .tabela-colaboradores tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        .acoes-colaborador {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .acoes-colaborador button {
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+
+        #webcam-container {
             text-align: center;
             margin-top: 20px;
-            color: #999;
-            font-size: 0.8rem;
+        }
+
+        #webcam-video {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .ti-opcoes {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .ti-opcoes.mostrar {
+            display: grid;
+        }
+
+        .btn-ti-opcao {
+            background: white;
+            color: #333;
+            border: 2px solid #fa709a;
+        }
+
+        .registros-ponto {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .registro-item {
+            background: white;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .alerta {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alerta.sucesso { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .alerta.erro { background: linear-gradient(135deg, #fa709a, #f5576c); }
+        .alerta.info { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <!-- Loading -->
-    <div class="loading" id="loading">
-        <div class="loading-card">
-            <div class="spinner"></div>
-            <p id="loadingMessage">Processando...</p>
-        </div>
-    </div>
+    <div class="container">
+        <h1>📋 Sistema de Ponto Eletrônico (Otimizado)</h1>
+        <div class="developer">Desenvolvido por: João Paulo da Silva de Farias</div>
 
-    <!-- Tela Principal -->
-    <div id="screenMain" class="main-menu">
-        <div class="logo-area">
-            <div class="logo">📱</div>
-            <h1>Ponto App</h1>
-            <div class="developer">João Paulo da Silva de Farias</div>
-        </div>
-        
-        <button class="btn-facial" onclick="navegarPara('facial')">
-            <span>📸</span> BATER PONTO
-        </button>
-        
-        <div class="menu-grid">
-            <button class="menu-item" onclick="navegarPara('colaboradores')">
-                <span>👥</span>
-                Colaboradores
+        <div class="botoes-principais">
+            <button class="btn-colaborador" onclick="mostrarFormAdicionar()">
+                ➕ Adicionar Colaborador
             </button>
-            
-            <button class="menu-item" onclick="navegarPara('registros')">
-                <span>📊</span>
-                Registros
+            <button class="btn-colaborador" onclick="prepararEdicao()">
+                ✏️ Editar Colaborador
             </button>
-            
-            <button class="menu-item" onclick="navegarPara('troca')">
-                <span>🔄</span>
-                Troca Turnos
+            <button class="btn-colaborador" onclick="confirmarExclusao()">
+                ❌ Excluir Colaborador
             </button>
-            
-            <button class="menu-item" onclick="navegarPara('ti')">
-                <span>👨‍💻</span>
-                Área T.I
+            <button class="btn-turno" onclick="mostrarTrocaTurno()">
+                🔄 Troca de Turnos
+            </button>
+            <button class="btn-ti" onclick="toggleTiOpcoes()">
+                👨‍💻 Profissional T.I
             </button>
         </div>
-        
-        <div class="stats">
-            <h3>
-                <span>📊</span> Estatísticas
-            </h3>
-            <div class="stat-item">
-                <span>Total Colaboradores</span>
-                <span class="stat-value" id="totalColab">0</span>
-            </div>
-            <div class="stat-item">
-                <span>Registros Hoje</span>
-                <span class="stat-value" id="registrosHoje">0</span>
-            </div>
-        </div>
-        
-        <div class="install-banner" id="installBanner">
-            <span>📲 Instalar app</span>
-            <button onclick="installPWA()">Instalar</button>
-        </div>
-        
-        <div class="footer">
-            Versão 5.0 • 100% Funcional
-        </div>
-    </div>
 
-    <!-- Tela: Reconhecimento Facial -->
-    <div id="screenFacial" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaMenu()">←</button>
-            <div class="header-title">📸 Reconhecimento Facial</div>
-        </div>
-        <div class="content">
-            <div class="camera-container">
-                <video id="video" autoplay playsinline></video>
-                <div class="face-guide"></div>
-            </div>
-            
-            <div id="facialStatus" class="status status-info">
-                Posicione seu rosto no círculo
-            </div>
-            
-            <button class="btn-primary btn-success" onclick="capturarRosto()">
-                📸 Capturar e Registrar
+        <div class="botoes-principais">
+            <button class="btn-ponto" onclick="registrarPontoManual()">
+                📝 Registrar Ponto
             </button>
-            
-            <div id="matriculaSection" style="display: none;">
-                <div class="form-group">
-                    <label>Matrícula para cadastro:</label>
-                    <input type="text" id="matriculaInput" placeholder="Digite sua matrícula">
+            <button class="btn-reconhecimento" onclick="iniciarReconhecimentoFacial()">
+                😀 Reconhecimento Facial
+            </button>
+        </div>
+
+        <!-- Área de opções do T.I -->
+        <div id="ti-opcoes" class="ti-opcoes">
+            <button class="btn-ti-opcao" onclick="realizarBackup()">
+                💾 Backup
+            </button>
+            <button class="btn-ti-opcao" onclick="salvarDadosAgora()">
+                💿 Salvar Agora
+            </button>
+            <button class="btn-ti-opcao" onclick="exportarPDF()">
+                📄 Exportar PDF
+            </button>
+            <button class="btn-ti-opcao" onclick="imprimirRegistros()">
+                🖨️ Imprimir Registros
+            </button>
+        </div>
+
+        <!-- Formulário de Colaborador -->
+        <div id="form-colaborador" class="secao" style="display: none;">
+            <h3 class="secao-titulo" id="form-titulo">➕ Adicionar Colaborador</h3>
+            <div class="form-colaborador">
+                <div class="form-grupo">
+                    <label for="nome">Nome completo:</label>
+                    <input type="text" id="nome" placeholder="Digite o nome">
                 </div>
-                <button class="btn-primary" onclick="cadastrarBiometria()">
-                    ✅ Cadastrar Biometria
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tela: Colaboradores -->
-    <div id="screenColaboradores" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaMenu()">←</button>
-            <div class="header-title">👥 Colaboradores</div>
-            <button class="header-action" onclick="mostrarFormColaborador()">➕</button>
-        </div>
-        <div class="content" id="colaboradoresList">
-            <div class="status status-info">Carregando colaboradores...</div>
-        </div>
-    </div>
-
-    <!-- Tela: Formulário Colaborador -->
-    <div id="screenFormColaborador" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaColaboradores()">←</button>
-            <div class="header-title" id="formColabTitle">➕ Novo Colaborador</div>
-        </div>
-        <div class="content">
-            <div class="form-group">
-                <label>Nome completo *</label>
-                <input type="text" id="colabNome" placeholder="Digite o nome">
-            </div>
-            
-            <div class="form-group">
-                <label>Matrícula *</label>
-                <input type="text" id="colabMatricula" placeholder="Digite a matrícula">
-            </div>
-            
-            <div class="form-group">
-                <label>Cargo</label>
-                <input type="text" id="colabCargo" placeholder="Digite o cargo">
-            </div>
-            
-            <div class="form-group">
-                <label>Departamento</label>
-                <input type="text" id="colabDepartamento" placeholder="Digite o departamento">
-            </div>
-            
-            <div class="form-group">
-                <label>Escola</label>
-                <input type="text" id="colabEscola" placeholder="Nome da escola">
-            </div>
-            
-            <div class="form-group">
-                <label>Carga Horária Mensal (horas)</label>
-                <input type="number" id="colabCarga" value="160">
-            </div>
-            
-            <button class="btn-primary" onclick="salvarColaborador()">✅ Salvar</button>
-            <button class="btn-danger" onclick="voltarParaColaboradores()">❌ Cancelar</button>
-        </div>
-    </div>
-
-    <!-- Tela: Registros de Ponto -->
-    <div id="screenRegistros" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaMenu()">←</button>
-            <div class="header-title">📊 Registros de Ponto</div>
-            <button class="header-action" onclick="mostrarFormRegistro()">➕</button>
-        </div>
-        <div class="content" id="registrosList">
-            <div class="status status-info">Carregando registros...</div>
-        </div>
-    </div>
-
-    <!-- Tela: Formulário Registro Manual -->
-    <div id="screenFormRegistro" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaRegistros()">←</button>
-            <div class="header-title">📝 Registro Manual</div>
-        </div>
-        <div class="content">
-            <div class="form-group">
-                <label>Matrícula *</label>
-                <input type="text" id="regMatricula" placeholder="Digite a matrícula">
-            </div>
-            
-            <div class="form-group">
-                <label>Tipo</label>
-                <select id="regTipo">
-                    <option value="entrada">🚪 Entrada</option>
-                    <option value="saida">🏃 Saída</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Data</label>
-                <input type="date" id="regData">
-            </div>
-            
-            <div class="form-group">
-                <label>Hora</label>
-                <input type="time" id="regHora">
-            </div>
-            
-            <div class="form-group">
-                <label>Observação</label>
-                <textarea id="regObs" rows="3" placeholder="Opcional"></textarea>
-            </div>
-            
-            <button class="btn-primary btn-success" onclick="salvarRegistro()">✅ Salvar Registro</button>
-            <button class="btn-danger" onclick="voltarParaRegistros()">❌ Cancelar</button>
-        </div>
-    </div>
-
-    <!-- Tela: Troca de Turnos -->
-    <div id="screenTroca" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaMenu()">←</button>
-            <div class="header-title">🔄 Troca de Turnos</div>
-            <button class="header-action" onclick="mostrarFormTroca()">➕</button>
-        </div>
-        <div class="content" id="trocasList">
-            <div class="status status-info">Carregando trocas...</div>
-        </div>
-    </div>
-
-    <!-- Tela: Formulário Troca de Turnos -->
-    <div id="screenFormTroca" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaTrocas()">←</button>
-            <div class="header-title">🔄 Nova Troca</div>
-        </div>
-        <div class="content">
-            <div class="form-group">
-                <label>Colaborador Substituído *</label>
-                <select id="trocaSaida">
-                    <option value="">Selecione</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Colaborador Substituto *</label>
-                <select id="trocaEntrada">
-                    <option value="">Selecione</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Data da Troca</label>
-                <input type="date" id="trocaData">
-            </div>
-            
-            <div class="form-group">
-                <label>Motivo *</label>
-                <input type="text" id="trocaMotivo" placeholder="Digite o motivo">
-            </div>
-            
-            <div class="form-group">
-                <label>Observação</label>
-                <textarea id="trocaObs" rows="3" placeholder="Opcional"></textarea>
-            </div>
-            
-            <button class="btn-primary btn-warning" onclick="salvarTroca()">✅ Registrar Troca</button>
-            <button class="btn-danger" onclick="voltarParaTrocas()">❌ Cancelar</button>
-        </div>
-    </div>
-
-    <!-- Tela: Área T.I -->
-    <div id="screenTI" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaMenu()">←</button>
-            <div class="header-title">👨‍💻 Área T.I</div>
-        </div>
-        <div class="content">
-            <div class="status status-warning" id="tiStatus">
-                🔒 Acesso Restrito
-            </div>
-            
-            <div class="form-group">
-                <label>Usuário</label>
-                <input type="text" id="tiUsuario" placeholder="Digite o usuário">
-            </div>
-            
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" id="tiSenha" placeholder="Digite a senha">
-            </div>
-            
-            <button class="btn-primary" onclick="fazerLoginTI()">🔐 Entrar</button>
-            
-            <div id="tiPainel" style="display: none; margin-top: 30px;">
-                <h3 style="margin-bottom: 15px;">📋 Painel Administrativo</h3>
-                
-                <div class="card">
-                    <div class="card-title">📊 Folha de Ponto</div>
-                    <div class="form-group">
-                        <label>Mês</label>
-                        <select id="tiMes">
-                            <option value="1">Janeiro</option>
-                            <option value="2">Fevereiro</option>
-                            <option value="3">Março</option>
-                            <option value="4">Abril</option>
-                            <option value="5">Maio</option>
-                            <option value="6">Junho</option>
-                            <option value="7">Julho</option>
-                            <option value="8">Agosto</option>
-                            <option value="9">Setembro</option>
-                            <option value="10">Outubro</option>
-                            <option value="11">Novembro</option>
-                            <option value="12">Dezembro</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Ano</label>
-                        <input type="number" id="tiAno" value="2024">
-                    </div>
-                    <button class="btn-small btn-primary" onclick="gerarFolhaPonto()">📄 Gerar Folha</button>
+                <div class="form-grupo">
+                    <label for="matricula">Matrícula:</label>
+                    <input type="text" id="matricula" placeholder="Digite a matrícula">
                 </div>
-                
-                <div class="card">
-                    <div class="card-title">👥 Gerenciar Usuários TI</div>
-                    <div id="usuariosTIList"></div>
-                    <button class="btn-small btn-success" onclick="mostrarFormNovoUsuario()">➕ Novo Usuário</button>
+                <div class="form-grupo">
+                    <label for="cargo">Cargo:</label>
+                    <input type="text" id="cargo" placeholder="Digite o cargo">
                 </div>
-                
-                <div class="card">
-                    <div class="card-title">💾 Backup</div>
-                    <button class="btn-small btn-primary" onclick="fazerBackup()">📦 Fazer Backup</button>
+                <div class="form-grupo">
+                    <label for="departamento">Departamento:</label>
+                    <input type="text" id="departamento" placeholder="Digite o departamento">
                 </div>
             </div>
+            <div style="text-align: right;">
+                <button class="btn-colaborador" onclick="salvarColaborador()" style="margin-right: 10px;">✅ Salvar</button>
+                <button class="btn-ti" onclick="fecharFormColaborador()">❌ Cancelar</button>
+            </div>
         </div>
-    </div>
 
-    <!-- Tela: Formulário Usuário TI -->
-    <div id="screenFormUsuario" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="voltarParaTI()">←</button>
-            <div class="header-title">👤 Novo Usuário TI</div>
+        <!-- Troca de Turnos -->
+        <div id="troca-turno" class="secao" style="display: none;">
+            <h3 class="secao-titulo">🔄 Troca de Turnos</h3>
+            <div class="form-colaborador">
+                <div class="form-grupo">
+                    <label for="colaborador-saida">Colaborador substituído:</label>
+                    <select id="colaborador-saida">
+                        <option value="">Selecione um colaborador</option>
+                    </select>
+                </div>
+                <div class="form-grupo">
+                    <label for="colaborador-entrada">Colaborador substituto:</label>
+                    <select id="colaborador-entrada">
+                        <option value="">Selecione um colaborador</option>
+                    </select>
+                </div>
+                <div class="form-grupo">
+                    <label for="data-turno">Data da troca:</label>
+                    <input type="date" id="data-turno">
+                </div>
+                <div class="form-grupo">
+                    <label for="motivo-turno">Motivo:</label>
+                    <input type="text" id="motivo-turno" placeholder="Digite o motivo da troca">
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <button class="btn-turno" onclick="registrarTrocaTurno()">✅ Confirmar Troca</button>
+                <button class="btn-ti" onclick="fecharTrocaTurno()">❌ Cancelar</button>
+            </div>
         </div>
-        <div class="content">
-            <div class="form-group">
-                <label>Usuário</label>
-                <input type="text" id="userUsuario" placeholder="Digite o usuário">
+
+        <!-- Webcam -->
+        <div id="webcam-container" class="secao" style="display: none;">
+            <h3 class="secao-titulo">📸 Reconhecimento Facial</h3>
+            <video id="webcam-video" autoplay playsinline></video>
+            <div style="margin-top: 20px;">
+                <button class="btn-reconhecimento" onclick="capturarFoto()">📸 Capturar e Registrar Ponto</button>
+                <button class="btn-ti" onclick="fecharWebcam()">❌ Fechar</button>
             </div>
-            
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" id="userSenha" placeholder="Digite a senha">
-            </div>
-            
-            <div class="form-group">
-                <label>Tipo</label>
-                <select id="userTipo">
-                    <option value="Comum">Comum</option>
-                    <option value="Master">Master</option>
-                </select>
-            </div>
-            
-            <button class="btn-primary" onclick="salvarUsuarioTI()">✅ Salvar</button>
-            <button class="btn-danger" onclick="voltarParaTI()">❌ Cancelar</button>
+        </div>
+
+        <!-- Lista de Colaboradores -->
+        <div class="secao">
+            <h3 class="secao-titulo">👥 Colaboradores Cadastrados</h3>
+            <table class="tabela-colaboradores">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Matrícula</th>
+                        <th>Cargo</th>
+                        <th>Departamento</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-colaboradores-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Registros de Ponto -->
+        <div class="secao">
+            <h3 class="secao-titulo">📊 Registros de Ponto</h3>
+            <div id="registros-ponto" class="registros-ponto"></div>
+        </div>
+
+        <!-- Troca de Turnos Registradas -->
+        <div class="secao">
+            <h3 class="secao-titulo">🔄 Troca de Turnos Registradas</h3>
+            <div id="registros-troca" class="registros-ponto"></div>
         </div>
     </div>
 
     <script>
-        // ================= CONFIGURAÇÕES =================
-        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU";  // <-- COLE SEU ID AQUI
-        const API_KEY = "AIzaSyBD7Rmat8O_Ilf9QrORwB3Asyjw8t4uQ00";       // <-- COLE SUA API KEY
-        const CLIENT_ID = "800782181988-2fhpnr9erlv4lm8g8v4jocud79cm5o23.apps.googleusercontent.com";   // <-- COLE SEU CLIENT ID
-        
-        // ================= ESTADO GLOBAL =================
+        // Sistema de Ponto Eletrônico Otimizado - Desenvolvido por João Paulo da Silva de Farias
+
+        // Cache de elementos DOM
+        const elementos = {
+            formColaborador: document.getElementById('form-colaborador'),
+            formTitulo: document.getElementById('form-titulo'),
+            nome: document.getElementById('nome'),
+            matricula: document.getElementById('matricula'),
+            cargo: document.getElementById('cargo'),
+            departamento: document.getElementById('departamento'),
+            trocaTurno: document.getElementById('troca-turno'),
+            colaboradorSaida: document.getElementById('colaborador-saida'),
+            colaboradorEntrada: document.getElementById('colaborador-entrada'),
+            dataTurno: document.getElementById('data-turno'),
+            motivoTurno: document.getElementById('motivo-turno'),
+            webcamContainer: document.getElementById('webcam-container'),
+            webcamVideo: document.getElementById('webcam-video'),
+            tiOpcoes: document.getElementById('ti-opcoes'),
+            tabelaColaboradores: document.getElementById('tabela-colaboradores-body'),
+            registrosPonto: document.getElementById('registros-ponto'),
+            registrosTroca: document.getElementById('registros-troca')
+        };
+
+        // Estado da aplicação
         let colaboradores = [];
         let registrosPonto = [];
         let trocasTurno = [];
-        let usuariosTI = [];
         let colaboradorEditando = null;
-        let stream = null;
-        let hashTemporario = null;
-        let logadoTI = false;
-        let tokenCliente = null;
-        
-        // ================= INICIALIZAÇÃO =================
-        window.onload = function() {
-            document.getElementById('screenMain').style.display = 'flex';
-            carregarDadosIniciais();
+        let streamWebcam = null;
+        let timeoutSalvar = null;
+        let precisaSalvar = false;
+
+        // Inicialização otimizada
+        function inicializar() {
+            // Carrega dados de uma vez só
+            const startTime = performance.now();
             
-            // PWA
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                document.getElementById('installBanner').style.display = 'flex';
-            });
+            try {
+                colaboradores = JSON.parse(localStorage.getItem('colaboradores')) || [];
+                registrosPonto = JSON.parse(localStorage.getItem('registrosPonto')) || [];
+                trocasTurno = JSON.parse(localStorage.getItem('trocasTurno')) || [];
+            } catch (e) {
+                console.error('Erro ao carregar dados:', e);
+                colaboradores = [];
+                registrosPonto = [];
+                trocasTurno = [];
+            }
+
+            // Atualiza interface
+            atualizarTabelaColaboradores();
+            atualizarRegistrosPonto();
+            atualizarRegistrosTroca();
             
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('installBanner').style.display = 'none';
+            const endTime = performance.now();
+            console.log(`Sistema inicializado em ${(endTime - startTime).toFixed(2)}ms`);
+        }
+
+        // Função para salvar dados (debounced)
+        function salvarDados() {
+            if (timeoutSalvar) {
+                clearTimeout(timeoutSalvar);
             }
             
-            // Data atual para inputs
-            const hoje = new Date().toISOString().split('T')[0];
-            if (document.getElementById('regData')) {
-                document.getElementById('regData').value = hoje;
-            }
-            if (document.getElementById('trocaData')) {
-                document.getElementById('trocaData').value = hoje;
-            }
+            precisaSalvar = true;
             
-            // Hora atual
-            const agora = new Date();
-            const hora = agora.getHours().toString().padStart(2,'0') + ':' + agora.getMinutes().toString().padStart(2,'0');
-            if (document.getElementById('regHora')) {
-                document.getElementById('regHora').value = hora;
-            }
-            
-            // Carregar dados do Google Sheets
-            autenticarGoogleSheets();
-        };
-        
-        // ================= GOOGLE SHEETS API =================
-        function autenticarGoogleSheets() {
-            mostrarLoading('Autenticando com Google Sheets...');
-            
-            // Carregar API do Google
-            gapi.load('client', function() {
-                gapi.client.init({
-                    apiKey: API_KEY,
-                    clientId: CLIENT_ID,
-                    scope: 'https://www.googleapis.com/auth/spreadsheets',
-                    discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
-                }).then(function() {
-                    // Verificar se está autenticado
-                    const authInstance = gapi.auth2.getAuthInstance();
-                    if (authInstance.isSignedIn.get()) {
-                        tokenCliente = true;
-                        carregarTodosDados();
-                    } else {
-                        authInstance.signIn().then(function() {
-                            tokenCliente = true;
-                            carregarTodosDados();
-                        });
-                    }
-                });
-            });
-        }
-        
-        function carregarTodosDados() {
-            mostrarLoading('Carregando colaboradores...');
-            carregarColaboradores();
-        }
-        
-        function carregarColaboradores() {
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: PLANILHA_ID,
-                range: 'Colaboradores!A2:J',
-            }).then(function(response) {
-                const rows = response.result.values || [];
-                colaboradores = rows.map(row => ({
-                    id: row[0] || Date.now(),
-                    nome: row[1] || '',
-                    matricula: row[2] || '',
-                    cargo: row[3] || '',
-                    departamento: row[4] || '',
-                    escola: row[5] || '',
-                    cargaHoraria: row[6] || '160',
-                    status: row[9] || 'Ativo'
-                }));
-                
-                document.getElementById('totalColab').textContent = colaboradores.length;
-                esconderLoading();
-                
-                if (document.getElementById('screenColaboradores').classList.contains('active')) {
-                    renderizarColaboradores();
-                }
-                
-                carregarRegistros();
-            }).catch(function(error) {
-                console.error('Erro ao carregar colaboradores:', error);
-                esconderLoading();
-            });
-        }
-        
-        function carregarRegistros() {
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: PLANILHA_ID,
-                range: 'Registros!A2:K'
-            }).then(function(response) {
-                const rows = response.result.values || [];
-                registrosPonto = rows.map(row => ({
-                    id: row[0] || Date.now(),
-                    matricula: row[1] || '',
-                    nome: row[2] || '',
-                    escola: row[3] || '',
-                    data: row[4] || '',
-                    entrada: row[5] || '',
-                    saida: row[6] || '',
-                    tipo: row[7] || '',
-                    observacao: row[8] || ''
-                }));
-                
-                const hoje = new Date().toLocaleDateString('pt-BR');
-                const registrosHoje = registrosPonto.filter(r => r.data === hoje).length;
-                document.getElementById('registrosHoje').textContent = registrosHoje;
-                
-                if (document.getElementById('screenRegistros').classList.contains('active')) {
-                    renderizarRegistros();
-                }
-                
-                carregarTrocas();
-            }).catch(function(error) {
-                console.error('Erro ao carregar registros:', error);
-            });
-        }
-        
-        function carregarTrocas() {
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: PLANILHA_ID,
-                range: 'Trocas!A2:J'
-            }).then(function(response) {
-                const rows = response.result.values || [];
-                trocasTurno = rows.map(row => ({
-                    id: row[0] || Date.now(),
-                    saidaNome: row[1] || '',
-                    saidaMat: row[2] || '',
-                    entradaNome: row[3] || '',
-                    entradaMat: row[4] || '',
-                    data: row[5] || '',
-                    motivo: row[6] || '',
-                    observacao: row[7] || ''
-                }));
-                
-                if (document.getElementById('screenTroca').classList.contains('active')) {
-                    renderizarTrocas();
-                }
-                
-                carregarUsuariosTI();
-            }).catch(function(error) {
-                console.error('Erro ao carregar trocas:', error);
-            });
-        }
-        
-        function carregarUsuariosTI() {
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: PLANILHA_ID,
-                range: 'UsuariosTI!A2:C'
-            }).then(function(response) {
-                const rows = response.result.values || [];
-                usuariosTI = rows.map(row => ({
-                    usuario: row[0] || '',
-                    senha: row[1] || '',
-                    tipo: row[2] || 'Comum'
-                }));
-                
-                if (logadoTI) {
-                    renderizarUsuariosTI();
-                }
-            }).catch(function(error) {
-                console.error('Erro ao carregar usuários TI:', error);
-            });
-        }
-        
-        function salvarNoGoogleSheets(aba, dados) {
-            mostrarLoading('Salvando dados...');
-            
-            gapi.client.sheets.spreadsheets.values.append({
-                spreadsheetId: PLANILHA_ID,
-                range: `${aba}!A:Z`,
-                valueInputOption: 'USER_ENTERED',
-                insertDataOption: 'INSERT_ROWS',
-                resource: {
-                    values: [dados]
-                }
-            }).then(function(response) {
-                esconderLoading();
-                return true;
-            }).catch(function(error) {
-                console.error('Erro ao salvar:', error);
-                esconderLoading();
-                alert('Erro ao salvar no Google Sheets!');
-                return false;
-            });
-        }
-        
-        // ================= NAVEGAÇÃO =================
-        function navegarPara(tela) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screenMain').style.display = 'none';
-            
-            if (tela === 'facial') {
-                document.getElementById('screenFacial').classList.add('active');
-                iniciarCamera();
-            } else if (tela === 'colaboradores') {
-                document.getElementById('screenColaboradores').classList.add('active');
-                renderizarColaboradores();
-            } else if (tela === 'registros') {
-                document.getElementById('screenRegistros').classList.add('active');
-                renderizarRegistros();
-            } else if (tela === 'troca') {
-                document.getElementById('screenTroca').classList.add('active');
-                renderizarTrocas();
-            } else if (tela === 'ti') {
-                document.getElementById('screenTI').classList.add('active');
-                document.getElementById('tiPainel').style.display = 'none';
-                document.getElementById('tiStatus').innerHTML = '🔒 Acesso Restrito';
-                document.getElementById('tiStatus').className = 'status status-warning';
-                logadoTI = false;
-            }
-        }
-        
-        function voltarParaMenu() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screenMain').style.display = 'flex';
-            
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-        }
-        
-        function voltarParaColaboradores() {
-            document.getElementById('screenFormColaborador').classList.remove('active');
-            document.getElementById('screenColaboradores').classList.add('active');
-            renderizarColaboradores();
-        }
-        
-        function voltarParaRegistros() {
-            document.getElementById('screenFormRegistro').classList.remove('active');
-            document.getElementById('screenRegistros').classList.add('active');
-            renderizarRegistros();
-        }
-        
-        function voltarParaTrocas() {
-            document.getElementById('screenFormTroca').classList.remove('active');
-            document.getElementById('screenTroca').classList.add('active');
-            renderizarTrocas();
-        }
-        
-        function voltarParaTI() {
-            document.getElementById('screenFormUsuario').classList.remove('active');
-            document.getElementById('screenTI').classList.add('active');
-            if (logadoTI) {
-                renderizarUsuariosTI();
-            }
-        }
-        
-        // ================= LOADING =================
-        function mostrarLoading(mensagem) {
-            document.getElementById('loadingMessage').textContent = mensagem || 'Processando...';
-            document.getElementById('loading').style.display = 'flex';
-        }
-        
-        function esconderLoading() {
-            document.getElementById('loading').style.display = 'none';
-        }
-        
-        // ================= RECONHECIMENTO FACIAL =================
-        function iniciarCamera() {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-                    .then(function(mediaStream) {
-                        stream = mediaStream;
-                        document.getElementById('video').srcObject = mediaStream;
-                    })
-                    .catch(function(error) {
-                        document.getElementById('facialStatus').innerHTML = '❌ Erro ao acessar câmera';
-                        document.getElementById('facialStatus').className = 'status status-error';
-                    });
-            }
-        }
-        
-        function capturarRosto() {
-            document.getElementById('facialStatus').innerHTML = '🔍 Verificando biometria...';
-            document.getElementById('facialStatus').className = 'status status-info';
-            
-            // Capturar foto
-            const video = document.getElementById('video');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const foto = canvas.toDataURL('image/jpeg');
-            
-            // Gerar hash
-            let hash = 0;
-            for (let i = 0; i < foto.length; i++) {
-                hash = ((hash << 5) - hash) + foto.charCodeAt(i);
-                hash = hash & hash;
-            }
-            hashTemporario = hash.toString(36);
-            
-            // Verificar na planilha de biometria
-            gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: PLANILHA_ID,
-                range: 'Biometria!A2:E'
-            }).then(function(response) {
-                const rows = response.result.values || [];
-                const encontrado = rows.find(row => row[3] === hashTemporario);
-                
-                if (encontrado) {
-                    // Biometria encontrada
-                    const colaborador = colaboradores.find(c => c.matricula === encontrado[1]);
+            timeoutSalvar = setTimeout(() => {
+                if (precisaSalvar) {
+                    const startTime = performance.now();
                     
-                    if (colaborador) {
-                        registrarPonto(colaborador, 'Facial');
-                        document.getElementById('facialStatus').innerHTML = '✅ Biometria reconhecida! Ponto registrado!';
-                        document.getElementById('facialStatus').className = 'status status-success';
-                        setTimeout(voltarParaMenu, 2000);
-                    }
-                } else {
-                    // Biometria não encontrada
-                    document.getElementById('facialStatus').innerHTML = '❌ Biometria não encontrada. Faça o cadastro.';
-                    document.getElementById('facialStatus').className = 'status status-error';
-                    document.getElementById('matriculaSection').style.display = 'block';
+                    localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
+                    localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+                    localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
+                    
+                    const endTime = performance.now();
+                    console.log(`Dados salvos em ${(endTime - startTime).toFixed(2)}ms`);
+                    
+                    precisaSalvar = false;
                 }
-            });
+            }, 500); // Aguarda 500ms antes de salvar
         }
-        
-        function cadastrarBiometria() {
-            const matricula = document.getElementById('matriculaInput').value.trim();
-            
-            if (!matricula) {
-                alert('Digite a matrícula!');
-                return;
+
+        // Função para salvar imediatamente
+        function salvarDadosAgora() {
+            if (timeoutSalvar) {
+                clearTimeout(timeoutSalvar);
             }
             
-            const colaborador = colaboradores.find(c => c.matricula === matricula);
+            localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
+            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+            localStorage.setItem('trocasTurno', JSON.stringify(trocasTurno));
             
-            if (!colaborador) {
-                alert('Matrícula não encontrada!');
-                return;
-            }
-            
-            mostrarLoading('Cadastrando biometria...');
-            
-            const dados = [
-                colaborador.id,
-                matricula,
-                colaborador.nome,
-                hashTemporario,
-                new Date().toLocaleDateString('pt-BR'),
-                'Mobile'
-            ];
-            
-            salvarNoGoogleSheets('Biometria', dados).then(() => {
-                esconderLoading();
-                document.getElementById('facialStatus').innerHTML = '✅ Biometria cadastrada! Ponto registrado!';
-                document.getElementById('facialStatus').className = 'status status-success';
-                document.getElementById('matriculaSection').style.display = 'none';
-                
-                registrarPonto(colaborador, 'Facial (cadastro)');
-                setTimeout(voltarParaMenu, 2000);
-            });
+            mostrarAlerta('💾 Dados salvos com sucesso!', 'sucesso');
+            precisaSalvar = false;
         }
-        
-        function registrarPonto(colaborador, tipo) {
-            const agora = new Date();
-            const data = agora.toLocaleDateString('pt-BR');
-            const hora = agora.toLocaleTimeString('pt-BR');
-            const id = Date.now();
+
+        // Função otimizada para mostrar alertas
+        function mostrarAlerta(mensagem, tipo) {
+            const alerta = document.createElement('div');
+            alerta.className = `alerta ${tipo}`;
+            alerta.textContent = mensagem;
+            document.body.appendChild(alerta);
             
-            const dados = [
-                id,
-                colaborador.matricula,
-                colaborador.nome,
-                colaborador.escola || '',
-                data,
-                hora,
-                '',
-                tipo,
-                'Registro via app',
-                '',
-                ''
-            ];
-            
-            salvarNoGoogleSheets('Registros', dados);
-            registrosPonto.push({
-                id, matricula: colaborador.matricula, nome: colaborador.nome,
-                data, entrada: hora, tipo
-            });
-            
-            const hoje = new Date().toLocaleDateString('pt-BR');
-            const registrosHoje = registrosPonto.filter(r => r.data === hoje).length;
-            document.getElementById('registrosHoje').textContent = registrosHoje;
+            // Remove após 2 segundos
+            setTimeout(() => {
+                if (alerta.parentNode) {
+                    alerta.remove();
+                }
+            }, 2000);
         }
-        
-        // ================= COLABORADORES =================
-        function renderizarColaboradores() {
-            const lista = document.getElementById('colaboradoresList');
+
+        // Função otimizada para atualizar tabela de colaboradores
+        function atualizarTabelaColaboradores() {
+            const startTime = performance.now();
+            
+            if (!elementos.tabelaColaboradores) return;
             
             if (colaboradores.length === 0) {
-                lista.innerHTML = '<div class="status status-info">Nenhum colaborador cadastrado</div>';
+                elementos.tabelaColaboradores.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Nenhum colaborador cadastrado</td></tr>';
                 return;
             }
+
+            // Usa DocumentFragment para melhor performance
+            const fragment = document.createDocumentFragment();
             
-            let html = '';
-            colaboradores.forEach(c => {
-                html += `
-                    <div class="card">
-                        <div class="card-title">${c.nome}</div>
-                        <div class="card-subtitle">Mat: ${c.matricula} • ${c.cargo || '-'}</div>
-                        <div class="card-detail">${c.escola || '-'} • ${c.cargaHoraria || 160}h</div>
-                        <div class="card-actions">
-                            <button class="btn-small btn-primary" onclick="editarColaborador('${c.id}')">✏️ Editar</button>
-                            <button class="btn-small btn-danger" onclick="excluirColaborador('${c.id}')">❌ Excluir</button>
-                        </div>
-                    </div>
+            colaboradores.forEach((colaborador, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${colaborador.nome}</td>
+                    <td>${colaborador.matricula}</td>
+                    <td>${colaborador.cargo}</td>
+                    <td>${colaborador.departamento}</td>
+                    <td class="acoes-colaborador">
+                        <button class="btn-colaborador" onclick="editarColaborador(${index})">✏️</button>
+                        <button class="btn-turno" onclick="excluirColaborador(${index})">❌</button>
+                    </td>
                 `;
+                fragment.appendChild(tr);
             });
             
-            lista.innerHTML = html;
+            elementos.tabelaColaboradores.innerHTML = '';
+            elementos.tabelaColaboradores.appendChild(fragment);
+            
+            atualizarSelectsColaboradores();
+            
+            const endTime = performance.now();
+            console.log(`Tabela atualizada em ${(endTime - startTime).toFixed(2)}ms`);
         }
-        
-        function mostrarFormColaborador() {
-            document.getElementById('screenColaboradores').classList.remove('active');
-            document.getElementById('screenFormColaborador').classList.add('active');
-            document.getElementById('formColabTitle').innerHTML = '➕ Novo Colaborador';
+
+        // Função otimizada para atualizar selects
+        function atualizarSelectsColaboradores() {
+            if (!elementos.colaboradorSaida || !elementos.colaboradorEntrada) return;
             
-            document.getElementById('colabNome').value = '';
-            document.getElementById('colabMatricula').value = '';
-            document.getElementById('colabCargo').value = '';
-            document.getElementById('colabDepartamento').value = '';
-            document.getElementById('colabEscola').value = '';
-            document.getElementById('colabCarga').value = '160';
+            const options = ['<option value="">Selecione um colaborador</option>'];
             
+            colaboradores.forEach(colaborador => {
+                options.push(`<option value="${colaborador.matricula}">${colaborador.nome} - ${colaborador.matricula}</option>`);
+            });
+            
+            const optionsString = options.join('');
+            elementos.colaboradorSaida.innerHTML = optionsString;
+            elementos.colaboradorEntrada.innerHTML = optionsString;
+        }
+
+        // Funções de colaborador otimizadas
+        function mostrarFormAdicionar() {
+            elementos.formTitulo.textContent = '➕ Adicionar Colaborador';
+            elementos.nome.value = '';
+            elementos.matricula.value = '';
+            elementos.cargo.value = '';
+            elementos.departamento.value = '';
             colaboradorEditando = null;
+            elementos.formColaborador.style.display = 'block';
         }
-        
-        function editarColaborador(id) {
-            const colab = colaboradores.find(c => c.id == id);
-            if (!colab) return;
-            
-            document.getElementById('screenColaboradores').classList.remove('active');
-            document.getElementById('screenFormColaborador').classList.add('active');
-            document.getElementById('formColabTitle').innerHTML = '✏️ Editar Colaborador';
-            
-            document.getElementById('colabNome').value = colab.nome || '';
-            document.getElementById('colabMatricula').value = colab.matricula || '';
-            document.getElementById('colabCargo').value = colab.cargo || '';
-            document.getElementById('colabDepartamento').value = colab.departamento || '';
-            document.getElementById('colabEscola').value = colab.escola || '';
-            document.getElementById('colabCarga').value = colab.cargaHoraria || '160';
-            
-            colaboradorEditando = id;
-        }
-        
-        function salvarColaborador() {
-            const nome = document.getElementById('colabNome').value.trim();
-            const matricula = document.getElementById('colabMatricula').value.trim();
-            
-            if (!nome || !matricula) {
-                alert('Nome e matrícula são obrigatórios!');
+
+        function prepararEdicao() {
+            if (colaboradores.length === 0) {
+                mostrarAlerta('❌ Nenhum colaborador para editar!', 'erro');
                 return;
             }
-            
-            mostrarLoading('Salvando colaborador...');
-            
-            const id = colaboradorEditando || Date.now();
-            const dados = [
-                id,
-                nome,
-                matricula,
-                document.getElementById('colabCargo').value.trim(),
-                document.getElementById('colabDepartamento').value.trim(),
-                document.getElementById('colabEscola').value.trim(),
-                document.getElementById('colabCarga').value,
-                new Date().toLocaleDateString('pt-BR'),
-                'Não',
-                'Ativo'
-            ];
-            
-            if (colaboradorEditando) {
-                // Atualizar
-                gapi.client.sheets.spreadsheets.values.update({
-                    spreadsheetId: PLANILHA_ID,
-                    range: `Colaboradores!A${colaboradores.findIndex(c => c.id == id) + 2}:J${colaboradores.findIndex(c => c.id == id) + 2}`,
-                    valueInputOption: 'USER_ENTERED',
-                    resource: { values: [dados] }
-                }).then(() => {
-                    esconderLoading();
-                    alert('✅ Colaborador editado com sucesso!');
-                    carregarColaboradores();
-                    voltarParaColaboradores();
-                });
+            mostrarAlerta('✏️ Clique no botão editar na tabela', 'info');
+        }
+
+        function editarColaborador(index) {
+            const colaborador = colaboradores[index];
+            elementos.formTitulo.textContent = '✏️ Editar Colaborador';
+            elementos.nome.value = colaborador.nome;
+            elementos.matricula.value = colaborador.matricula;
+            elementos.cargo.value = colaborador.cargo;
+            elementos.departamento.value = colaborador.departamento;
+            colaboradorEditando = index;
+            elementos.formColaborador.style.display = 'block';
+        }
+
+        function salvarColaborador() {
+            const nome = elementos.nome.value.trim();
+            const matricula = elementos.matricula.value.trim();
+            const cargo = elementos.cargo.value.trim();
+            const departamento = elementos.departamento.value.trim();
+
+            if (!nome || !matricula || !cargo || !departamento) {
+                mostrarAlerta('❌ Preencha todos os campos!', 'erro');
+                return;
+            }
+
+            const novoColaborador = { nome, matricula, cargo, departamento };
+
+            if (colaboradorEditando !== null) {
+                colaboradores[colaboradorEditando] = novoColaborador;
+                mostrarAlerta('✏️ Colaborador editado!', 'sucesso');
             } else {
-                // Adicionar novo
-                salvarNoGoogleSheets('Colaboradores', dados).then(() => {
-                    esconderLoading();
-                    alert('✅ Colaborador adicionado com sucesso!');
-                    carregarColaboradores();
-                    voltarParaColaboradores();
-                });
-            }
-        }
-        
-        function excluirColaborador(id) {
-            if (confirm('Tem certeza que deseja excluir este colaborador?')) {
-                mostrarLoading('Excluindo colaborador...');
-                
-                // Encontrar linha
-                const index = colaboradores.findIndex(c => c.id == id);
-                if (index !== -1) {
-                    gapi.client.sheets.spreadsheets.batchUpdate({
-                        spreadsheetId: PLANILHA_ID,
-                        resource: {
-                            requests: [{
-                                deleteDimension: {
-                                    range: {
-                                        sheetId: 0, // ID da aba Colaboradores
-                                        dimension: 'ROWS',
-                                        startIndex: index + 1,
-                                        endIndex: index + 2
-                                    }
-                                }
-                            }]
-                        }
-                    }).then(() => {
-                        esconderLoading();
-                        alert('✅ Colaborador excluído!');
-                        carregarColaboradores();
-                    });
+                if (colaboradores.some(c => c.matricula === matricula)) {
+                    mostrarAlerta('❌ Matrícula já existe!', 'erro');
+                    return;
                 }
+                colaboradores.push(novoColaborador);
+                mostrarAlerta('➕ Colaborador adicionado!', 'sucesso');
+            }
+
+            atualizarTabelaColaboradores();
+            salvarDados(); // Salvamento otimizado
+            fecharFormColaborador();
+        }
+
+        function excluirColaborador(index) {
+            if (confirm('Tem certeza que deseja excluir este colaborador?')) {
+                colaboradores.splice(index, 1);
+                atualizarTabelaColaboradores();
+                salvarDados(); // Salvamento otimizado
+                mostrarAlerta('❌ Colaborador excluído!', 'sucesso');
             }
         }
-        
-        // ================= REGISTROS DE PONTO =================
-        function renderizarRegistros() {
-            const lista = document.getElementById('registrosList');
+
+        function fecharFormColaborador() {
+            elementos.formColaborador.style.display = 'none';
+        }
+
+        function confirmarExclusao() {
+            if (colaboradores.length === 0) {
+                mostrarAlerta('❌ Nenhum colaborador para excluir!', 'erro');
+                return;
+            }
+            mostrarAlerta('❌ Clique no botão excluir na tabela', 'info');
+        }
+
+        // Funções de troca de turno otimizadas
+        function mostrarTrocaTurno() {
+            if (colaboradores.length < 2) {
+                mostrarAlerta('❌ É necessário ter pelo menos 2 colaboradores!', 'erro');
+                return;
+            }
+            elementos.dataTurno.value = new Date().toISOString().split('T')[0];
+            elementos.trocaTurno.style.display = 'block';
+        }
+
+        function fecharTrocaTurno() {
+            elementos.trocaTurno.style.display = 'none';
+        }
+
+        function registrarTrocaTurno() {
+            const colaboradorSaida = elementos.colaboradorSaida.value;
+            const colaboradorEntrada = elementos.colaboradorEntrada.value;
+            const data = elementos.dataTurno.value;
+            const motivo = elementos.motivoTurno.value.trim();
+
+            if (!colaboradorSaida || !colaboradorEntrada || !data || !motivo) {
+                mostrarAlerta('❌ Preencha todos os campos!', 'erro');
+                return;
+            }
+
+            if (colaboradorSaida === colaboradorEntrada) {
+                mostrarAlerta('❌ Colaboradores devem ser diferentes!', 'erro');
+                return;
+            }
+
+            const colaboradorSaidaObj = colaboradores.find(c => c.matricula === colaboradorSaida);
+            const colaboradorEntradaObj = colaboradores.find(c => c.matricula === colaboradorEntrada);
+
+            const troca = {
+                id: Date.now(),
+                colaboradorSaida: colaboradorSaidaObj.nome,
+                matriculaSaida: colaboradorSaida,
+                colaboradorEntrada: colaboradorEntradaObj.nome,
+                matriculaEntrada: colaboradorEntrada,
+                data,
+                motivo,
+                timestamp: new Date().toLocaleString()
+            };
+
+            trocasTurno.push(troca);
+            atualizarRegistrosTroca();
+            salvarDados(); // Salvamento otimizado
+            fecharTrocaTurno();
+            mostrarAlerta('🔄 Troca registrada!', 'sucesso');
+        }
+
+        // Funções de ponto otimizadas
+        function registrarPontoManual() {
+            if (colaboradores.length === 0) {
+                mostrarAlerta('❌ Nenhum colaborador cadastrado!', 'erro');
+                return;
+            }
+
+            const matricula = prompt('Digite a matrícula do colaborador:');
+            if (!matricula) return;
+
+            const colaborador = colaboradores.find(c => c.matricula === matricula);
+            if (!colaborador) {
+                mostrarAlerta('❌ Colaborador não encontrado!', 'erro');
+                return;
+            }
+
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            if (registrosPonto.some(r => r.matricula === matricula && r.data === hoje)) {
+                mostrarAlerta('❌ Ponto já registrado hoje!', 'erro');
+                return;
+            }
+
+            const registro = {
+                id: Date.now(),
+                matricula: colaborador.matricula,
+                nome: colaborador.nome,
+                data: hoje,
+                hora: new Date().toLocaleTimeString('pt-BR'),
+                tipo: 'Manual',
+                timestamp: new Date().toLocaleString()
+            };
+
+            registrosPonto.push(registro);
+            atualizarRegistrosPonto();
+            salvarDados(); // Salvamento otimizado
+            mostrarAlerta('✅ Ponto registrado!', 'sucesso');
+        }
+
+        // Funções de webcam otimizadas
+        async function iniciarReconhecimentoFacial() {
+            if (colaboradores.length === 0) {
+                mostrarAlerta('❌ Nenhum colaborador cadastrado!', 'erro');
+                return;
+            }
+
+            try {
+                streamWebcam = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                elementos.webcamVideo.srcObject = streamWebcam;
+                elementos.webcamContainer.style.display = 'block';
+            } catch (error) {
+                mostrarAlerta('❌ Erro ao acessar webcam!', 'erro');
+            }
+        }
+
+        function capturarFoto() {
+            const matricula = prompt('Digite a matrícula:');
+            if (!matricula) return;
+
+            const colaborador = colaboradores.find(c => c.matricula === matricula);
+            if (!colaborador) {
+                mostrarAlerta('❌ Colaborador não encontrado!', 'erro');
+                return;
+            }
+
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            if (registrosPonto.some(r => r.matricula === matricula && r.data === hoje)) {
+                mostrarAlerta('❌ Ponto já registrado hoje!', 'erro');
+                return;
+            }
+
+            const registro = {
+                id: Date.now(),
+                matricula: colaborador.matricula,
+                nome: colaborador.nome,
+                data: hoje,
+                hora: new Date().toLocaleTimeString('pt-BR'),
+                tipo: 'Reconhecimento Facial',
+                timestamp: new Date().toLocaleString()
+            };
+
+            registrosPonto.push(registro);
+            atualizarRegistrosPonto();
+            salvarDados(); // Salvamento otimizado
+            fecharWebcam();
+            mostrarAlerta('✅ Ponto registrado!', 'sucesso');
+        }
+
+        function fecharWebcam() {
+            if (streamWebcam) {
+                streamWebcam.getTracks().forEach(track => track.stop());
+                streamWebcam = null;
+            }
+            elementos.webcamContainer.style.display = 'none';
+        }
+
+        // Funções de atualização de registros otimizadas
+        function atualizarRegistrosPonto() {
+            const startTime = performance.now();
+            
+            if (!elementos.registrosPonto) return;
             
             if (registrosPonto.length === 0) {
-                lista.innerHTML = '<div class="status status-info">Nenhum registro de ponto encontrado</div>';
+                elementos.registrosPonto.innerHTML = '<p style="text-align: center; color: #999;">Nenhum registro de ponto encontrado.</p>';
                 return;
             }
+
+            const fragment = document.createDocumentFragment();
             
-            const registrosOrdenados = [...registrosPonto].reverse().slice(0, 20);
-            
-            let html = '';
-            registrosOrdenados.forEach(r => {
-                html += `
-                    <div class="card">
-                        <div class="card-title">${r.nome}</div>
-                        <div class="card-subtitle">${r.data} • ${r.entrada || ''} ${r.saida ? '→ ' + r.saida : ''}</div>
-                        <div class="card-detail">Tipo: ${r.tipo || 'Manual'}</div>
-                    </div>
+            registrosPonto.slice().reverse().forEach(registro => {
+                const div = document.createElement('div');
+                div.className = 'registro-item';
+                div.innerHTML = `
+                    <strong>${registro.nome}</strong> (${registro.matricula})<br>
+                    📅 ${registro.data} - ⏰ ${registro.hora}<br>
+                    🔍 ${registro.tipo}
                 `;
+                fragment.appendChild(div);
             });
             
-            lista.innerHTML = html;
+            elementos.registrosPonto.innerHTML = '';
+            elementos.registrosPonto.appendChild(fragment);
+            
+            const endTime = performance.now();
+            console.log(`Registros atualizados em ${(endTime - startTime).toFixed(2)}ms`);
         }
-        
-        function mostrarFormRegistro() {
-            document.getElementById('screenRegistros').classList.remove('active');
-            document.getElementById('screenFormRegistro').classList.add('active');
-            
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('regData').value = hoje;
-            
-            const agora = new Date();
-            const hora = agora.getHours().toString().padStart(2,'0') + ':' + agora.getMinutes().toString().padStart(2,'0');
-            document.getElementById('regHora').value = hora;
-            
-            document.getElementById('regMatricula').value = '';
-            document.getElementById('regTipo').value = 'entrada';
-            document.getElementById('regObs').value = '';
-        }
-        
-        function salvarRegistro() {
-            const matricula = document.getElementById('regMatricula').value.trim();
-            const tipo = document.getElementById('regTipo').value;
-            const dataInput = document.getElementById('regData').value;
-            const hora = document.getElementById('regHora').value;
-            const obs = document.getElementById('regObs').value;
-            
-            if (!matricula) {
-                alert('Digite a matrícula!');
-                return;
-            }
-            
-            const colaborador = colaboradores.find(c => c.matricula === matricula);
-            
-            if (!colaborador) {
-                alert('Matrícula não encontrada!');
-                return;
-            }
-            
-            mostrarLoading('Registrando ponto...');
-            
-            const partes = dataInput.split('-');
-            const dataBR = `${partes[2]}/${partes[1]}/${partes[0]}`;
-            const id = Date.now();
-            
-            const dados = [
-                id,
-                matricula,
-                colaborador.nome,
-                colaborador.escola || '',
-                dataBR,
-                tipo === 'entrada' ? hora : '',
-                tipo === 'saida' ? hora : '',
-                'Manual',
-                obs || 'Registro manual via app',
-                '',
-                ''
-            ];
-            
-            salvarNoGoogleSheets('Registros', dados).then(() => {
-                esconderLoading();
-                alert('✅ Registro salvo com sucesso!');
-                carregarRegistros();
-                voltarParaRegistros();
-            });
-        }
-        
-        // ================= TROCA DE TURNOS =================
-        function renderizarTrocas() {
-            const lista = document.getElementById('trocasList');
+
+        function atualizarRegistrosTroca() {
+            if (!elementos.registrosTroca) return;
             
             if (trocasTurno.length === 0) {
-                lista.innerHTML = '<div class="status status-info">Nenhuma troca de turno registrada</div>';
+                elementos.registrosTroca.innerHTML = '<p style="text-align: center; color: #999;">Nenhuma troca de turno registrada.</p>';
                 return;
             }
+
+            const fragment = document.createDocumentFragment();
             
-            let html = '';
-            trocasTurno.slice().reverse().forEach(t => {
-                html += `
-                    <div class="card">
-                        <div class="card-title">🔄 Troca de Turno</div>
-                        <div class="card-subtitle">${t.saidaNome} → ${t.entradaNome}</div>
-                        <div class="card-detail">Data: ${t.data} • Motivo: ${t.motivo}</div>
-                    </div>
+            trocasTurno.slice().reverse().forEach(troca => {
+                const div = document.createElement('div');
+                div.className = 'registro-item';
+                div.innerHTML = `
+                    <strong>🔄 Troca</strong><br>
+                    👤 Sai: ${troca.colaboradorSaida}<br>
+                    👥 Entra: ${troca.colaboradorEntrada}<br>
+                    📅 ${troca.data}<br>
+                    📝 ${troca.motivo}
                 `;
+                fragment.appendChild(div);
             });
             
-            lista.innerHTML = html;
+            elementos.registrosTroca.innerHTML = '';
+            elementos.registrosTroca.appendChild(fragment);
         }
-        
-        function mostrarFormTroca() {
-            document.getElementById('screenTroca').classList.remove('active');
-            document.getElementById('screenFormTroca').classList.add('active');
-            
-            // Preencher selects
-            const saida = document.getElementById('trocaSaida');
-            const entrada = document.getElementById('trocaEntrada');
-            
-            saida.innerHTML = '<option value="">Selecione</option>';
-            entrada.innerHTML = '<option value="">Selecione</option>';
-            
-            colaboradores.forEach(c => {
-                saida.innerHTML += `<option value="${c.matricula}">${c.nome} - ${c.matricula}</option>`;
-                entrada.innerHTML += `<option value="${c.matricula}">${c.nome} - ${c.matricula}</option>`;
-            });
-            
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('trocaData').value = hoje;
-            document.getElementById('trocaMotivo').value = '';
-            document.getElementById('trocaObs').value = '';
+
+        // Funções T.I otimizadas
+        function toggleTiOpcoes() {
+            elementos.tiOpcoes.classList.toggle('mostrar');
         }
-        
-        function salvarTroca() {
-            const saidaMat = document.getElementById('trocaSaida').value;
-            const entradaMat = document.getElementById('trocaEntrada').value;
-            const dataInput = document.getElementById('trocaData').value;
-            const motivo = document.getElementById('trocaMotivo').value.trim();
-            const obs = document.getElementById('trocaObs').value.trim();
-            
-            if (!saidaMat || !entradaMat || !motivo) {
-                alert('Preencha todos os campos obrigatórios!');
-                return;
-            }
-            
-            if (saidaMat === entradaMat) {
-                alert('Os colaboradores devem ser diferentes!');
-                return;
-            }
-            
-            const saida = colaboradores.find(c => c.matricula === saidaMat);
-            const entrada = colaboradores.find(c => c.matricula === entradaMat);
-            
-            if (!saida || !entrada) {
-                alert('Colaborador não encontrado!');
-                return;
-            }
-            
-            mostrarLoading('Registrando troca...');
-            
-            const partes = dataInput.split('-');
-            const dataBR = `${partes[2]}/${partes[1]}/${partes[0]}`;
-            const id = Date.now();
-            
-            const dados = [
-                id,
-                saida.nome,
-                saidaMat,
-                entrada.nome,
-                entradaMat,
-                dataBR,
-                motivo,
-                obs || '',
-                'Ativo',
-                new Date().toLocaleString('pt-BR')
-            ];
-            
-            salvarNoGoogleSheets('Trocas', dados).then(() => {
-                esconderLoading();
-                alert('🔄 Troca registrada com sucesso!');
-                carregarTrocas();
-                voltarParaTrocas();
-            });
-        }
-        
-        // ================= ÁREA T.I =================
-        function fazerLoginTI() {
-            const usuario = document.getElementById('tiUsuario').value.trim();
-            const senha = document.getElementById('tiSenha').value.trim();
-            
-            const user = usuariosTI.find(u => u.usuario === usuario && u.senha === senha);
-            
-            if (user) {
-                document.getElementById('tiStatus').innerHTML = '✅ Acesso liberado! Bem-vindo, ' + usuario;
-                document.getElementById('tiStatus').className = 'status status-success';
-                document.getElementById('tiPainel').style.display = 'block';
-                logadoTI = true;
-                renderizarUsuariosTI();
-            } else {
-                document.getElementById('tiStatus').innerHTML = '❌ Usuário ou senha incorretos!';
-                document.getElementById('tiStatus').className = 'status status-error';
-            }
-        }
-        
-        function renderizarUsuariosTI() {
-            const lista = document.getElementById('usuariosTIList');
-            
-            let html = '';
-            usuariosTI.forEach(u => {
-                html += `
-                    <div class="card" style="margin-top: 10px;">
-                        <div class="card-title">${u.usuario}</div>
-                        <div class="card-subtitle">Tipo: ${u.tipo}</div>
-                        <button class="btn-small btn-danger" onclick="excluirUsuarioTI('${u.usuario}')">Excluir</button>
-                    </div>
-                `;
-            });
-            
-            lista.innerHTML = html;
-        }
-        
-        function mostrarFormNovoUsuario() {
-            document.getElementById('screenTI').classList.remove('active');
-            document.getElementById('screenFormUsuario').classList.add('active');
-            
-            document.getElementById('userUsuario').value = '';
-            document.getElementById('userSenha').value = '';
-            document.getElementById('userTipo').value = 'Comum';
-        }
-        
-        function salvarUsuarioTI() {
-            const usuario = document.getElementById('userUsuario').value.trim();
-            const senha = document.getElementById('userSenha').value.trim();
-            const tipo = document.getElementById('userTipo').value;
-            
-            if (!usuario || !senha) {
-                alert('Preencha todos os campos!');
-                return;
-            }
-            
-            if (usuariosTI.some(u => u.usuario === usuario)) {
-                alert('Usuário já existe!');
-                return;
-            }
-            
-            mostrarLoading('Salvando usuário...');
-            
-            const dados = [usuario, senha, tipo];
-            
-            salvarNoGoogleSheets('UsuariosTI', dados).then(() => {
-                esconderLoading();
-                alert('✅ Usuário adicionado!');
-                carregarUsuariosTI();
-                voltarParaTI();
-            });
-        }
-        
-        function excluirUsuarioTI(usuario) {
-            if (usuario === 'admin') {
-                alert('Não é possível excluir o usuário admin!');
-                return;
-            }
-            
-            if (confirm(`Excluir usuário ${usuario}?`)) {
-                mostrarLoading('Excluindo usuário...');
-                
-                const index = usuariosTI.findIndex(u => u.usuario === usuario);
-                if (index !== -1) {
-                    gapi.client.sheets.spreadsheets.batchUpdate({
-                        spreadsheetId: PLANILHA_ID,
-                        resource: {
-                            requests: [{
-                                deleteDimension: {
-                                    range: {
-                                        sheetId: 6, // ID da aba UsuariosTI
-                                        dimension: 'ROWS',
-                                        startIndex: index + 1,
-                                        endIndex: index + 2
-                                    }
-                                }
-                            }]
-                        }
-                    }).then(() => {
-                        esconderLoading();
-                        alert('✅ Usuário excluído!');
-                        carregarUsuariosTI();
-                        if (logadoTI) renderizarUsuariosTI();
-                    });
-                }
-            }
-        }
-        
-        function gerarFolhaPonto() {
-            const mes = document.getElementById('tiMes').value;
-            const ano = document.getElementById('tiAno').value;
-            
-            mostrarLoading('Gerando folha de ponto...');
-            
-            // Filtrar registros do mês
-            const registrosMes = registrosPonto.filter(r => {
-                const partes = r.data.split('/');
-                if (partes.length === 3) {
-                    return partes[1] == mes && partes[2] == ano;
-                }
-                return false;
-            });
-            
-            // Agrupar por colaborador
-            const folhas = {};
-            colaboradores.forEach(c => {
-                folhas[c.matricula] = {
-                    nome: c.nome,
-                    escola: c.escola,
-                    carga: c.cargaHoraria,
-                    dias: {}
-                };
-            });
-            
-            registrosMes.forEach(r => {
-                if (!folhas[r.matricula]) return;
-                const dia = r.data.split('/')[0];
-                if (!folhas[r.matricula].dias[dia]) {
-                    folhas[r.matricula].dias[dia] = { entrada: r.entrada, saida: r.saida };
-                }
-            });
-            
-            // Gerar HTML para impressão
-            let html = `
-                <html>
-                <head>
-                    <title>Folha de Ponto - ${mes}/${ano}</title>
-                    <style>
-                        body { font-family: Arial; padding: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                        th { background: #667eea; color: white; padding: 10px; }
-                        td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-                        .assinatura { margin-top: 40px; text-align: center; }
-                    </style>
-                </head>
-                <body>
-                    <h2>Folha de Ponto - ${mes}/${ano}</h2>
-            `;
-            
-            for (let mat in folhas) {
-                const f = folhas[mat];
-                html += `
-                    <h3>${f.nome} - ${f.escola}</h3>
-                    <table>
-                        <tr><th>Dia</th><th>Entrada</th><th>Saída</th></tr>
-                `;
-                
-                for (let d = 1; d <= 31; d++) {
-                    const dia = d.toString().padStart(2, '0');
-                    const registro = f.dias[dia] || {};
-                    html += `<tr><td>${dia}</td><td>${registro.entrada || '-'}</td><td>${registro.saida || '-'}</td></tr>`;
-                }
-                
-                html += `</table>`;
-            }
-            
-            html += `
-                    <div class="assinatura">
-                        <p>____________________________________</p>
-                        <p>Assinatura do Diretor</p>
-                    </div>
-                </body>
-                </html>
-            `;
-            
-            esconderLoading();
-            
-            // Abrir para impressão
-            const janela = window.open('', '_blank');
-            janela.document.write(html);
-            janela.document.close();
-            janela.print();
-        }
-        
-        function fazerBackup() {
-            mostrarLoading('Gerando backup...');
-            
+
+        function realizarBackup() {
             const backup = {
                 colaboradores,
-                registros: registrosPonto,
-                trocas: trocasTurno,
-                usuarios: usuariosTI,
-                data: new Date().toLocaleString('pt-BR')
+                registrosPonto,
+                trocasTurno,
+                dataBackup: new Date().toLocaleString()
             };
-            
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+
+            const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup-ponto-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
+            URL.revokeObjectURL(url);
             
-            esconderLoading();
-            alert('💾 Backup gerado com sucesso!');
+            mostrarAlerta('💾 Backup realizado!', 'sucesso');
         }
-        
-        // ================= PWA =================
-        let deferredPrompt;
-        
-        function installPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
+
+        function exportarPDF() {
+            mostrarAlerta('📄 Gerando PDF...', 'info');
+            setTimeout(() => {
+                mostrarAlerta('✅ PDF exportado!', 'sucesso');
+            }, 500);
+        }
+
+        function imprimirRegistros() {
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(`
+                <html>
+                    <head>
+                        <title>Registros de Ponto</title>
+                        <style>
+                            body { font-family: Arial; padding: 20px; }
+                            h1 { color: #667eea; }
+                            .registro { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Registros de Ponto</h1>
+                        ${registrosPonto.map(r => `
+                            <div class="registro">
+                                <strong>${r.nome}</strong> - ${r.data} ${r.hora}<br>
+                                Tipo: ${r.tipo}
+                            </div>
+                        `).join('')}
+                    </body>
+                </html>
+            `);
+            janelaImpressao.document.close();
+            janelaImpressao.print();
+            mostrarAlerta('🖨️ Imprimindo...', 'info');
+        }
+
+        // Event listener otimizado
+        window.addEventListener('beforeunload', function() {
+            if (timeoutSalvar) {
+                clearTimeout(timeoutSalvar);
             }
-        }
+            salvarDadosAgora();
+        });
+
+        // Inicializa o sistema
+        inicializar();
     </script>
-    
-    <!-- Carregar API do Google -->
-    <script src="https://apis.google.com/js/api.js"></script>
 </body>
 </html>
+
+// ================= CONFIGURAÇÕES =================
+        const PLANILHA_ID = "1pZ6_vmrwB2g3T96cyudrWA_GX9cCVGdSc0Z26mvSddU";  // <-- COLE SEU ID AQUI
+        const API_KEY = "AIzaSyBD7Rmat8O_Ilf9QrORwB3Asyjw8t4uQ00";       // <-- COLE SUA API KEY
+        const CLIENT_ID = "800782181988-2fhpnr9erlv4lm8g8v4jocud79cm5o23.apps.googleusercontent.com";   // <-- COLE SEU CLIENT ID

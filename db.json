@@ -1,8 +1,20 @@
 {
   "ativacao": {
     "status": false,
-    "chave": ""
+    "chave": "",
+    "dataAtivacao": null,
+    "dispositivoId": null
   },
+  "chaves": [
+    {
+      "id": 1,
+      "chave": "ALFA-2024-XK7J9-PL2M4",
+      "usada": false,
+      "dataCriacao": "2024-01-01T00:00:00.000Z",
+      "dataUso": null,
+      "dispositivoId": null
+    }
+  ],
   "dados": {
     "colaboradores": [],
     "registrosPonto": [],

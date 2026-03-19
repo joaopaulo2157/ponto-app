@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Sistema de Ponto Digital v4.1 - ALFA TECH (Cloud Sync)</title>
+    <title>Sistema de Ponto Digital v4.2 - ALFA TECH (Chaves Dinâmicas)</title>
     <style>
         * {
             margin: 0;
@@ -865,17 +865,17 @@
             
             <div class="info-sistema">
                 <p>Sistema de Ponto Digital</p>
-                <p>Versão: 4.1 Cloud</p>
+                <p>Versão: 4.2 Cloud</p>
                 <p class="destaque">ALFA TECH</p>
                 <p style="margin-top: 10px;">Digite a chave de ativação fornecida pelo proprietário</p>
-                <p style="margin-top: 5px; font-size: 0.9em; color: #667eea;">Ativação única em qualquer computador!</p>
+                <p style="margin-top: 5px; font-size: 0.9em; color: #667eea;">Cada chave é única e pode ser usada apenas uma vez</p>
             </div>
             
             <div class="aviso-ativacao">
                 ⚠️ A chave de ativação é fornecida apenas pelo proprietário do sistema (ALFA TECH)
             </div>
             
-            <input type="text" id="chave-ativacao" placeholder="Digite a chave de ativação" maxlength="30" autocomplete="off">
+            <input type="text" id="chave-ativacao" placeholder="Digite sua chave de ativação" maxlength="30" autocomplete="off">
             
             <button class="btn-ativar-sistema" onclick="validarAtivacao()">
                 ✅ Ativar Sistema
@@ -1071,15 +1071,14 @@
     </div>
 
     <script>
-        // Sistema de Ponto Digital v4.1 - ALFA TECH (Cloud Sync)
-        // Corrigido: Agora sincroniza corretamente com o servidor
+        // ============================================
+        // SISTEMA DE PONTO DIGITAL v4.2 - ALFA TECH
+        // CHAVES DINÂMICAS - VALIDAÇÃO NO SERVIDOR
+        // ============================================
 
-        // Configuração
-        const CHAVE_ATIVACAO = 'ALFA-TECH-2024-SISTEMA';
+        // CONFIGURAÇÃO - ALTERE AQUI SUA URL DO VERCEL
+        const API_URL = 'https://ponto-digital-api.vercel.app'; // <-- COLOQUE SUA URL AQUI
         const LIMITE_DEMO = 2;
-        
-        // IMPORTANTE: Substitua pela sua URL do Vercel
-        const API_URL = 'https://ponto-digital-api.vercel.app';
         
         let sistemaAtivado = false;
         let modoDemonstracao = false;
@@ -1165,11 +1164,59 @@
             }
         }
 
+        // ==================== FUNÇÃO PARA GERAR ID DO DISPOSITIVO ====================
+
+        function gerarDispositivoId() {
+            let dispositivoId = localStorage.getItem('dispositivoId');
+            
+            if (!dispositivoId) {
+                dispositivoId = 'DEV-' + Math.random().toString(36).substring(2, 15) + 
+                               Math.random().toString(36).substring(2, 15);
+                localStorage.setItem('dispositivoId', dispositivoId);
+            }
+            
+            return dispositivoId;
+        }
+
+        // ==================== FUNÇÃO PARA VALIDAR CHAVE NO SERVIDOR ====================
+
+        async function validarChaveNoServidor(chaveDigitada, dispositivoId) {
+            try {
+                // Busca todas as chaves
+                const response = await fetch(`${API_URL}/chaves`);
+                const chaves = await response.json();
+                
+                // Procura a chave digitada que não foi usada ainda
+                const chaveEncontrada = chaves.find(c => c.chave === chaveDigitada && !c.usada);
+                
+                if (chaveEncontrada) {
+                    // Marca a chave como usada
+                    await fetch(`${API_URL}/chaves/${chaveEncontrada.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ...chaveEncontrada,
+                            usada: true,
+                            dataUso: new Date().toISOString(),
+                            dispositivoId: dispositivoId
+                        })
+                    });
+                    
+                    return true;
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('Erro ao validar chave:', error);
+                return false;
+            }
+        }
+
         // ==================== STATUS DE CONEXÃO ====================
 
         async function verificarConexao() {
             try {
-                const response = await fetch(`${API_URL}/test`, { method: 'HEAD' });
+                const response = await fetch(`${API_URL}/chaves`, { method: 'HEAD' });
                 online = response.ok;
             } catch {
                 online = false;
@@ -1214,7 +1261,7 @@
             return sistemaAtivado;
         }
 
-        async function salvarAtivacaoServidor() {
+        async function salvarAtivacaoServidor(chave, dispositivoId) {
             mostrarLoading(true);
             
             try {
@@ -1227,15 +1274,17 @@
                     result = await apiRequest(`ativacao/${atual.id}`, 'PUT', {
                         ...atual,
                         status: true,
-                        chave: CHAVE_ATIVACAO,
-                        dataAtivacao: new Date().toISOString()
+                        chave: chave,
+                        dataAtivacao: new Date().toISOString(),
+                        dispositivoId: dispositivoId
                     });
                 } else {
                     // Se não existe, faz POST
                     result = await apiRequest('ativacao', 'POST', {
                         status: true,
-                        chave: CHAVE_ATIVACAO,
-                        dataAtivacao: new Date().toISOString()
+                        chave: chave,
+                        dataAtivacao: new Date().toISOString(),
+                        dispositivoId: dispositivoId
                     });
                 }
                 
@@ -1461,11 +1510,25 @@
             elementos.welcomeScreen.style.display = 'flex';
         }
 
+        // ==================== FUNÇÃO DE ATIVAÇÃO ATUALIZADA ====================
+
         async function validarAtivacao() {
             const chave = elementos.chaveAtivacao.value.trim();
+            const dispositivoId = gerarDispositivoId();
             
-            if (chave === CHAVE_ATIVACAO) {
-                const salvou = await salvarAtivacaoServidor();
+            if (!chave) {
+                mostrarAlerta('❌ Digite uma chave de ativação!', 'erro');
+                return;
+            }
+
+            mostrarLoading(true);
+            
+            // Valida a chave no servidor
+            const valida = await validarChaveNoServidor(chave, dispositivoId);
+            
+            if (valida) {
+                // Salva ativação no servidor
+                const salvou = await salvarAtivacaoServidor(chave, dispositivoId);
                 
                 if (salvou) {
                     sistemaAtivado = true;
@@ -1480,15 +1543,19 @@
                     // Inicia sincronização periódica
                     syncInterval = setInterval(sincronizarDados, 30000);
                     
-                    mostrarAlerta('✅ Sistema ativado com sucesso na nuvem!', 'sucesso');
+                    mostrarAlerta('✅ Sistema ativado com sucesso!', 'sucesso');
                 } else {
                     mostrarAlerta('❌ Erro ao ativar no servidor!', 'erro');
                 }
             } else {
-                mostrarAlerta('❌ Chave de ativação inválida!', 'erro');
+                mostrarAlerta('❌ Chave de ativação inválida ou já usada!', 'erro');
                 elementos.chaveAtivacao.value = '';
             }
+            
+            mostrarLoading(false);
         }
+
+        // ==================== MODO DEMONSTRAÇÃO ====================
 
         async function entrarModoDemonstracao() {
             modoDemonstracao = true;
@@ -1655,7 +1722,7 @@
             salvarDadosLocal();
             
             if (!modoDemonstracao) {
-                await sincronizarDados(); // Envia para nuvem imediatamente
+                await sincronizarDados();
             }
             
             fecharFormColaborador();
@@ -1986,7 +2053,7 @@
                 registrosPonto,
                 trocasTurno,
                 data: new Date().toLocaleString(),
-                versao: '4.1'
+                versao: '4.2'
             };
 
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });

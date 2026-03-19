@@ -1,10 +1,4 @@
 {
-  "ativacao": {
-    "status": false,
-    "chave": "",
-    "dataAtivacao": null,
-    "dispositivoId": null
-  },
   "chaves": [
     {
       "id": 1,
@@ -15,6 +9,12 @@
       "dispositivoId": null
     }
   ],
+  "ativacao": {
+    "status": false,
+    "chave": "",
+    "dataAtivacao": null,
+    "dispositivoId": null
+  },
   "dados": {
     "colaboradores": [],
     "registrosPonto": [],

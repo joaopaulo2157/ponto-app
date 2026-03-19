@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Chaves - ALFA TECH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .config-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f5576c;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .chave-container {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .chave-gerada {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 3px;
+            word-break: break-all;
+            margin-bottom: 15px;
+        }
+
+        .chave-info {
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .chave-info span {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+
+        .tabela-chaves {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .tabela-chaves th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px;
+            font-size: 0.9em;
+        }
+
+        .tabela-chaves td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .usada {
+            color: #f5576c;
+            font-weight: 600;
+        }
+
+        .disponivel {
+            color: #43e97b;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-usada {
+            background: #f5576c;
+            color: white;
+        }
+
+        .status-disponivel {
+            background: #43e97b;
+            color: white;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .url-api {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .url-api label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .url-api input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alerta {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideIn 0.3s;
+        }
+
+        .alerta.sucesso { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .alerta.erro { background: linear-gradient(135deg, #fa709a, #f5576c); }
+        .alerta.info { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Gerador de Chaves de Ativação</h1>
+        <div class="subtitle">ALFA TECH - Sistema de Ponto Digital</div>
+
+        <div class="config-section">
+            <h3>⚙️ Configuração da API</h3>
+            <div class="url-api">
+                <label>URL da sua API no Vercel:</label>
+                <input type="text" id="api-url" placeholder="https://ponto-digital-api.vercel.app" value="https://ponto-digital-api.vercel.app">
+            </div>
+            <button class="btn btn-primary" onclick="testarConexao()">
+                🔌 Testar Conexão
+            </button>
+        </div>
+
+        <div class="chave-container">
+            <h3 style="color: white; margin-bottom: 20px;">🎲 Gerar Nova Chave</h3>
+            
+            <div class="form-group" style="text-align: left;">
+                <label style="color: white;">Quantidade de chaves:</label>
+                <input type="number" id="quantidade" min="1" max="10" value="1" style="width: 100px; text-align: center;">
+            </div>
+
+            <div id="chave-gerada-area" style="display: none;">
+                <div class="chave-gerada" id="chave-gerada"></div>
+                <div class="chave-info">
+                    <span id="chave-data"></span>
+                </div>
+            </div>
+
+            <div class="acoes">
+                <button class="btn btn-success" onclick="gerarChave()">
+                    🎲 Gerar Chave
+                </button>
+                <button class="btn btn-primary" onclick="copiarChave()" id="btn-copiar" style="display: none;">
+                    📋 Copiar Chave
+                </button>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3>📋 Chaves Geradas</h3>
+            <div style="overflow-x: auto;">
+                <table class="tabela-chaves" id="tabela-chaves">
+                    <thead>
+                        <tr>
+                            <th>Chave</th>
+                            <th>Status</th>
+                            <th>Data Criação</th>
+                            <th>Data Uso</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chaves-lista">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 30px;">
+                                Clique em "Carregar Chaves" para ver a lista
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="acoes">
+                <button class="btn btn-primary" onclick="carregarChaves()">
+                    🔄 Carregar Chaves
+                </button>
+                <button class="btn btn-danger" onclick="limparChavesUsadas()">
+                    🗑️ Limpar Chaves Usadas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração
+        let apiUrl = 'https://ponto-digital-api.vercel.app';
+        let ultimaChaveGerada = '';
+
+        // Elementos
+        const elementos = {
+            apiUrl: document.getElementById('api-url'),
+            quantidade: document.getElementById('quantidade'),
+            chaveGeradaArea: document.getElementById('chave-gerada-area'),
+            chaveGerada: document.getElementById('chave-gerada'),
+            chaveData: document.getElementById('chave-data'),
+            btnCopiar: document.getElementById('btn-copiar'),
+            chavesLista: document.getElementById('chaves-lista')
+        };
+
+        // Função para mostrar alerta
+        function mostrarAlerta(mensagem, tipo) {
+            const alerta = document.createElement('div');
+            alerta.className = `alerta ${tipo}`;
+            alerta.textContent = mensagem;
+            document.body.appendChild(alerta);
+            setTimeout(() => alerta.remove(), 3000);
+        }
+
+        // Função para testar conexão
+        async function testarConexao() {
+            apiUrl = elementos.apiUrl.value.trim();
+            
+            try {
+                const response = await fetch(`${apiUrl}/chaves`);
+                if (response.ok) {
+                    mostrarAlerta('✅ Conectado à API com sucesso!', 'sucesso');
+                } else {
+                    mostrarAlerta('❌ Erro ao conectar à API', 'erro');
+                }
+            } catch (error) {
+                mostrarAlerta('❌ Não foi possível conectar à API', 'erro');
+            }
+        }
+
+        // Função para gerar chave aleatória
+        function gerarChaveAleatoria() {
+            const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const prefixo = 'ALFA';
+            const ano = new Date().getFullYear();
+            
+            let parte1 = '';
+            let parte2 = '';
+            
+            for (let i = 0; i < 5; i++) {
+                parte1 += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+            }
+            
+            for (let i = 0; i < 5; i++) {
+                parte2 += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+            }
+            
+            return `${prefixo}-${ano}-${parte1}-${parte2}`;
+        }
+
+        // Função para gerar chave
+        async function gerarChave() {
+            const quantidade = parseInt(elementos.quantidade.value) || 1;
+            const chavesGeradas = [];
+            
+            for (let i = 0; i < quantidade; i++) {
+                const novaChave = gerarChaveAleatoria();
+                chavesGeradas.push(novaChave);
+            }
+
+            // Salvar no servidor
+            apiUrl = elementos.apiUrl.value.trim();
+            
+            try {
+                // Primeiro, pegar chaves existentes
+                const response = await fetch(`${apiUrl}/chaves`);
+                const chavesExistentes = await response.json();
+                
+                // Criar novas chaves
+                const novasChaves = chavesGeradas.map((chave, index) => ({
+                    id: chavesExistentes.length + index + 1,
+                    chave: chave,
+                    usada: false,
+                    dataCriacao: new Date().toISOString(),
+                    dataUso: null,
+                    dispositivoId: null
+                }));
+
+                // Adicionar cada nova chave
+                for (const novaChave of novasChaves) {
+                    await fetch(`${apiUrl}/chaves`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(novaChave)
+                    });
+                }
+
+                // Mostrar a primeira chave gerada
+                if (chavesGeradas.length > 0) {
+                    ultimaChaveGerada = chavesGeradas[0];
+                    elementos.chaveGerada.textContent = ultimaChaveGerada;
+                    elementos.chaveData.textContent = `Gerada em: ${new Date().toLocaleString()}`;
+                    elementos.chaveGeradaArea.style.display = 'block';
+                    elementos.btnCopiar.style.display = 'inline-flex';
+                    
+                    if (chavesGeradas.length > 1) {
+                        mostrarAlerta(`✅ ${chavesGeradas.length} chaves geradas com sucesso!`, 'sucesso');
+                    } else {
+                        mostrarAlerta('✅ Chave gerada com sucesso!', 'sucesso');
+                    }
+                }
+                
+                await carregarChaves();
+                
+            } catch (error) {
+                console.error('Erro ao salvar chave:', error);
+                mostrarAlerta('❌ Erro ao salvar chave no servidor', 'erro');
+            }
+        }
+
+        // Função para copiar chave
+        function copiarChave() {
+            navigator.clipboard.writeText(ultimaChaveGerada).then(() => {
+                mostrarAlerta('📋 Chave copiada para a área de transferência!', 'sucesso');
+            });
+        }
+
+        // Função para carregar chaves
+        async function carregarChaves() {
+            apiUrl = elementos.apiUrl.value.trim();
+            
+            try {
+                const response = await fetch(`${apiUrl}/chaves`);
+                const chaves = await response.json();
+                
+                if (chaves.length === 0) {
+                    elementos.chavesLista.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 30px;">
+                                Nenhuma chave gerada ainda
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Ordenar por data (mais recentes primeiro)
+                chaves.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
+
+                let html = '';
+                chaves.forEach(chave => {
+                    const dataCriacao = new Date(chave.dataCriacao).toLocaleString();
+                    const dataUso = chave.dataUso ? new Date(chave.dataUso).toLocaleString() : '-';
+                    const statusClass = chave.usada ? 'status-usada' : 'status-disponivel';
+                    const statusText = chave.usada ? 'Usada' : 'Disponível';
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${chave.chave}</strong></td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>${dataCriacao}</td>
+                            <td>${dataUso}</td>
+                            <td>
+                                ${!chave.usada ? `
+                                    <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8em;" onclick="copiarChaveEspecifica('${chave.chave}')">
+                                        📋 Copiar
+                                    </button>
+                                ` : '-'}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                elementos.chavesLista.innerHTML = html;
+                mostrarAlerta('✅ Chaves carregadas com sucesso!', 'sucesso');
+                
+            } catch (error) {
+                console.error('Erro ao carregar chaves:', error);
+                mostrarAlerta('❌ Erro ao carregar chaves do servidor', 'erro');
+            }
+        }
+
+        // Função para copiar chave específica
+        function copiarChaveEspecifica(chave) {
+            navigator.clipboard.writeText(chave).then(() => {
+                mostrarAlerta('📋 Chave copiada!', 'sucesso');
+            });
+        }
+
+        // Função para limpar chaves usadas
+        async function limparChavesUsadas() {
+            if (!confirm('Tem certeza que deseja remover todas as chaves usadas?')) return;
+            
+            apiUrl = elementos.apiUrl.value.trim();
+            
+            try {
+                const response = await fetch(`${apiUrl}/chaves`);
+                const chaves = await response.json();
+                
+                const chavesNaoUsadas = chaves.filter(c => !c.usada);
+                
+                // Limpar tudo e recriar só as não usadas
+                for (const chave of chaves) {
+                    await fetch(`${apiUrl}/chaves/${chave.id}`, {
+                        method: 'DELETE'
+                    });
+                }
+                
+                for (const chave of chavesNaoUsadas) {
+                    await fetch(`${apiUrl}/chaves`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(chave)
+                    });
+                }
+                
+                mostrarAlerta('✅ Chaves usadas removidas!', 'sucesso');
+                await carregarChaves();
+                
+            } catch (error) {
+                console.error('Erro ao limpar chaves:', error);
+                mostrarAlerta('❌ Erro ao limpar chaves', 'erro');
+            }
+        }
+
+        // Carregar chaves ao iniciar
+        setTimeout(carregarChaves, 1000);
+    </script>
+</body>
+</html>
